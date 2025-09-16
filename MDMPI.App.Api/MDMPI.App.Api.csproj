@@ -15,4 +15,12 @@
     <ProjectReference Include="..\MDMPI.App.Data\MDMPI.App.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\Engineer\" />
+    <Folder Include="Controllers\Collection\" />
+    <Folder Include="Controllers\Ims\" />
+    <Folder Include="Controllers\ProductSpecialist\" />
+    <Folder Include="Controllers\Sales\" />
+  </ItemGroup>
+
 </Project>

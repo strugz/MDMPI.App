@@ -10,4 +10,25 @@
     <ProjectReference Include="..\MDMPI.App.Core\MDMPI.App.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Collection\Common\" />
+    <Folder Include="Collection\Interfaces\" />
+    <Folder Include="Collection\Repositories\" />
+    <Folder Include="Engineer\Common\" />
+    <Folder Include="Engineer\Interfaces\" />
+    <Folder Include="Engineer\Repositories\" />
+    <Folder Include="Ims\Common\" />
+    <Folder Include="Ims\Interfaces\" />
+    <Folder Include="Ims\Repositories\" />
+    <Folder Include="Logistic\Common\" />
+    <Folder Include="Logistic\Interfaces\" />
+    <Folder Include="Logistic\Repositories\" />
+    <Folder Include="ProductSpecialist\Common\" />
+    <Folder Include="ProductSpecialist\Interfaces\" />
+    <Folder Include="ProductSpecialist\Repositories\" />
+    <Folder Include="Sales\Common\" />
+    <Folder Include="Sales\Interfaces\" />
+    <Folder Include="Sales\Repositories\" />
+  </ItemGroup>
+
 </Project>
