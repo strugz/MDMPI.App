@@ -1,0 +1,6 @@
+@MDMPI.App.Api_HostAddress = http://localhost:5177
+
+GET {{MDMPI.App.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
