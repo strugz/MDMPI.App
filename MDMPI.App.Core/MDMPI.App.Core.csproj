@@ -6,4 +6,26 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Collection\" />
+    <Folder Include="Collection\Entities\" />
+    <Folder Include="Engineer\DTOs\" />
+    <Folder Include="Engineer\Entities\" />
+    <Folder Include="Engineer\Interfaces\" />
+    <Folder Include="Collection\Interfaces\" />
+    <Folder Include="Collection\DTOs\" />
+    <Folder Include="Ims\DTOs\" />
+    <Folder Include="Ims\Entities\" />
+    <Folder Include="Ims\Interfaces\" />
+    <Folder Include="Logistic\DTOs\" />
+    <Folder Include="Logistic\Entities\" />
+    <Folder Include="Logistic\Interfaces\" />
+    <Folder Include="ProductSpecialist\DTOs\" />
+    <Folder Include="ProductSpecialist\Entities\" />
+    <Folder Include="ProductSpecialist\Interfaces\" />
+    <Folder Include="Sales\DTOs\" />
+    <Folder Include="Sales\Entities\" />
+    <Folder Include="Sales\Interfaces\" />
+  </ItemGroup>
+
 </Project>

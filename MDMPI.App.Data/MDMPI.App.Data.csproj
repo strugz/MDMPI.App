@@ -11,23 +11,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Collection\Common\" />
-    <Folder Include="Collection\Interfaces\" />
-    <Folder Include="Collection\Repositories\" />
-    <Folder Include="Engineer\Common\" />
-    <Folder Include="Engineer\Interfaces\" />
+    <Folder Include="Collection\" />
+    <Folder Include="Engineer\Migrations\" />
     <Folder Include="Engineer\Repositories\" />
-    <Folder Include="Ims\Common\" />
-    <Folder Include="Ims\Interfaces\" />
+    <Folder Include="Ims\Migrations\" />
     <Folder Include="Ims\Repositories\" />
-    <Folder Include="Logistic\Common\" />
-    <Folder Include="Logistic\Interfaces\" />
+    <Folder Include="Collection\Migrations\" />
+    <Folder Include="Logistic\Migrations\" />
     <Folder Include="Logistic\Repositories\" />
-    <Folder Include="ProductSpecialist\Common\" />
-    <Folder Include="ProductSpecialist\Interfaces\" />
+    <Folder Include="Collection\Repositories\" />
+    <Folder Include="ProductSpecialist\Migrations\" />
     <Folder Include="ProductSpecialist\Repositories\" />
-    <Folder Include="Sales\Common\" />
-    <Folder Include="Sales\Interfaces\" />
+    <Folder Include="Sales\Migrations\" />
     <Folder Include="Sales\Repositories\" />
   </ItemGroup>
 
