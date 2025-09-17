@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDMPI.App.Data", "MDMPI.App
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDMPI.App.Tests", "MDMPI.App.Tests\MDMPI.App.Tests.csproj", "{E16455A7-35FA-4A18-9EC9-CC3235AAC9AE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDMPI.App.Common", "MDMPI.App.Common\MDMPI.App.Common.csproj", "{3625FEC0-78F7-4580-86BF-B48D618EACEA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{E16455A7-35FA-4A18-9EC9-CC3235AAC9AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E16455A7-35FA-4A18-9EC9-CC3235AAC9AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E16455A7-35FA-4A18-9EC9-CC3235AAC9AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3625FEC0-78F7-4580-86BF-B48D618EACEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3625FEC0-78F7-4580-86BF-B48D618EACEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3625FEC0-78F7-4580-86BF-B48D618EACEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3625FEC0-78F7-4580-86BF-B48D618EACEA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
