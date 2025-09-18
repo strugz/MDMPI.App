@@ -2,7 +2,6 @@
 using MDMPI.App.Core.CommonOldEntities.Entities;
 using MDMPI.App.Core.Logistic.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Runtime;
 
 namespace MDMPI.App.Data
 {
@@ -18,9 +17,12 @@ namespace MDMPI.App.Data
         public DbSet<ACCMSTModel> ACCMST_ { get; set; }
         public DbSet<MobileModel> a_tblMobile { get; set; }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<RequestStandardModel>()
+                .ToTable("a_tblRequest", b => b.UseSqlOutputClause(false));
         }
     }
 }

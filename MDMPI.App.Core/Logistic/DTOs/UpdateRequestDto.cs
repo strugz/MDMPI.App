@@ -8,15 +8,12 @@ namespace MDMPI.App.Core.Logistic.DTOs
 {
     public class UpdateRequestDto
     {
-        public int RequestID { get; set; }
-        public string? RequestShippingMethod { get; set; }
-        public string? RequestDeliveryTerms { get; set; }
-        public string? RequestDeliveryDate { get; set; }
-        public string? RequestPreference { get; set; }
+        public long RequestID { get; set; }
         public string? RequestStatus { get; set; }
         public string? RequestItemPreparedBy { get; set; }
         public string? RequestDeliveredBy { get; set; }
         public string? RequestDriverHelper { get; set; }
+        public long? MobileID { get; set; }
         public string? Receiver { get; set; }
         public string? RequestTripTicketNumber { get; set; }
         public string? RequestItemPreparedAt { get; set; }

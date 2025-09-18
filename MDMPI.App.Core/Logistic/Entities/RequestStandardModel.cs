@@ -19,7 +19,6 @@ namespace MDMPI.App.Core.Logistic.Entities
         public string? RequestCreatedBy { get; set; }
         public string? RequestItemPreparedBy { get; set; }
         public string? RequestDeliveredBy { get; set; }
-        public string? RequestCreatedAt { get; set; }
         public string? RequestItemPreparedAt { get; set; }
         public string? RequestItemPreparedEndAt { get; set; }
         public string? RequestDeliveredAt { get; set; }
@@ -27,12 +26,12 @@ namespace MDMPI.App.Core.Logistic.Entities
         public string? LocationStartedAt { get; set; }
         public string? LocationEndAt { get; set; }
 
-        public long? MobileID { get; set; }
+        public long? MobileID { get; set; } = 0;
         public string? RequestDriverHelper { get; set; }
         public string? Receiver { get; set; }
         public string? RequestTripTicketNumber { get; set; }
 
-        public List<DocumentReferenceModel>? DocumenRDocumentReference { get; set; }
+        public List<DocumentReferenceModel>? DocumentReference { get; set; }
         public ImageModel? Image { get; set; }
         public SignatureModel? Signature  { get; set; }
         public RemarksModel? Remarks { get; set; }

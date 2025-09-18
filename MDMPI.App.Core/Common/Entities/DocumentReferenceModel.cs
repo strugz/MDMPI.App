@@ -12,8 +12,7 @@ namespace MDMPI.App.Core.Common.Entities
     {
         public long ID { get; set; }
         public long RequestID { get; set; }
-        public string Reference { get; set; } = string.Empty;
-        public DateTime RequestCreatedAt { get; set; }
+        public string Reference { get; set; }
 
         [ForeignKey(nameof(RequestID))]
         public RequestStandardModel? Request { get; set; }

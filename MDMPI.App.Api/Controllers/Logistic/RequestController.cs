@@ -1,4 +1,5 @@
-﻿using MDMPI.App.Core.Logistic.Interfaces;
+﻿using MDMPI.App.Core.Logistic.DTOs;
+using MDMPI.App.Core.Logistic.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -18,7 +19,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
             _mobileRepository = mobileRepository;
         }
 
-        
+
         [HttpGet("all")]
         public async Task<ActionResult> GetRequestAll()
         {
@@ -34,7 +35,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
         [HttpGet("cancel/{requestid}")]
         public async Task<ActionResult> GetCancelledRemarks(string requestid)
         {
-           var result = await _requestRepository.GetAllRemarks(requestid);
+            var result = await _requestRepository.GetAllRemarks(requestid);
             if (result == null)
             {
                 return NotFound();
@@ -68,25 +69,59 @@ namespace MDMPI.App.Api.Controllers.Logistic
         public async Task<ActionResult> GetMobile()
         {
             var result = await _mobileRepository.GetAllMobilesAsync();
-            if(result == null)
+            if (result == null)
             {
                 return NotFound();
             }
             return Ok(result);
         }
 
-
-        // POST api/<RequestController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult> PostRequest([FromBody] InsertRequestDto value)
         {
+            var result = await _requestRepository.InsertRequest(value);
+            if (!result)
+            {
+                return BadRequest("Insert failed.");
+            }
+            return Ok();
         }
 
         // PUT api/<RequestController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPatch]
+        public async Task<ActionResult> UpdateRequest([FromBody] UpdateRequestDto value)
         {
+            // Basic validation
+            if (value.RequestID <= 0)
+            {
+                return BadRequest("RequestID is required and must be greater than zero.");
+            }
+
+            var result = await _requestRepository.UpdateRequest(value);
+            if (!result)
+            {
+                return NotFound("Request not found or update failed.");
+            }
+            return Ok("Request updated successfully.");
         }
+
+        [HttpPatch("cancel/{requestid}")]
+        public async Task<ActionResult> CancelRequest(string requestid, [FromBody] string remarks)
+        {
+            if (string.IsNullOrWhiteSpace(requestid))
+            {
+                return BadRequest("RequestID is required.");
+            }
+
+            var result = await _requestRepository.InsertRemarkAndCancelRequestAsync(long.Parse(requestid), remarks);
+            if (!result)
+            {
+                return NotFound("Request not found or cancel failed.");
+            }
+
+            return Ok(new { message = "Request cancelled successfully." });
+        }
+
 
         // DELETE api/<RequestController>/5
         [HttpDelete("{id}")]
