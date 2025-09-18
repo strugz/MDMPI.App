@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace MDMPI.App.Core.Logistic.DTOs
+namespace MDMPI.App.Core.Logistic.DTOs.RequestStandard
 {
     public class RequestStandardDto
     {

@@ -17,6 +17,9 @@ namespace MDMPI.App.Data
         public DbSet<ACCMSTModel> ACCMST_ { get; set; }
         public DbSet<MobileModel> a_tblMobile { get; set; }
 
+        public DbSet<RequestPullOutReturnPickUpModel> a_tblRequestPullOutReturnPickUp { get; set; }
+
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

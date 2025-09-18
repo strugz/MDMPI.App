@@ -2,7 +2,7 @@
 using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Services;
 using MDMPI.App.Core.CommonOldEntities.DTOs;
-using MDMPI.App.Core.Logistic.DTOs;
+using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
 using MDMPI.App.Core.Logistic.Entities;
 using MDMPI.App.Core.Logistic.Interfaces;
 using Microsoft.EntityFrameworkCore;
