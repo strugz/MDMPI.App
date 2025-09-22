@@ -12,7 +12,7 @@ namespace MDMPI.App.Core.Common.DTOs
     {
         [Key]
         [JsonPropertyName("RequestID")]
-        public long? RequestID { get; set; }
+        public string? RequestID { get; set; }
         [JsonPropertyName("Remarks")]
         public string? Remarks { get; set; }
         [JsonPropertyName("Date")]

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MDMPI.App.Data.Logistic.Repositories
+namespace MDMPI.App.Data.Common.Repositories
 {
     public class MobileRepository : IMobileRepository
     {

@@ -12,7 +12,7 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestStandard
     public class RequestStandardDto
     {
         [JsonPropertyName("ID")]
-        public long ID { get; set; }
+        public string? ID { get; set; }
         [JsonPropertyName("ClientID")]
         public string? ClientID { get; set; }
         [JsonPropertyName("ShippingMethod")]

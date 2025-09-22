@@ -1,27 +1,28 @@
-﻿using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
-using MDMPI.App.Core.Logistic.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using Microsoft.AspNetCore.Http;
 using MDMPI.App.Api.Models;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using MDMPI.App.Core.Logistic.DTOs.RequestPullOutReturnPickUp;
+using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
+using MDMPI.App.Core.Logistic.Interfaces;
+using MDMPI.App.Data.Common.Repositories;
+using MDMPI.App.Data.Logistic.Repositories;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace MDMPI.App.Api.Controllers.Logistic
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RequestController : ControllerBase
+    public class RequestPullOutReturnPickUpController : ControllerBase
     {
-        private readonly IRequestRepository _requestRepository;
-        private readonly IMobileRepository _mobileRepository;
+        private readonly IRequestPullOutReturnPickUpRepository _repository;
+        private readonly ILogger<RequestPullOutReturnPickUpController> _logger;
         private readonly IRequestRemarksRepository _requestRemarksRepository;
         private readonly IImagePathTypeRepository _imagePathTypeRepository;
 
-        public RequestController(IRequestRepository requestRepository, IMobileRepository mobileRepository, IRequestRemarksRepository requestRemarksRepository, IImagePathTypeRepository imagePathTypeRepository)
+        public RequestPullOutReturnPickUpController(IRequestPullOutReturnPickUpRepository repository, ILogger<RequestPullOutReturnPickUpController> logger, IRequestRemarksRepository requestRemarksRepository, IImagePathTypeRepository imagePathTypeRepository)
         {
-            _requestRepository = requestRepository;
-            _mobileRepository = mobileRepository;
+            _repository = repository;
+            _logger = logger;
             _requestRemarksRepository = requestRemarksRepository;
             _imagePathTypeRepository = imagePathTypeRepository;
         }
@@ -38,13 +39,33 @@ namespace MDMPI.App.Api.Controllers.Logistic
                 DateFilter = dateFilter
             };
 
-            var result = await _requestRepository.GetAllRequestsAsync(query);
-
+            var result = await _repository.GetAllAsync(query);
             if (result == null)
             {
                 return NotFound();
             }
             return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Insert([FromBody] InsertRequestPullOutReturnPickUpDto dto)
+        {
+            var id = await _repository.InsertAsync(dto);
+            if (id == false)
+                return BadRequest("Insert failed.");
+            return Ok();
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Update(string id, [FromBody] UpdateRequestPullOutReturnPickUpDto dto)
+        {
+            if (id != dto.RequestID.ToString())
+                return BadRequest("ID mismatch.");
+
+            var success = await _repository.UpdateAsync(dto);
+            if (!success)
+                return NotFound();
+            return NoContent();
         }
 
         [HttpGet("cancel/{requestid}")]
@@ -66,52 +87,13 @@ namespace MDMPI.App.Api.Controllers.Logistic
                 return BadRequest("RequestID is required.");
             }
 
-            var result = await _requestRemarksRepository.InsertRemarkAndCancelRequestForStandardDeliveryAsync(requestid, remarks);
+            var result = await _requestRemarksRepository.InsertRemarkAndCancelRequestForPullOutReturnPickUp(requestid, remarks);
             if (!result)
             {
                 return NotFound("Request not found or cancel failed.");
             }
 
             return Ok(new { message = "Request cancelled successfully." });
-        }
-
-        [HttpGet("mobile")]
-        public async Task<ActionResult> GetMobile()
-        {
-            var result = await _mobileRepository.GetAllMobilesAsync();
-            if (result == null)
-            {
-                return NotFound();
-            }
-            return Ok(result);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> PostRequest([FromBody] InsertRequestDto value)
-        {
-            var result = await _requestRepository.InsertRequest(value);
-            if (!result)
-            {
-                return BadRequest("Insert failed.");
-            }
-            return Ok();
-        }
-
-        [HttpPatch]
-        public async Task<ActionResult> UpdateRequest([FromBody] UpdateRequestDto value)
-        {
-            // Basic validation
-            if (long.Parse(value.RequestID!) <= 0)
-            {
-                return BadRequest("RequestID is required and must be greater than zero.");
-            }
-
-            var result = await _requestRepository.UpdateRequest(value);
-            if (!result)
-            {
-                return NotFound("Request not found or update failed.");
-            }
-            return Ok("Request updated successfully.");
         }
 
         [HttpGet("image")]

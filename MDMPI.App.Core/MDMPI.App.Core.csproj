@@ -7,22 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Collection\" />
-    <Folder Include="Collection\Entities\" />
-    <Folder Include="Engineer\DTOs\" />
-    <Folder Include="Engineer\Entities\" />
-    <Folder Include="Engineer\Interfaces\" />
-    <Folder Include="Collection\Interfaces\" />
-    <Folder Include="Collection\DTOs\" />
-    <Folder Include="Ims\DTOs\" />
-    <Folder Include="Ims\Entities\" />
-    <Folder Include="Ims\Interfaces\" />
-    <Folder Include="ProductSpecialist\DTOs\" />
-    <Folder Include="ProductSpecialist\Entities\" />
-    <Folder Include="ProductSpecialist\Interfaces\" />
-    <Folder Include="Sales\DTOs\" />
-    <Folder Include="Sales\Entities\" />
-    <Folder Include="Sales\Interfaces\" />
+    <Compile Remove="Collection\**" />
+    <Compile Remove="Engineer\**" />
+    <Compile Remove="Ims\**" />
+    <Compile Remove="ProductSpecialist\**" />
+    <Compile Remove="Sales\**" />
+    <EmbeddedResource Remove="Collection\**" />
+    <EmbeddedResource Remove="Engineer\**" />
+    <EmbeddedResource Remove="Ims\**" />
+    <EmbeddedResource Remove="ProductSpecialist\**" />
+    <EmbeddedResource Remove="Sales\**" />
+    <None Remove="Collection\**" />
+    <None Remove="Engineer\**" />
+    <None Remove="Ims\**" />
+    <None Remove="ProductSpecialist\**" />
+    <None Remove="Sales\**" />
   </ItemGroup>
 
   <ItemGroup>

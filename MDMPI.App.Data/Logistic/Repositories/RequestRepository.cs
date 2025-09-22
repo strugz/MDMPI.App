@@ -3,7 +3,6 @@ using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Services;
 using MDMPI.App.Core.CommonOldEntities.DTOs;
 using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
-using MDMPI.App.Core.Logistic.Entities;
 using MDMPI.App.Core.Logistic.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -14,45 +13,55 @@ namespace MDMPI.App.Data.Logistic.Repositories
     {
         private readonly AppDbContext _db;
         private readonly ILogger<RequestRepository> _logger;
+        private readonly IRequestIdGenerator _requestIdGenerator;
 
-        public RequestRepository(AppDbContext db, ILogger<RequestRepository> logger)
+        public RequestRepository(AppDbContext db, ILogger<RequestRepository> logger, IRequestIdGenerator requestIdGenerator)
         {
             _db = db;
             _logger = logger;
+            _requestIdGenerator = requestIdGenerator;
         }
 
         /// <summary>
-        /// Gets all requests as DTOs.
+        /// Gets all requests as DTOs with paging, sorting, and date filtering.
         /// </summary>
-        public async Task<List<RequestStandardDto>> GetAllRequestsAsync()
+        public async Task<List<RequestStandardDto>> GetAllRequestsAsync(RequestQueryDto query)
         {
-            _logger.LogInformation("Fetching all requests.");
-            var result = await _db.a_tblRequest
-                .AsNoTracking()
+            _logger.LogInformation("Fetching requests with filters: {@Query}", query);
+            var requests = _db.a_tblRequestStandardDelivery.AsNoTracking();
+
+            requests = Helper.ApplyDateFilterAny(
+                requests,
+                query.DateFilter,
+                r => r.RequestDeliveryDate.HasValue ? r.RequestDeliveryDate.Value : null
+            );
+
+            var result = await requests
                 .Select(r => new RequestStandardDto
                 {
-                    ID = r.RequestID,
+                    ID = r.RequestID.ToString(),
                     ClientID = r.RequestClientID,
                     ShippingMethod = r.RequestShippingMethod,
                     DeliveryTerms = r.RequestDeliveryTerms,
-                    DeliveryDate = r.RequestDeliveryDate,
+                    DeliveryDate = r.RequestDeliveryDate.HasValue ? r.RequestDeliveryDate.Value.ToString("yyyy-MM-dd") : null,
                     Preference = r.RequestPreference,
                     Status = r.RequestStatus,
                     RequestBy = r.RequestBy,
                     CreatedBy = r.RequestCreatedBy,
+                    CreatedAt = r.RequestCreatedAt.HasValue ? r.RequestCreatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : null,
                     ItemPreparedBy = r.RequestItemPreparedBy,
                     DeliveredBy = r.RequestDeliveredBy,
-                    ItemPreparedAt = r.RequestItemPreparedAt,
-                    ItemPreparedEndAt = r.RequestItemPreparedEndAt,
-                    DeliveredAt = r.RequestDeliveredAt,
-                    DeliveredEndAt = r.RequestDeliveredEndAt,
+                    ItemPreparedAt = r.RequestItemPreparedAt.HasValue ? r.RequestItemPreparedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : null,
+                    ItemPreparedEndAt = r.RequestItemPreparedEndAt.HasValue ? r.RequestItemPreparedEndAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : null,
+                    DeliveredAt = r.RequestDeliveredAt.HasValue ? r.RequestDeliveredAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : null,
+                    DeliveredEndAt = r.RequestDeliveredEndAt.HasValue ? r.RequestDeliveredEndAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : null,
                     MobileID = r.MobileID,
-                    MobileName = r.Mobile!.MobileName,
+                    MobileName = r.Mobile != null ? r.Mobile.MobileName : null,
                     Helper = r.RequestDriverHelper,
                     Receiver = r.Receiver,
                     TripTicketNumber = r.RequestTripTicketNumber,
                     DocumentReference = r.DocumentReference != null
-                        ? r.DocumentReference.Select(dr => dr.Reference).ToList()
+                        ? r.DocumentReference.Select(dr => dr.Reference).ToList()!
                         : new List<string>(),
                     Client = r.Client == null ? null : new ACCMSTDto
                     {
@@ -82,36 +91,28 @@ namespace MDMPI.App.Data.Logistic.Repositories
             try
             {
                 _logger.LogInformation("Inserting new request for ClientID: {ClientID}", dto.RequestClientID);
-                var request = new RequestStandardModel
+
+                var newRequestId = await _requestIdGenerator.GenerateAsync();
+
+                var request = Helper.BuildRequestStandardModel(dto, newRequestId);
+
+                _db.a_tblRequestStandardDelivery.Add(request);
+                await _db.SaveChangesAsync();
+
+                if (dto.DocumentReference is not null && dto.DocumentReference.Count > 0)
                 {
-                    RequestClientID = dto.RequestClientID,
-                    RequestShippingMethod = dto.RequestShippingMethod,
-                    RequestDeliveryTerms = dto.RequestDeliveryTerms,
-                    RequestDeliveryDate = dto.RequestDeliveryDate,
-                    RequestPreference = dto.RequestPreference,
-                    RequestStatus = dto.RequestStatus,
-                    RequestBy = dto.RequestBy,
-                    RequestCreatedBy = dto.RequestCreatedBy,
-                    DocumentReference = dto.DocumentReference?.Select(dr => new DocumentReferenceModel
+                    var refs = dto.DocumentReference.Select(dr => new DocumentReferenceModel
                     {
+                        RequestID = request.RequestID,
                         Reference = dr
-                    }).ToList() ?? new List<DocumentReferenceModel>()
-                };
+                    });
+                    _db.a_tblRequestDocumentReference.AddRange(refs);
+                    await _db.SaveChangesAsync();
+                }
 
-                _db.a_tblRequest.Add(request);
-                var result = await _db.SaveChangesAsync();
                 await transaction.CommitAsync();
-
-                if (result > 0)
-                {
-                    _logger.LogInformation("Inserted request with ID: {RequestID}", request.RequestID);
-                    return true;
-                }
-                else
-                {
-                    _logger.LogWarning("Insert failed for ClientID: {ClientID}", dto.RequestClientID);
-                    return false;
-                }
+                _logger.LogInformation("Inserted request with ID: {RequestID}", request.RequestID);
+                return true;
             }
             catch (Exception ex)
             {
@@ -121,95 +122,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
         }
 
         /// <summary>
-        /// Gets all remarks for a request.
-        /// </summary>
-        public async Task<RemarksDto?> GetAllRemarks(string requestid)
-        {
-            _logger.LogInformation("Fetching remarks for RequestID: {RequestID}", requestid);
-            if (!long.TryParse(requestid, out var id))
-            {
-                _logger.LogWarning("Invalid RequestID format: {RequestID}", requestid);
-                return null;
-            }
-
-            var remarks = await _db.a_tblRequestRemarks
-                .AsNoTracking()
-                .Where(r => r.RequestID == id)
-                .Select(r => new RemarksDto
-                {
-                    RequestID = r.RequestID,
-                    Remarks = r.Remarks,
-                    Date = r.Date.HasValue
-                        ? r.Date.Value.ToString("yyyy-MM-dd HH:mm:ss")
-                        : null
-                })
-                .FirstOrDefaultAsync();
-
-            _logger.LogInformation("Fetched remarks for RequestID: {RequestID}", requestid);
-            return remarks;
-        }
-
-        /// <summary>
-        /// Gets the proof image for a request.
-        /// </summary>
-        public async Task<byte[]?> GetRequestProofImage(string requestid)
-        {
-            _logger.LogInformation("Fetching proof image for RequestID: {RequestID}", requestid);
-            if (!long.TryParse(requestid, out var id))
-            {
-                _logger.LogWarning("Invalid RequestID format: {RequestID}", requestid);
-                return null;
-            }
-
-            var image = await _db.a_tblRequestImage
-                .AsNoTracking()
-                .Where(r => r.RequestID == id)
-                .Select(r => r.RequestImage)
-                .FirstOrDefaultAsync();
-
-            _logger.LogInformation("Fetched proof image for RequestID: {RequestID}", requestid);
-            return image;
-        }
-
-        /// <summary>
-        /// Gets the signature image for a request.
-        /// </summary>
-        public async Task<byte[]?> GetRequestSignatureImage(string requestid)
-        {
-            _logger.LogInformation("Fetching signature image for RequestID: {RequestID}", requestid);
-            if (!long.TryParse(requestid, out var id))
-            {
-                _logger.LogWarning("Invalid RequestID format: {RequestID}", requestid);
-                return null;
-            }
-
-            var imageBase64 = await _db.a_tblRequestReceiverSignature
-                .AsNoTracking()
-                .Where(r => r.RequestID == id)
-                .Select(r => r.RequestReceiverSignature)
-                .FirstOrDefaultAsync();
-
-            if (string.IsNullOrWhiteSpace(imageBase64))
-            {
-                _logger.LogWarning("No signature image found for RequestID: {RequestID}", requestid);
-                return null;
-            }
-
-            try
-            {
-                var image = Convert.FromBase64String(imageBase64);
-                _logger.LogInformation("Fetched signature image for RequestID: {RequestID}", requestid);
-                return image;
-            }
-            catch (FormatException)
-            {
-                _logger.LogError("Invalid base64 string for signature image, RequestID: {RequestID}", requestid);
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Updates an existing request with the provided data.
+        /// Updates an existing request with the provided data (including Image, Signature, and Remarks upserts).
         /// </summary>
         public async Task<bool> UpdateRequest(UpdateRequestDto dto)
         {
@@ -218,8 +131,8 @@ namespace MDMPI.App.Data.Logistic.Repositories
             {
                 _logger.LogInformation("Updating request with ID: {RequestID}", dto.RequestID);
 
-                var request = await _db.a_tblRequest
-                    .FirstOrDefaultAsync(r => r.RequestID == dto.RequestID);
+                var request = await _db.a_tblRequestStandardDelivery
+                    .FirstOrDefaultAsync(r => r.RequestID == long.Parse(dto.RequestID!));
 
                 if (request == null)
                 {
@@ -227,7 +140,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     return false;
                 }
 
-                // Conditionally update all fields using the generic helper
+                // Conditionally update scalar fields
                 Helper.UpdateIfNotNull(v => request.RequestStatus = v, dto.RequestStatus);
                 Helper.UpdateIfNotNull(v => request.RequestItemPreparedBy = v, dto.RequestItemPreparedBy);
                 Helper.UpdateIfNotNull(v => request.RequestDeliveredBy = v, dto.RequestDeliveredBy);
@@ -235,14 +148,40 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 Helper.UpdateIfNotNull(v => request.MobileID = v, dto.MobileID);
                 Helper.UpdateIfNotNull(v => request.Receiver = v, dto.Receiver);
                 Helper.UpdateIfNotNull(v => request.RequestTripTicketNumber = v, dto.RequestTripTicketNumber);
-                Helper.UpdateIfNotNull(v => request.RequestItemPreparedAt = v, dto.RequestItemPreparedAt);
-                Helper.UpdateIfNotNull(v => request.RequestItemPreparedEndAt = v, dto.RequestItemPreparedEndAt);
-                Helper.UpdateIfNotNull(v => request.RequestDeliveredAt = v, dto.RequestDeliveredAt);
-                Helper.UpdateIfNotNull(v => request.RequestDeliveredEndAt = v, dto.RequestDeliveredEndAt);
+                Helper.UpdateIfNotNull(v => request.RequestItemPreparedAt = DateTime.TryParse(v, out var dt) ? dt : (DateTime?)null, dto.RequestItemPreparedAt);
+                Helper.UpdateIfNotNull(v => request.RequestItemPreparedEndAt = DateTime.TryParse(v, out var dt) ? dt : (DateTime?)null, dto.RequestItemPreparedEndAt);
+                Helper.UpdateIfNotNull(v => request.RequestDeliveredAt = DateTime.TryParse(v, out var dt) ? dt : (DateTime?)null, dto.RequestDeliveredAt);
+                Helper.UpdateIfNotNull(v => request.RequestDeliveredEndAt = DateTime.TryParse(v, out var dt) ? dt : (DateTime?)null, dto.RequestDeliveredEndAt);
                 Helper.UpdateIfNotNull(v => request.LocationStartedAt = v, dto.LocationStartedAt);
                 Helper.UpdateIfNotNull(v => request.LocationEndAt = v, dto.LocationEndAt);
 
-                await _db.SaveChangesAsync();
+                var requestIdLong = request.RequestID;
+
+                // Upsert Remarks
+                if (dto.Remarks is { Remarks: { } remarkText } && !string.IsNullOrWhiteSpace(remarkText))
+                {
+                    var existingRemarks = await _db.a_tblRequestRemarks
+                        .FirstOrDefaultAsync(r => r.RequestID == requestIdLong);
+
+                    if (existingRemarks is null)
+                    {
+                        _db.a_tblRequestRemarks.Add(new RemarksModel
+                        {
+                            RequestID = requestIdLong,
+                            Remarks = remarkText,
+                            Date = dto.Remarks.Date ?? DateTime.UtcNow
+                        });
+                        _logger.LogInformation("Inserted remarks for RequestID: {RequestID}", dto.RequestID);
+                    }
+                    else
+                    {
+                        existingRemarks.Remarks = remarkText;
+                        existingRemarks.Date = dto.Remarks.Date ?? DateTime.UtcNow;
+                        _logger.LogInformation("Updated remarks for RequestID: {RequestID}", dto.RequestID);
+                    }
+                }
+
+                var result = await _db.SaveChangesAsync();
                 await transaction.CommitAsync();
                 _logger.LogInformation("Updated request with ID: {RequestID}", dto.RequestID);
 
@@ -251,45 +190,6 @@ namespace MDMPI.App.Data.Logistic.Repositories
             catch (Exception ex)
             {
                 await Helper.RollbackTransactionAsync(transaction, _logger, ex, $"Error updating request with ID: {dto.RequestID}");
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Inserts a remark for a request and cancels the request atomically.
-        /// </summary>
-        public async Task<bool> InsertRemarkAndCancelRequestAsync(long requestId, string remarks)
-        {
-            using var transaction = await _db.Database.BeginTransactionAsync();
-            try
-            {
-                // Insert remark
-                var remark = new RemarksModel
-                {
-                    RequestID = requestId,
-                    Remarks = remarks,
-                    Date = DateTime.UtcNow
-                };
-                _db.a_tblRequestRemarks.Add(remark);
-
-                // Update request status
-                var request = await _db.a_tblRequest.FirstOrDefaultAsync(r => r.RequestID == requestId);
-                if (request == null)
-                {
-                    _logger.LogWarning("Request not found for ID: {RequestID}", requestId);
-                    return false;
-                }
-                request.RequestStatus = "Cancelled";
-
-                await _db.SaveChangesAsync();
-                await transaction.CommitAsync();
-
-                _logger.LogInformation("Inserted remark and cancelled request with ID: {RequestID}", requestId);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                await Helper.RollbackTransactionAsync(transaction, _logger, ex, $"Error inserting remark and cancelling request for ID: {requestId}");
                 return false;
             }
         }

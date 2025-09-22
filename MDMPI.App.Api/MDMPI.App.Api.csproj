@@ -7,6 +7,29 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\Collection\**" />
+    <Compile Remove="Controllers\Engineer\**" />
+    <Compile Remove="Controllers\Ims\**" />
+    <Compile Remove="Controllers\ProductSpecialist\**" />
+    <Compile Remove="Controllers\Sales\**" />
+    <Content Remove="Controllers\Collection\**" />
+    <Content Remove="Controllers\Engineer\**" />
+    <Content Remove="Controllers\Ims\**" />
+    <Content Remove="Controllers\ProductSpecialist\**" />
+    <Content Remove="Controllers\Sales\**" />
+    <EmbeddedResource Remove="Controllers\Collection\**" />
+    <EmbeddedResource Remove="Controllers\Engineer\**" />
+    <EmbeddedResource Remove="Controllers\Ims\**" />
+    <EmbeddedResource Remove="Controllers\ProductSpecialist\**" />
+    <EmbeddedResource Remove="Controllers\Sales\**" />
+    <None Remove="Controllers\Collection\**" />
+    <None Remove="Controllers\Engineer\**" />
+    <None Remove="Controllers\Ims\**" />
+    <None Remove="Controllers\ProductSpecialist\**" />
+    <None Remove="Controllers\Sales\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -17,14 +40,6 @@
   <ItemGroup>
     <ProjectReference Include="..\MDMPI.App.Core\MDMPI.App.Core.csproj" />
     <ProjectReference Include="..\MDMPI.App.Data\MDMPI.App.Data.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\Engineer\" />
-    <Folder Include="Controllers\Collection\" />
-    <Folder Include="Controllers\Ims\" />
-    <Folder Include="Controllers\ProductSpecialist\" />
-    <Folder Include="Controllers\Sales\" />
   </ItemGroup>
 
 </Project>

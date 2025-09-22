@@ -14,8 +14,5 @@ namespace MDMPI.App.Core.Common.Entities
         [Key]
         public long? RequestID { get; set; }
         public string? RequestReceiverSignature { get; set; }
-
-        [ForeignKey(nameof(RequestID))]
-        public RequestStandardModel? Request { get; set; }
     }
 }

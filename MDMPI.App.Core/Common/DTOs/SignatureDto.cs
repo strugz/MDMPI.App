@@ -10,7 +10,7 @@ namespace MDMPI.App.Core.Common.DTOs
     public class SignatureDto
     {
         [Key]
-        public long? RequestID { get; set; }
+        public string? RequestID { get; set; }
         public string? Image { get; set; }
     }
 }

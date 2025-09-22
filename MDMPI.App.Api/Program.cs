@@ -1,7 +1,11 @@
 using MDMPI.App.Core.Logistic.Interfaces;
+using MDMPI.App.Core.Common.Services;
 using MDMPI.App.Data;
+using MDMPI.App.Data.Common;
+using MDMPI.App.Data.Common.Services;
 using MDMPI.App.Data.Logistic.Repositories;
 using Microsoft.EntityFrameworkCore;
+using MDMPI.App.Data.Common.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,9 +17,21 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("DB")));
+
+// Register application services
+builder.Services.AddSingleton<ImageService>();
+
 builder.Services.AddScoped<IRequestRepository, RequestRepository>();
 
 builder.Services.AddScoped<IMobileRepository, MobileRepository>();
+
+builder.Services.AddScoped<IRequestPullOutReturnPickUpRepository, RequestPullOutReturnPickUpRepository>();
+
+builder.Services.AddScoped<IRequestIdGenerator, RequestIdGenerator>();
+
+builder.Services.AddScoped<IRequestRemarksRepository, RequestRemarksRepository>();
+
+builder.Services.AddScoped<IImagePathTypeRepository, ImagePathTypeRepository>();
 
 var app = builder.Build();
 

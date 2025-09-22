@@ -1,29 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using MDMPI.App.Core.Common.Entities;
+using MDMPI.App.Core.CommonOldEntities.Entities;
+using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MDMPI.App.Core.Logistic.Entities
 {
     public class RequestPullOutReturnPickUpModel
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long RequestID { get; set; }
-
-        public string? Client { get; set; }
+        public string? ClientID { get; set; }
         public string? ClientContactPerson { get; set; }
-        public string? ClientAddress { get; set; }
-        public string? Category { get; set; }
+        public long? FormCategoryID { get; set; }
+        public long? ItemCategoryID { get; set; }
         public string? SlipNo { get; set; }
         public string? IRRFNumber { get; set; }
         public DateTime? IRRFDate { get; set; }
         public string? ReasonForReturn { get; set; }
-        public string? DocumentReference { get; set; }
         public string? ReleasedBy { get; set; }
-        public string? ItemCategory { get; set; }
         public DateTime? PullOutDate { get; set; }
+        public DateTime? PullOutDateStartAt { get; set; }
         public DateTime? PullOutDateEndAt { get; set; }
         public string? RequestStatus { get; set; }
         public string? TripTicketNumber { get; set; }
@@ -31,5 +29,19 @@ namespace MDMPI.App.Core.Logistic.Entities
         public string? Helper { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+
+        [ForeignKey("RequestID")]
+        public List<DocumentReferenceModel>? DocumentReference { get; set; }
+        [ForeignKey("RequestID")]
+        public SignatureModel? Signature { get; set; }
+        [ForeignKey("RequestID")]
+        public RemarksModel? Remarks { get; set; }
+        [ForeignKey("FormCategoryID")]
+        public CategoryModel? FormCategory { get; set; }
+        [ForeignKey("ItemCategoryID")]
+        public CategoryModel? ItemCategory { get; set; }
+        [ForeignKey("ClientID")]
+        public ACCMSTModel? Client { get; set; }
+
     }
 }

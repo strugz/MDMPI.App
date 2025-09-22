@@ -12,10 +12,7 @@ namespace MDMPI.App.Core.Common.Entities
     public class ImageModel
     {
         [Key]
-        public long RequestID { get; set; }
+        public long? RequestID { get; set; }
         public byte[]? RequestImage { get; set; }
-
-        [ForeignKey(nameof(RequestID))]
-        public RequestStandardModel? Request { get; set; }
     }
 }

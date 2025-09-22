@@ -16,8 +16,5 @@ namespace MDMPI.App.Core.Common.Entities
         public long? RequestID { get; set; }
         public string? Remarks { get; set; }
         public DateTime? Date { get; set; }
-
-        [ForeignKey(nameof(RequestID))]
-        public RequestStandardModel? Request { get; set; }
     }
 }
