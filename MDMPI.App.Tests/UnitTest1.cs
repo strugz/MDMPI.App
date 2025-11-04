@@ -1,11 +1,47 @@
+using Xunit;
+using Moq;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using MDMPI.App.Api.Controllers.Logistic;
+using MDMPI.App.Core.Logistic.Interfaces;
+using MDMPI.App.Core.Common.DTOs;
+using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
+using MDMPI.App.Core.Logistic.DTOs.RequestPickUp;
+
 namespace MDMPI.App.Tests
 {
-    public class UnitTest1
+    public class ControllerTests
     {
         [Fact]
-        public void Test1()
+        public async Task RequestController_GetRequestAll_ReturnsOk_WhenRepositoryReturnsData()
         {
+            var mockRepo = new Mock<IRequestRepository>();
+            mockRepo.Setup(r => r.GetAllRequestsAsync(It.IsAny<RequestQueryDto>())).ReturnsAsync(new List<RequestStandardDto> { new RequestStandardDto() });
+            var mockMobile = new Mock<IMobileRepository>();
+            var mockRemarks = new Mock<IRequestRemarksRepository>();
+            var mockImage = new Mock<IImagePathTypeRepository>();
 
+            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object);
+
+            var result = await controller.GetRequestAll();
+
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task RequestPickUpController_GetAll_ReturnsNotFound_WhenRepoReturnsNull()
+        {
+            var mockRepo = new Mock<IRequestPickUpRepository>();
+            mockRepo.Setup(r => r.GetAllAsync(It.IsAny<RequestQueryDto>())).ReturnsAsync((List<RequestPickUpDto>?)null);
+            var mockImage = new Mock<IImagePathTypeRepository>();
+            var mockRemarks = new Mock<IRequestRemarksRepository>();
+            var mockMobile = new Mock<IMobileRepository>();
+
+            var controller = new RequestPickUpController(mockRepo.Object, mockImage.Object, mockRemarks.Object, mockMobile.Object);
+
+            var result = await controller.GetAll();
+
+            Assert.IsType<NotFoundResult>(result);
         }
     }
 }

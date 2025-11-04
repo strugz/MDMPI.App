@@ -193,8 +193,9 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 var effectiveStatus = !string.IsNullOrWhiteSpace(incomingStatus) ? incomingStatus! : entity.Status;
 
                 // Getting Supplies Ready: only PreparedBy and ItemPreparedAt (already handled above)
-                // ItemPreparedEndAt only if status is Item Packed
-                if (string.Equals(effectiveStatus, "Item Packed", StringComparison.OrdinalIgnoreCase))
+                // ItemPreparedEndAt only if status is Item Packed or Item Prepared
+                if (string.Equals(effectiveStatus, "Item Packed", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(effectiveStatus, "Item Prepared", StringComparison.OrdinalIgnoreCase))
                 {
                     Helper.UpdateIfNotNull(v => entity.ItemPreparedEndAt = v, dto.ItemPreparedEndAt);
                 }
