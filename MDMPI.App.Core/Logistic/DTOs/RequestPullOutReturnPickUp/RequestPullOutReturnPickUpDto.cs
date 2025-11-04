@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace MDMPI.App.Core.Logistic.DTOs.RequestPullOutReturnPickUp
 {
-    public class DisplayRequestPullOutReturnPickUpDto
+    public class RequestPullOutReturnPickUpDto
     {
         public long? RequestID { get; set; }
         public string? ClientID { get; set; }

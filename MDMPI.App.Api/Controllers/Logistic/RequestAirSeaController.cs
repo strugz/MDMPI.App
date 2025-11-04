@@ -1,50 +1,83 @@
-﻿using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
+using MDMPI.App.Core.Common.DTOs;
+using MDMPI.App.Core.Logistic.DTOs.RequestAirSea;
 using MDMPI.App.Core.Logistic.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using Microsoft.AspNetCore.Http;
 using MDMPI.App.Api.Models;
-using MDMPI.App.Core.Common.DTOs;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace MDMPI.App.Api.Controllers.Logistic
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RequestController : ControllerBase
+    public class RequestAirSeaController : ControllerBase
     {
-        private readonly IRequestRepository _requestRepository;
-        private readonly IMobileRepository _mobileRepository;
-        private readonly IRequestRemarksRepository _requestRemarksRepository;
+        private readonly IRequestAirSeaRepository _repository;
         private readonly IImagePathTypeRepository _imagePathTypeRepository;
+        private readonly IRequestRemarksRepository _requestRemarksRepository;
+        private readonly IMobileRepository _mobileRepository;
 
-        public RequestController(IRequestRepository requestRepository, IMobileRepository mobileRepository, IRequestRemarksRepository requestRemarksRepository, IImagePathTypeRepository imagePathTypeRepository)
+        public RequestAirSeaController(IRequestAirSeaRepository repository, IImagePathTypeRepository imagePathTypeRepository, IRequestRemarksRepository requestRemarksRepository, IMobileRepository mobileRepository)
         {
-            _requestRepository = requestRepository;
-            _mobileRepository = mobileRepository;
-            _requestRemarksRepository = requestRemarksRepository;
+            _repository = repository;
             _imagePathTypeRepository = imagePathTypeRepository;
+            _requestRemarksRepository = requestRemarksRepository;
+            _mobileRepository = mobileRepository;
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetRequestAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20, [FromQuery] RequestDateFilter dateFilter = RequestDateFilter.All, [FromQuery] RequestStatusFilter statusFilter = RequestStatusFilter.All)
+        public async Task<ActionResult> GetAll(
+            [FromQuery] RequestDateFilter dateFilter = RequestDateFilter.All,
+            [FromQuery] RequestStatusFilter statusFilter = RequestStatusFilter.All,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 20)
         {
             var query = new RequestQueryDto
             {
-                Page = page,
-                PageSize = pageSize,
+                DateFilter = dateFilter,
                 StatusFilter = statusFilter,
-                DateFilter = dateFilter
+                Page = page,
+                PageSize = pageSize
             };
 
-            var result = await _requestRepository.GetAllRequestsAsync(query);
-
+            var result = await _repository.GetAllAsync(query);
             if (result == null)
             {
                 return NotFound();
             }
             return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Insert([FromBody] InsertRequestAirSeaDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            var success = await _repository.InsertAsync(dto);
+            if (!success)
+            {
+                return BadRequest("Insert failed.");
+            }
+
+            return Ok();
+        }
+
+        [HttpPatch]
+        public async Task<ActionResult> Update([FromBody] UpdateRequestAirSeaDto dto)
+        {
+            if (dto.RequestID <= 0)
+            {
+                return BadRequest("RequestID is required.");
+            }
+
+            var success = await _repository.UpdateAsync(dto);
+            if (!success)
+            {
+                return NotFound("Request not found or update failed.");
+            }
+
+            return Ok("Request updated successfully.");
         }
 
         [HttpGet("cancel/{requestid}")]
@@ -66,7 +99,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
                 return BadRequest("RequestID is required and must be greater than zero.");
             }
 
-            var result = await _requestRemarksRepository.InsertRemarkAndCancelRequestForStandardDeliveryAsync(requestid, remarks);
+            var result = await _requestRemarksRepository.InsertRemarkAndCancelRequestForAirSea(requestid, remarks);
             if (!result)
             {
                 return NotFound("Request not found or cancel failed.");
@@ -84,34 +117,6 @@ namespace MDMPI.App.Api.Controllers.Logistic
                 return NotFound();
             }
             return Ok(result);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> PostRequest([FromBody] InsertRequestDto value)
-        {
-            var result = await _requestRepository.InsertRequest(value);
-            if (!result)
-            {
-                return BadRequest("Insert failed.");
-            }
-            return Ok();
-        }
-
-        [HttpPatch]
-        public async Task<ActionResult> UpdateRequest([FromBody] UpdateRequestDto value)
-        {
-            // Basic validation
-            if (long.Parse(value.RequestID!) <= 0)
-            {
-                return BadRequest("RequestID is required and must be greater than zero.");
-            }
-
-            var result = await _requestRepository.UpdateRequest(value);
-            if (!result)
-            {
-                return NotFound("Request not found or update failed.");
-            }
-            return Ok("Request updated successfully.");
         }
 
         [HttpGet("image")]
@@ -147,7 +152,12 @@ namespace MDMPI.App.Api.Controllers.Logistic
 
             using var ms = new MemoryStream();
             await image.CopyToAsync(ms);
-            byte[] imageBytes = ms.ToArray();
+            var imageBytes = ms.ToArray();
+
+            if (string.IsNullOrWhiteSpace(dto.Type) || (dto.Type != "Signature" && dto.Type != "Proof"))
+            {
+                return BadRequest("Type must be 'Signature' or 'Proof'.");
+            }
 
             var filePath = await _imagePathTypeRepository.UploadImageAsync(imageBytes, dto.RequestID!, dto.Type!);
             if (filePath == null)

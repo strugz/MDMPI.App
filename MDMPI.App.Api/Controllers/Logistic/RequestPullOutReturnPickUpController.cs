@@ -1,12 +1,8 @@
 using MDMPI.App.Api.Models;
+using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Logistic.DTOs.RequestPullOutReturnPickUp;
-using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
 using MDMPI.App.Core.Logistic.Interfaces;
-using MDMPI.App.Data.Common.Repositories;
-using MDMPI.App.Data.Logistic.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 
 namespace MDMPI.App.Api.Controllers.Logistic
 {
@@ -17,6 +13,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
         private readonly IRequestPullOutReturnPickUpRepository _repository;
         private readonly ILogger<RequestPullOutReturnPickUpController> _logger;
         private readonly IRequestRemarksRepository _requestRemarksRepository;
+        private readonly IImagePathTypeRepository _imagePathType_repository; // placeholder
         private readonly IImagePathTypeRepository _imagePathTypeRepository;
 
         public RequestPullOutReturnPickUpController(IRequestPullOutReturnPickUpRepository repository, ILogger<RequestPullOutReturnPickUpController> logger, IRequestRemarksRepository requestRemarksRepository, IImagePathTypeRepository imagePathTypeRepository)
@@ -24,19 +21,19 @@ namespace MDMPI.App.Api.Controllers.Logistic
             _repository = repository;
             _logger = logger;
             _requestRemarksRepository = requestRemarksRepository;
+            _imagePathType_repository = imagePathTypeRepository; // placeholder
             _imagePathTypeRepository = imagePathTypeRepository;
         }
 
-        [HttpGet("all")]
-        public async Task<ActionResult> GetRequestAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20, [FromQuery] string? sortBy = null, [FromQuery] bool sortDesc = false, [FromQuery] RequestDateFilter dateFilter = RequestDateFilter.All)
+        [HttpGet]
+        public async Task<ActionResult> GetRequestAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20, [FromQuery] RequestDateFilter dateFilter = RequestDateFilter.All, [FromQuery] RequestStatusFilter statusFilter = RequestStatusFilter.All)
         {
             var query = new RequestQueryDto
             {
                 Page = page,
                 PageSize = pageSize,
-                SortBy = sortBy,
-                SortDesc = sortDesc,
-                DateFilter = dateFilter
+                DateFilter = dateFilter,
+                StatusFilter = statusFilter
             };
 
             var result = await _repository.GetAllAsync(query);
@@ -56,20 +53,24 @@ namespace MDMPI.App.Api.Controllers.Logistic
             return Ok();
         }
 
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] UpdateRequestPullOutReturnPickUpDto dto)
+        [HttpPatch]
+        public async Task<IActionResult> Update([FromBody] UpdateRequestPullOutReturnPickUpDto dto)
         {
-            if (id != dto.RequestID.ToString())
-                return BadRequest("ID mismatch.");
+            if (dto.RequestID <= 0)
+            {
+                return BadRequest("RequestID is required and must be greater than zero.");
+            }
 
             var success = await _repository.UpdateAsync(dto);
             if (!success)
-                return NotFound();
-            return NoContent();
+            {
+                return NotFound("Request not found or update failed.");
+            }
+            return Ok("Request updated successfully.");
         }
 
         [HttpGet("cancel/{requestid}")]
-        public async Task<ActionResult> GetCancelledRemarks(string requestid)
+        public async Task<ActionResult> GetCancelledRemarks(long requestid)
         {
             var result = await _requestRemarksRepository.GetAllRemarks(requestid);
             if (result == null)
@@ -80,11 +81,11 @@ namespace MDMPI.App.Api.Controllers.Logistic
         }
 
         [HttpPatch("cancel/{requestid}")]
-        public async Task<ActionResult> CancelRequest(string requestid, [FromBody] string remarks)
+        public async Task<ActionResult> CancelRequest(long requestid, [FromBody] string remarks)
         {
-            if (string.IsNullOrWhiteSpace(requestid))
+            if (requestid <= 0)
             {
-                return BadRequest("RequestID is required.");
+                return BadRequest("RequestID is required and must be greater than zero.");
             }
 
             var result = await _requestRemarksRepository.InsertRemarkAndCancelRequestForPullOutReturnPickUp(requestid, remarks);

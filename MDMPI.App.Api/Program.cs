@@ -33,6 +33,10 @@ builder.Services.AddScoped<IRequestRemarksRepository, RequestRemarksRepository>(
 
 builder.Services.AddScoped<IImagePathTypeRepository, ImagePathTypeRepository>();
 
+builder.Services.AddScoped<IRequestPickUpRepository, RequestPickUpRepository>();
+
+builder.Services.AddScoped<IRequestAirSeaRepository, RequestAirSeaRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

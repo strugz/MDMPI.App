@@ -18,6 +18,8 @@ namespace MDMPI.App.Data
         public DbSet<MobileModel> a_tblMobile { get; set; }
         public DbSet<RequestPullOutReturnPickUpModel> a_tblRequestPullOutReturnPickUp { get; set; }
         public DbSet<RequestCounterModel> a_tblRequestCounters { get; set; }
+        public DbSet<RequestPickUpModel> a_tblRequestPickUpMDMPI { get; set; }
+        public DbSet<RequestAirSeaModel> a_tblRequestAirSea { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,6 +30,12 @@ namespace MDMPI.App.Data
 
             modelBuilder.Entity<RequestPullOutReturnPickUpModel>()
                 .ToTable("a_tblRequestPullOutReturnPickUp");
+
+            modelBuilder.Entity<RequestPickUpModel>()
+                .ToTable("a_tblRequestPickUpMDMPI");
+
+            modelBuilder.Entity<RequestAirSeaModel>()
+                .ToTable("a_tblRequestAirSea");
         }
     }
 }

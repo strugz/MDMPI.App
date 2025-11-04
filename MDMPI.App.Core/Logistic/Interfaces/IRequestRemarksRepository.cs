@@ -4,8 +4,10 @@ namespace MDMPI.App.Core.Logistic.Interfaces
 {
     public interface IRequestRemarksRepository
     {
-        Task<RemarksDto?> GetAllRemarks(string requestid);
-        Task<bool> InsertRemarkAndCancelRequestForStandardDeliveryAsync(string requestId, string remarks);
-        Task<bool> InsertRemarkAndCancelRequestForPullOutReturnPickUp(string requestId, string remarks);
+        Task<RemarksDto?> GetAllRemarks(long requestid);
+        Task<bool> InsertRemarkAndCancelRequestForStandardDeliveryAsync(long requestId, string remarks);
+        Task<bool> InsertRemarkAndCancelRequestForPullOutReturnPickUp(long requestId, string remarks);
+        Task<bool> InsertRemarkAndCancelRequestForAirSea(long requestId, string remarks);
+        Task<bool> InsertRemarkAndCancelRequestForPickUp(long requestId, string remarks);
     }
 }

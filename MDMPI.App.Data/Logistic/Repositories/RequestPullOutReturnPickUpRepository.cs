@@ -1,8 +1,8 @@
+using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Services;
 using MDMPI.App.Core.CommonOldEntities.DTOs;
 using MDMPI.App.Core.Logistic.DTOs.RequestPullOutReturnPickUp;
-using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
 using MDMPI.App.Core.Logistic.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -25,9 +25,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
         /// <summary>
         /// Retrieves all pull-out/return/pick-up requests from the database, applies date filtering, and returns a list of display DTOs.
         /// </summary>
-        /// <param name="query">Query parameters including date filter and pagination.</param>
-        /// <returns>List of DisplayRequestPullOutReturnPickUpDto objects.</returns>
-        public async Task<List<DisplayRequestPullOutReturnPickUpDto>> GetAllAsync(RequestQueryDto query)
+        public async Task<List<RequestPullOutReturnPickUpDto>> GetAllAsync(RequestQueryDto query)
         {
             _logger.LogInformation("Fetching all pull-out/return/pick-up requests.");
             var requests = _db.a_tblRequestPullOutReturnPickUp.AsNoTracking();
@@ -39,8 +37,31 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 r => r.PullOutDate.HasValue ? DateOnly.FromDateTime(r.PullOutDate.Value) : (DateOnly?)null
             );
 
+            // Apply status filter from RequestQueryDto.StatusFilter
+            if (query.StatusFilter != RequestStatusFilter.All)
+            {
+                // Map enum value to the string stored in the RequestStatus column.
+                // Adjust the mapped strings if your DB stores different text.
+                string? statusValue = query.StatusFilter switch
+                {
+                    RequestStatusFilter.NewRequest => "New Request",
+                    RequestStatusFilter.GettingsSupliesReady => "Getting Supplies Ready",
+                    RequestStatusFilter.ItemPrepared => "Item Prepared",
+                    RequestStatusFilter.ForDelivery => "For Delivery",
+                    RequestStatusFilter.InTransit => "In Transit",
+                    RequestStatusFilter.Delivered => "Delivered",
+                    RequestStatusFilter.Cancelled => "Cancelled",
+                    _ => null
+                };
+
+                if (!string.IsNullOrWhiteSpace(statusValue))
+                {
+                    requests = requests.Where(r => r.RequestStatus == statusValue);
+                }
+            }
+
             var result = await requests
-                .Select(r => new DisplayRequestPullOutReturnPickUpDto
+                .Select(r => new RequestPullOutReturnPickUpDto
                 {
                     RequestID = r.RequestID,
                     ClientID = r.ClientID,
@@ -85,8 +106,6 @@ namespace MDMPI.App.Data.Logistic.Repositories
         /// <summary>
         /// Inserts a new pull-out/return/pick-up request into the database, including document references if provided.
         /// </summary>
-        /// <param name="dto">DTO containing request details to insert.</param>
-        /// <returns>True if insertion is successful, otherwise false.</returns>
         public async Task<bool> InsertAsync(InsertRequestPullOutReturnPickUpDto dto)
         {
             using var transaction = await _db.Database.BeginTransactionAsync();
@@ -128,8 +147,6 @@ namespace MDMPI.App.Data.Logistic.Repositories
         /// <summary>
         /// Updates an existing pull-out/return/pick-up request in the database, including remarks if provided.
         /// </summary>
-        /// <param name="dto">DTO containing updated request details.</param>
-        /// <returns>True if update is successful, otherwise false.</returns>
         public async Task<bool> UpdateAsync(UpdateRequestPullOutReturnPickUpDto dto)
         {
             using var transaction = await _db.Database.BeginTransactionAsync();

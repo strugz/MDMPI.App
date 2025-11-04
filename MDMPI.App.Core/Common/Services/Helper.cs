@@ -1,4 +1,5 @@
-﻿using MDMPI.App.Core.Common.Entities;
+﻿using MDMPI.App.Core.Common.DTOs;
+using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Logistic.DTOs.RequestPullOutReturnPickUp;
 using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
 using MDMPI.App.Core.Logistic.Entities;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace MDMPI.App.Core.Common.Services
 {
@@ -47,19 +49,42 @@ namespace MDMPI.App.Core.Common.Services
             };
         }
 
+        // Changed to accept an Expression so EF can translate the composed expression
         public static IQueryable<T> ApplyDateFilterAny<T>(
             IQueryable<T> query,
             RequestDateFilter filter,
-            Func<T, DateOnly?> dateSelector)
+            Expression<Func<T, DateOnly?>> dateSelector)
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
+
+            // helper to build a lambda comparing the selector to a specific DateOnly value
+            Expression<Func<T, bool>> BuildEqualsExpression(DateOnly compareDate)
+            {
+                // dateSelector has signature T -> DateOnly?
+                var parameter = dateSelector.Parameters[0];
+                var body = dateSelector.Body; // this is an expression returning DateOnly?
+
+                // create constant of type DateOnly
+                var constant = Expression.Constant(compareDate, typeof(DateOnly));
+
+                // For nullable DateOnly? we need to compare HasValue and Value or use Expression.Equal which works with nullables
+                // Build expression: body.HasValue && body.Value == constant
+                // body is DateOnly? so body.HasValue becomes Expression.Property(body, "HasValue")
+                var hasValue = Expression.Property(body, "HasValue");
+                var value = Expression.Property(body, "Value");
+                var equal = Expression.Equal(value, constant);
+                var andAlso = Expression.AndAlso(hasValue, equal);
+
+                return Expression.Lambda<Func<T, bool>>(andAlso, parameter);
+            }
+
             return filter switch
             {
-                RequestDateFilter.Today => query.Where(x => dateSelector(x) == today),
-                RequestDateFilter.Yesterday => query.Where(x => dateSelector(x) == today.AddDays(-1)),
-                RequestDateFilter.Tomorrow => query.Where(x => dateSelector(x) == today.AddDays(1)),
-                RequestDateFilter.FiveDaysAgo => query.Where(x => dateSelector(x) == today.AddDays(-5)),
-                RequestDateFilter.ThirtyDaysAgo => query.Where(x => dateSelector(x) == today.AddDays(-30)),
+                RequestDateFilter.Today => query.Where(BuildEqualsExpression(today)),
+                RequestDateFilter.Yesterday => query.Where(BuildEqualsExpression(today.AddDays(-1))),
+                RequestDateFilter.Tomorrow => query.Where(BuildEqualsExpression(today.AddDays(1))),
+                RequestDateFilter.FiveDaysAgo => query.Where(BuildEqualsExpression(today.AddDays(-5))),
+                RequestDateFilter.ThirtyDaysAgo => query.Where(BuildEqualsExpression(today.AddDays(-30))),
                 _ => query
             };
         }

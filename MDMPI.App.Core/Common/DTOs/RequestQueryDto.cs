@@ -1,4 +1,4 @@
-namespace MDMPI.App.Core.Logistic.DTOs.RequestStandard
+namespace MDMPI.App.Core.Common.DTOs
 {
     public enum RequestDateFilter
     {
@@ -9,13 +9,25 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestStandard
         ThirtyDaysAgo,
         All
     }
+    public enum RequestStatusFilter
+    {
+        NewRequest,
+        GettingsSupliesReady,
+        ItemPrepared,
+        ItemPacked,
+        ForDelivery,
+        InTransit,
+        Delivered,
+        Received,
+        Cancelled,
+        All
+    }
 
     public class RequestQueryDto
     {
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 20;
-        public string? SortBy { get; set; }
-        public bool SortDesc { get; set; } = false;
         public RequestDateFilter DateFilter { get; set; } = RequestDateFilter.All;
+        public RequestStatusFilter StatusFilter { get; set; } = RequestStatusFilter.All;
     }
 }

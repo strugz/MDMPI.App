@@ -36,6 +36,29 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 r => r.RequestDeliveryDate.HasValue ? r.RequestDeliveryDate.Value : null
             );
 
+            // Apply status filter from RequestQueryDto.StatusFilter
+            if (query.StatusFilter != RequestStatusFilter.All)
+            {
+                // Map enum value to the string stored in the RequestStatus column.
+                // Adjust the mapped strings if your DB stores different text.
+                string? statusValue = query.StatusFilter switch
+                {
+                    RequestStatusFilter.NewRequest => "New Request",
+                    RequestStatusFilter.GettingsSupliesReady => "Getting Supplies Ready",
+                    RequestStatusFilter.ItemPrepared => "Item Prepared",
+                    RequestStatusFilter.ForDelivery => "For Delivery",
+                    RequestStatusFilter.InTransit => "In Transit",
+                    RequestStatusFilter.Delivered => "Delivered",
+                    RequestStatusFilter.Cancelled => "Cancelled",
+                    _ => null
+                };
+
+                if (!string.IsNullOrWhiteSpace(statusValue))
+                {
+                    requests = requests.Where(r => r.RequestStatus == statusValue);
+                }
+            }
+
             var result = await requests
                 .Select(r => new RequestStandardDto
                 {

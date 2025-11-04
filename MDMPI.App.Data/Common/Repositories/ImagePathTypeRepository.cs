@@ -75,7 +75,7 @@ namespace MDMPI.App.Data.Common.Repositories
             }
 
             var directoryPath = ImageService.GetImageDirectory();
-            var fileName = type == "Signature" ? $"RequestSignature_{requestId}.png" : $"RequestProof_{requestId}.png";
+            var fileName = type == "Signature" ? $"Signature_{requestId}.png" : $"Proof_{requestId}.png";
             var filePath = Path.Combine(directoryPath, fileName);
 
             try
