@@ -1,5 +1,7 @@
-﻿using System;
+﻿using MDMPI.App.Core.CommonOldEntities.DTOs;
+using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace MDMPI.App.Core.Logistic.DTOs.RequestPickUp
 {
@@ -19,5 +21,7 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestPickUp
         public string? ReceivedBy { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        [JsonPropertyName("Client")]
+        public ACCMSTDto? Client { get; set; }
     }
 }

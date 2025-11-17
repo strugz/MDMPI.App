@@ -25,6 +25,8 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestPullOutReturnPickUp
         public string? Helper { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public string? CreatedBy { get; set; }
+        public string? RequestedBy { get; set; }
 
         [JsonPropertyName("Client")]
         public ACCMSTDto? Client { get; set; }

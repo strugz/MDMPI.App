@@ -1,4 +1,5 @@
 using Azure.Core;
+using MDMPI.App.Common.Utilities;
 using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Services;
@@ -111,7 +112,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     {
                         ACCMID = r.Client.ACCMID,
                         ACCMSC = r.Client.ACCMSC,
-                        ACCMNM = r.Client.ACCMNM,
+                        ACCMNM = r.Client.ACCMNM.ToProperCase(),
                         ACCMBC = r.Client.ACCMBC,
                         ACCMAD = r.Client.ACCMAD,
                         ACCMPH = r.Client.ACCMPH,

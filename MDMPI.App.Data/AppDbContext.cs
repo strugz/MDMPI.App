@@ -2,7 +2,7 @@
 using MDMPI.App.Core.CommonOldEntities.Entities;
 using MDMPI.App.Core.Logistic.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.Data.SqlClient;
 
 namespace MDMPI.App.Data
 {
@@ -20,6 +20,7 @@ namespace MDMPI.App.Data
         public DbSet<RequestCounterModel> a_tblRequestCounters { get; set; }
         public DbSet<RequestPickUpModel> a_tblRequestPickUpMDMPI { get; set; }
         public DbSet<RequestAirSeaModel> a_tblRequestAirSea { get; set; }
+        public DbSet<CategoryModel> a_tblCategory { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,6 +37,18 @@ namespace MDMPI.App.Data
 
             modelBuilder.Entity<RequestAirSeaModel>()
                 .ToTable("a_tblRequestAirSea");
+        }
+
+        // call from a repository or controller
+        public Task<List<ACCMSTModel>> GetAccMstByCodeAsync(string code) =>
+            ACCMST_.FromSqlInterpolated($"EXEC dbo.usp_GetACCMST {code}")
+                   .AsNoTracking()
+                   .ToListAsync();
+
+        public async Task DoSomethingAsync(string parameter)
+        {
+            var p1 = new SqlParameter("@p1", parameter ?? (object)DBNull.Value);
+            await Database.ExecuteSqlRawAsync("EXEC dbo.usp_DoSomething @p1", p1);
         }
     }
 }

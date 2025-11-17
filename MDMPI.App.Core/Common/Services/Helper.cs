@@ -138,6 +138,9 @@ namespace MDMPI.App.Core.Common.Services
                 ItemCategoryID = dto.ItemCategoryID,
                 PullOutDate = dto.PullOutDate,
                 RequestStatus = dto.RequestStatus,
+                // map new fields
+                CreatedBy = dto.CreatedBy,
+                RequestedBy = dto.RequestedBy,
                 CreatedAt = DateTime.UtcNow
             };
         }

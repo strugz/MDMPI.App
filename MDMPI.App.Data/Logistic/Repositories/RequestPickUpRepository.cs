@@ -1,6 +1,8 @@
+using MDMPI.App.Common.Utilities;
 using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Services;
+using MDMPI.App.Core.CommonOldEntities.DTOs;
 using MDMPI.App.Core.Logistic.DTOs.RequestPickUp;
 using MDMPI.App.Core.Logistic.Entities;
 using MDMPI.App.Core.Logistic.Interfaces;
@@ -105,7 +107,20 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     ReleasedBy = r.ReleasedBy,
                     ReceivedBy = r.ReceivedBy,
                     CreatedAt = r.CreatedAt,
-                    UpdatedAt = r.UpdatedAt
+                    UpdatedAt = r.UpdatedAt,
+                    Client = r.Client == null ? null : new ACCMSTDto
+                    {
+                        ACCMID = r.Client.ACCMID,
+                        ACCMSC = r.Client.ACCMSC,
+                        ACCMNM = r.Client.ACCMNM.ToProperCase(),
+                        ACCMBC = r.Client.ACCMBC,
+                        ACCMAD = r.Client.ACCMAD,
+                        ACCMPH = r.Client.ACCMPH,
+                        ACCMEM = r.Client.ACCMEM,
+                        ACCMWS = r.Client.ACCMWS,
+                        ACCSTS = r.Client.ACCSTS,
+                        ACCOWN = r.Client.ACCOWN
+                    }
                 })
                 .ToListAsync();
 

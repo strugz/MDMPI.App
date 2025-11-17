@@ -6,6 +6,7 @@ using MDMPI.App.Data.Common.Services;
 using MDMPI.App.Data.Logistic.Repositories;
 using Microsoft.EntityFrameworkCore;
 using MDMPI.App.Data.Common.Repositories;
+using MDMPI.App.Data.Common.Repositories; // for CategoryRepository
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,9 @@ builder.Services.AddScoped<IImagePathTypeRepository, ImagePathTypeRepository>();
 builder.Services.AddScoped<IRequestPickUpRepository, RequestPickUpRepository>();
 
 builder.Services.AddScoped<IRequestAirSeaRepository, RequestAirSeaRepository>();
+
+// register category repository
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 var app = builder.Build();
 

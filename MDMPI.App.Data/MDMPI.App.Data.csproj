@@ -26,9 +26,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MDMPI.App.Core\MDMPI.App.Core.csproj" />
+    <ProjectReference Include="..\MDMPI.App.Common\MDMPI.App.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Database\" />
     <Folder Include="Logistic\Migrations\" />
   </ItemGroup>
 

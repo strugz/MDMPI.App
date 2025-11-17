@@ -29,6 +29,8 @@ namespace MDMPI.App.Core.Logistic.Entities
         public string? Helper { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public string? CreatedBy { get; set; }
+        public string? RequestedBy { get; set; }
 
         [ForeignKey("RequestID")]
         public List<DocumentReferenceModel>? DocumentReference { get; set; }

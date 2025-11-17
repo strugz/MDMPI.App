@@ -1,3 +1,4 @@
+using MDMPI.App.Common.Utilities;
 using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Services;
@@ -81,6 +82,9 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     Helper = r.Helper,
                     CreatedAt = r.CreatedAt,
                     UpdatedAt = r.UpdatedAt,
+                    // map new fields
+                    CreatedBy = r.CreatedBy,
+                    RequestedBy = r.RequestedBy,
                     DocumentReference = r.DocumentReference != null
                         ? r.DocumentReference.Select(dr => dr.Reference).ToList()!
                         : new List<string>(),
@@ -88,7 +92,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     {
                         ACCMID = r.Client.ACCMID,
                         ACCMSC = r.Client.ACCMSC,
-                        ACCMNM = r.Client.ACCMNM,
+                        ACCMNM = r.Client.ACCMNM.ToProperCase(),
                         ACCMBC = r.Client.ACCMBC,
                         ACCMAD = r.Client.ACCMAD,
                         ACCMPH = r.Client.ACCMPH,
