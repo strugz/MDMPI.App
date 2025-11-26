@@ -58,15 +58,15 @@ namespace MDMPI.App.Api.Controllers.Logistic
             return Ok(result);
         }
 
-        [HttpPatch("cancel/{requestid}")]
-        public async Task<ActionResult> CancelRequest(long requestid, [FromBody] string remarks)
+        [HttpPatch("cancel/{requestid}/{user}")]
+        public async Task<ActionResult> CancelRequest(long requestid, string user, [FromBody] string remarks)
         {
             if (requestid <= 0)
             {
                 return BadRequest("RequestID is required and must be greater than zero.");
             }
 
-            var result = await _requestRemarksRepository.InsertRemarkAndCancelRequestForStandardDeliveryAsync(requestid, remarks);
+            var result = await _requestRemarksRepository.InsertRemarkAndCancelRequestForStandardDeliveryAsync(requestid, user, remarks);
             if (!result)
             {
                 return NotFound("Request not found or cancel failed.");

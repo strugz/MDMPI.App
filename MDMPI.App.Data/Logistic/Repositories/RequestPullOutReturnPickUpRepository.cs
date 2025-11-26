@@ -31,11 +31,11 @@ namespace MDMPI.App.Data.Logistic.Repositories
             _logger.LogInformation("Fetching all pull-out/return/pick-up requests.");
             var requests = _db.a_tblRequestPullOutReturnPickUp.AsNoTracking();
 
-            // Fix: Convert DateTime? to DateOnly? for the filter
+            // PullOutDate is DateOnly? on the model, pass it directly to the helper
             requests = Helper.ApplyDateFilterAny(
                 requests,
                 query.DateFilter,
-                r => r.PullOutDate.HasValue ? DateOnly.FromDateTime(r.PullOutDate.Value) : (DateOnly?)null
+                r => r.PullOutDate
             );
 
             // Apply status filter from RequestQueryDto.StatusFilter
@@ -76,13 +76,16 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     ItemCategoryID = r.ItemCategoryID,
                     PullOutDate = r.PullOutDate,
                     PullOutDateEndAt = r.PullOutDateEndAt,
+                    PullOutDateStartAt = r.PullOutDateStartAt,
                     RequestStatus = r.RequestStatus,
                     TripTicketNumber = r.TripTicketNumber,
                     Driver = r.Driver,
                     Helper = r.Helper,
+                    ReceivedBy = r.ReceivedBy,
+                    MobileID = r.MobileID,
+                    MobileName = r.Mobile != null ? r.Mobile.MobileName : null,
                     CreatedAt = r.CreatedAt,
                     UpdatedAt = r.UpdatedAt,
-                    // map new fields
                     CreatedBy = r.CreatedBy,
                     RequestedBy = r.RequestedBy,
                     DocumentReference = r.DocumentReference != null
@@ -173,34 +176,15 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 Helper.UpdateIfNotNull(v => request.ReasonForReturn = v, dto.ReasonForReturn);
                 Helper.UpdateIfNotNull(v => request.ReleasedBy = v, dto.ReleasedBy);
                 Helper.UpdateIfNotNull(v => request.PullOutDateStartAt = v, dto.PullOutDateStartAt);
+                Helper.UpdateIfNotNull(v => request.PullOutDateEndAt = v, dto.PullOutDateEndAt);
+                Helper.UpdateIfNotNull(v => request.MobileID = v, dto.MobileID);
                 Helper.UpdateIfNotNull(v => request.RequestStatus = v, dto.RequestStatus);
                 Helper.UpdateIfNotNull(v => request.TripTicketNumber = v, dto.TripTicketNumber);
                 Helper.UpdateIfNotNull(v => request.Driver = v, dto.Driver);
                 Helper.UpdateIfNotNull(v => request.Helper = v, dto.Helper);
+                Helper.UpdateIfNotNull(v => request.ReceivedBy = v, dto.ReceivedBy);
                 request.UpdatedAt = DateTime.UtcNow;
                 var requestId = request.RequestID;
-
-                if (dto.Remarks is { Remarks: { } remarkText } && !string.IsNullOrWhiteSpace(remarkText))
-                {
-                    var existingRemark = await _db.a_tblRequestRemarks
-                        .FirstOrDefaultAsync(r => r.RequestID == requestId);
-                    if (existingRemark is null)
-                    {
-                        _db.a_tblRequestRemarks.Add(new RemarksModel
-                        {
-                            RequestID = requestId,
-                            Remarks = remarkText,
-                            Date = DateTime.UtcNow
-                        });
-                        _logger.LogInformation("Added new remark for RequestID: {RequestID}", requestId);
-                    }
-                    else
-                    {
-                        existingRemark.Remarks = remarkText;
-                        existingRemark.Date = DateTime.UtcNow;
-                        _logger.LogInformation("Updated remark for RequestID: {RequestID}", requestId);
-                    }
-                }
 
                 var result = await _db.SaveChangesAsync();
 

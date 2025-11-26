@@ -125,7 +125,7 @@ namespace MDMPI.App.Tests.Controllers
 
             var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
 
-            var result = await controller.CancelRequest(0, "x");
+            var result = await controller.CancelRequest(0, "JCA", "x");
 
             Assert.IsType<BadRequestObjectResult>(result);
         }
@@ -141,7 +141,7 @@ namespace MDMPI.App.Tests.Controllers
 
             var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
 
-            var result = await controller.CancelRequest(1, "x");
+            var result = await controller.CancelRequest(1, "JCA", "x");
 
             Assert.IsType<NotFoundObjectResult>(result);
         }
@@ -157,7 +157,7 @@ namespace MDMPI.App.Tests.Controllers
 
             var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
 
-            var result = await controller.CancelRequest(1, "x");
+            var result = await controller.CancelRequest(1, "JCA", "x");
 
             var ok = Assert.IsType<OkObjectResult>(result);
             // anonymous object with message

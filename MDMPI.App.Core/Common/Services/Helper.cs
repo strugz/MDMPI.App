@@ -14,7 +14,7 @@ using System.Linq.Expressions;
 
 namespace MDMPI.App.Core.Common.Services
 {
-    public  class Helper
+    public class Helper
     {
         public static void UpdateIfNotNull<T>(Action<T> setter, T? value)
         {
@@ -60,16 +60,11 @@ namespace MDMPI.App.Core.Common.Services
             // helper to build a lambda comparing the selector to a specific DateOnly value
             Expression<Func<T, bool>> BuildEqualsExpression(DateOnly compareDate)
             {
-                // dateSelector has signature T -> DateOnly?
                 var parameter = dateSelector.Parameters[0];
-                var body = dateSelector.Body; // this is an expression returning DateOnly?
+                var body = dateSelector.Body; // expression returning DateOnly?
 
-                // create constant of type DateOnly
                 var constant = Expression.Constant(compareDate, typeof(DateOnly));
 
-                // For nullable DateOnly? we need to compare HasValue and Value or use Expression.Equal which works with nullables
-                // Build expression: body.HasValue && body.Value == constant
-                // body is DateOnly? so body.HasValue becomes Expression.Property(body, "HasValue")
                 var hasValue = Expression.Property(body, "HasValue");
                 var value = Expression.Property(body, "Value");
                 var equal = Expression.Equal(value, constant);
@@ -130,15 +125,16 @@ namespace MDMPI.App.Core.Common.Services
             {
                 RequestID = requestid,
                 ClientID = dto.ClientID,
+                ClientContactPerson = dto.ClientContactPerson,
                 FormCategoryID = dto.FormCategoryID,
                 SlipNo = dto.SlipNo,
                 IRRFNumber = dto.IRRFNumber,
                 IRRFDate = dto.IRRFDate,
                 ReasonForReturn = dto.ReasonForReturn,
                 ItemCategoryID = dto.ItemCategoryID,
+                // PullOutDate is DateOnly? in model and DTO
                 PullOutDate = dto.PullOutDate,
                 RequestStatus = dto.RequestStatus,
-                // map new fields
                 CreatedBy = dto.CreatedBy,
                 RequestedBy = dto.RequestedBy,
                 CreatedAt = DateTime.UtcNow

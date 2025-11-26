@@ -16,5 +16,7 @@ namespace MDMPI.App.Core.Common.Entities
         public long? RequestID { get; set; }
         public string? Remarks { get; set; }
         public DateTime? Date { get; set; }
+        [MaxLength(255)]
+        public string? UserUpdated { get; set; }
     }
 }

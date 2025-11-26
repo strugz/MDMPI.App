@@ -35,6 +35,7 @@ namespace MDMPI.App.Data.Common.Repositories
                 {
                     RequestID = r.RequestID.ToString(),
                     Remarks = r.Remarks,
+                    UserUpdated = r.UserUpdated,
                     Date = r.Date.HasValue
                         ? r.Date.Value.ToString("yyyy-MM-dd HH:mm:ss")
                         : null
@@ -48,40 +49,40 @@ namespace MDMPI.App.Data.Common.Repositories
         /// <summary>
         /// Inserts a remark for a request and cancels the request atomically (Standard Delivery).
         /// </summary>
-        public async Task<bool> InsertRemarkAndCancelRequestForStandardDeliveryAsync(long requestId, string remarks)
+        public async Task<bool> InsertRemarkAndCancelRequestForStandardDeliveryAsync(long requestId, string user, string remarks)
         {
-            return await InsertRemarkAndCancelRequestAsync(_db.a_tblRequestStandardDelivery, requestId, remarks);
+            return await InsertRemarkAndCancelRequestAsync(_db.a_tblRequestStandardDelivery, requestId, user,   remarks);
         }
 
         /// <summary>
         /// Inserts a remark for a request and cancels the request atomically (PullOut Return PickUp).
         /// </summary>
-        public async Task<bool> InsertRemarkAndCancelRequestForPullOutReturnPickUp(long requestId, string remarks)
+        public async Task<bool> InsertRemarkAndCancelRequestForPullOutReturnPickUp(long requestId, string user, string remarks)
         {
-            return await InsertRemarkAndCancelRequestAsync(_db.a_tblRequestPullOutReturnPickUp, requestId, remarks);
+            return await InsertRemarkAndCancelRequestAsync(_db.a_tblRequestPullOutReturnPickUp, requestId, user, remarks);
         }
 
         /// <summary>
         /// Inserts a remark for a request and cancels the request atomically (AirSea).
         /// </summary>
-        public async Task<bool> InsertRemarkAndCancelRequestForAirSea(long requestId, string remarks)
+        public async Task<bool> InsertRemarkAndCancelRequestForAirSea(long requestId,string user, string remarks)
         {
-            return await InsertRemarkAndCancelRequestAsync(_db.a_tblRequestAirSea, requestId, remarks);
+            return await InsertRemarkAndCancelRequestAsync(_db.a_tblRequestAirSea, requestId, user, remarks);
         }
 
         /// <summary>
         /// Inserts a remark for a request and cancels the request atomically (PickUp).
         /// </summary>
-        public async Task<bool> InsertRemarkAndCancelRequestForPickUp(long requestId, string remarks)
+        public async Task<bool> InsertRemarkAndCancelRequestForPickUp(long requestId, string user, string remarks)
         {
-            return await InsertRemarkAndCancelRequestAsync(_db.a_tblRequestPickUpMDMPI, requestId, remarks);
+            return await InsertRemarkAndCancelRequestAsync(_db.a_tblRequestPickUpMDMPI, requestId, user, remarks);
         }
 
         /// <summary>
         /// Inserts a remark and cancels the request in a transaction.
         /// Handles entities whose primary key may be long or string by attempting to find by long first then by string.
         /// </summary>
-        private async Task<bool> InsertRemarkAndCancelRequestAsync<TEntity>(DbSet<TEntity> dbSet, long requestId, string remarks) where TEntity : class
+        private async Task<bool> InsertRemarkAndCancelRequestAsync<TEntity>(DbSet<TEntity> dbSet, long requestId, string user, string remarks) where TEntity : class
         {
             using var transaction = await _db.Database.BeginTransactionAsync();
             try
@@ -90,6 +91,7 @@ namespace MDMPI.App.Data.Common.Repositories
                 {
                     RequestID = requestId,
                     Remarks = remarks,
+                    UserUpdated = user, 
                     Date = DateTime.UtcNow
                 };
 

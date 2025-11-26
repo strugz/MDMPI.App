@@ -17,5 +17,8 @@ namespace MDMPI.App.Core.Common.DTOs
         public string? Remarks { get; set; }
         [JsonPropertyName("Date")]
         public string? Date { get; set; }
+        [JsonPropertyName("UserUpdated")]
+        [MaxLength(255)]
+        public string? UserUpdated { get; set; }
     }
 }

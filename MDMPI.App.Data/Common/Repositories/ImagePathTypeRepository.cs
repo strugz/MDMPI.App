@@ -47,7 +47,7 @@ namespace MDMPI.App.Data.Common.Repositories
 
             try
             {
-                return await File.ReadAllBytesAsync(imageRecord.ImagePath);
+                return await File.ReadAllBytesAsync(imageRecord!.ImagePath);
             }
             catch (Exception ex)
             {
@@ -97,31 +97,38 @@ namespace MDMPI.App.Data.Common.Repositories
                         {
                             _db.a_tblRequestImagePath.Add(new ImagePathModel
                             {
-                                RequestID = long.Parse(requestId),
+                                RequestID = id,
                                 ImagePath = filePath,
                                 ImageType = type,
                             });
                         }
                         else
                         {
-                            existingSig.RequestID = long.Parse(requestId);
+                            // update path and type when record exists
+                            existingSig.ImagePath = filePath;
+                            existingSig.ImageType = type;
+                            existingSig.RequestID = id;
                         }
                     }
                     else // Proof
                     {
-                        var existingImage = await _db.a_tblRequestImagePath.FirstOrDefaultAsync(i => i.RequestID == id);
+                        // Always check both RequestID and ImageType for existence
+                        var existingImage = await _db.a_tblRequestImagePath.FirstOrDefaultAsync(i => i.RequestID == id && i.ImageType == type);
                         if (existingImage is null)
                         {
                             _db.a_tblRequestImagePath.Add(new ImagePathModel
                             {
-                                RequestID = long.Parse(requestId),
+                                RequestID = id,
                                 ImagePath = filePath,
                                 ImageType = type,
                             });
                         }
                         else
                         {
-                            existingImage.RequestID = long.Parse(requestId);
+                            // update path and type when record exists
+                            existingImage.ImagePath = filePath;
+                            existingImage.ImageType = type;
+                            existingImage.RequestID = id;
                         }
                     }
 

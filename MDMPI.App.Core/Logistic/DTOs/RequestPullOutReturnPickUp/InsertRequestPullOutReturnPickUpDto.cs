@@ -13,7 +13,7 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestPullOutReturnPickUp
         public DateTime? IRRFDate { get; set; }
         public string? ReasonForReturn { get; set; }
         public List<string>? DocumentReference { get; set; }
-        public DateTime? PullOutDate { get; set; }
+        public DateOnly? PullOutDate { get; set; }
         public string? RequestStatus { get; set; }
         public string? CreatedBy { get; set; }
         public string? RequestedBy { get; set; }

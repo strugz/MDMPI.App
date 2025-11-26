@@ -20,17 +20,19 @@ namespace MDMPI.App.Core.Logistic.Entities
         public DateTime? IRRFDate { get; set; }
         public string? ReasonForReturn { get; set; }
         public string? ReleasedBy { get; set; }
-        public DateTime? PullOutDate { get; set; }
+        public DateOnly? PullOutDate { get; set; } // PullOutDate is a date-only value (no time)
         public DateTime? PullOutDateStartAt { get; set; }
         public DateTime? PullOutDateEndAt { get; set; }
         public string? RequestStatus { get; set; }
         public string? TripTicketNumber { get; set; }
         public string? Driver { get; set; }
         public string? Helper { get; set; }
+        public string? ReceivedBy { get; set; } // New property to capture who received the returned/picked up items
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string? CreatedBy { get; set; }
         public string? RequestedBy { get; set; }
+        public long? MobileID { get; set; }
 
         [ForeignKey("RequestID")]
         public List<DocumentReferenceModel>? DocumentReference { get; set; }
@@ -44,6 +46,8 @@ namespace MDMPI.App.Core.Logistic.Entities
         public CategoryModel? ItemCategory { get; set; }
         [ForeignKey("ClientID")]
         public ACCMSTModel? Client { get; set; }
+        [ForeignKey("MobileID")]
+        public MobileModel? Mobile { get; set; }
 
     }
 }

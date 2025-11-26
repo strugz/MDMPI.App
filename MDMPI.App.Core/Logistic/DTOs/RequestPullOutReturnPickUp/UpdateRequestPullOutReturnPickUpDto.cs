@@ -7,6 +7,7 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestPullOutReturnPickUp
     public class UpdateRequestPullOutReturnPickUpDto
     {
         public long? RequestID { get; set; }
+        public long? MobileID { get; set; }
         public string? ClientContactPerson { get; set; }
         public string? ReasonForReturn { get; set; }
         public string? ReleasedBy { get; set; }
@@ -16,8 +17,6 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestPullOutReturnPickUp
         public string? TripTicketNumber { get; set; }
         public string? Driver { get; set; }
         public string? Helper { get; set; }
-
-        [ForeignKey("RequestID")]
-        public RemarksModel? Remarks { get; set; }
+        public string? ReceivedBy { get; set; }
     }
 }
