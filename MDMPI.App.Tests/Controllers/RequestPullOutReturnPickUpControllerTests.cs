@@ -136,7 +136,7 @@ namespace MDMPI.App.Tests.Controllers
             var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
             var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
             var mockRemarks = new Mock<IRequestRemarksRepository>();
-            mockRemarks.Setup(r => r.InsertRemarkAndCancelRequestForPullOutReturnPickUp(It.IsAny<long>(), It.IsAny<string>())).ReturnsAsync(false);
+            mockRemarks.Setup(r => r.InsertRemarkAndCancelRequestForPullOutReturnPickUp(It.IsAny<long>(), "JCA", It.IsAny<string>())).ReturnsAsync(false);
             var mockImage = new Mock<IImagePathTypeRepository>();
 
             var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
@@ -152,7 +152,7 @@ namespace MDMPI.App.Tests.Controllers
             var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
             var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
             var mockRemarks = new Mock<IRequestRemarksRepository>();
-            mockRemarks.Setup(r => r.InsertRemarkAndCancelRequestForPullOutReturnPickUp(It.IsAny<long>(), It.IsAny<string>())).ReturnsAsync(true);
+            mockRemarks.Setup(r => r.InsertRemarkAndCancelRequestForPullOutReturnPickUp(It.IsAny<long>(), "JCA", It.IsAny<string>())).ReturnsAsync(true);
             var mockImage = new Mock<IImagePathTypeRepository>();
 
             var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);

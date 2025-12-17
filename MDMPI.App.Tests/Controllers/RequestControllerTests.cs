@@ -74,7 +74,7 @@ namespace MDMPI.App.Tests.Controllers
 
             var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object);
 
-            var result = await controller.CancelRequest(0, "x");
+            var result = await controller.CancelRequest(0, "JCA", "x");
 
             Assert.IsType<BadRequestObjectResult>(result);
         }
@@ -85,12 +85,12 @@ namespace MDMPI.App.Tests.Controllers
             var mockRepo = new Mock<IRequestRepository>();
             var mockMobile = new Mock<IMobileRepository>();
             var mockRemarks = new Mock<IRequestRemarksRepository>();
-            mockRemarks.Setup(r => r.InsertRemarkAndCancelRequestForStandardDeliveryAsync(It.IsAny<long>(), It.IsAny<string>())).ReturnsAsync(true);
+            mockRemarks.Setup(r => r.InsertRemarkAndCancelRequestForStandardDeliveryAsync(It.IsAny<long>(), "JCA", It.IsAny<string>())).ReturnsAsync(true);
             var mockImage = new Mock<IImagePathTypeRepository>();
 
             var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object);
 
-            var result = await controller.CancelRequest(1, "x");
+            var result = await controller.CancelRequest(1, "JCA", "x");
 
             var ok = Assert.IsType<OkObjectResult>(result);
             Assert.NotNull(ok.Value);

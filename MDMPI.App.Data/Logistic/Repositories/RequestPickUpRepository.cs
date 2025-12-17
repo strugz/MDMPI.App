@@ -106,6 +106,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     Status = r.Status,
                     ReleasedBy = r.ReleasedBy,
                     ReceivedBy = r.ReceivedBy,
+                    CreatedBy = r.CreatedBy,
                     CreatedAt = r.CreatedAt,
                     UpdatedAt = r.UpdatedAt,
                     Client = r.Client == null ? null : new ACCMSTDto
@@ -146,6 +147,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     DocumentReference = null, // stored separately
                     DatePickUp = dto.DatePickUp,
                     Status = string.IsNullOrWhiteSpace(dto.Status) ? "New Request" : dto.Status,
+                    CreatedBy = dto.CreatedBy,
                     CreatedAt = DateTime.UtcNow
                 };
 

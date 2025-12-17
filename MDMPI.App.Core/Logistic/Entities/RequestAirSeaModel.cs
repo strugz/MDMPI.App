@@ -1,6 +1,5 @@
 using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.CommonOldEntities.Entities;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -15,7 +14,15 @@ namespace MDMPI.App.Core.Logistic.Entities
         public string? ClientID { get; set; }
         public long? ItemCategoryID { get; set; }
         [MaxLength(100)]
-        public string? RiderName { get; set; }
+        public string? ReceivedBy { get; set; }
+        [MaxLength(100)]
+        public string? WaybillNumber { get; set; }
+        [MaxLength(100)]
+        public string? TripTicketNumber { get; set; }
+        [MaxLength(100)]
+        public string? Driver { get; set; }
+        [MaxLength(100)]
+        public string? Helper { get; set; }
         public long? MobileID { get; set; }
         public DateTime? DatePickUp { get; set; }
         public DateTime? ItemPreparedAt { get; set; }
@@ -26,6 +33,8 @@ namespace MDMPI.App.Core.Logistic.Entities
         public string? Status { get; set; }
         [MaxLength(255)]
         public string? Remarks { get; set; }
+        [MaxLength(100)]
+        public string? CreatedBy { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 

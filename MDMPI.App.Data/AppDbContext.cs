@@ -50,5 +50,29 @@ namespace MDMPI.App.Data
             var p1 = new SqlParameter("@p1", parameter ?? (object)DBNull.Value);
             await Database.ExecuteSqlRawAsync("EXEC dbo.usp_DoSomething @p1", p1);
         }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var entries = ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Modified);
+
+            foreach (var entry in entries)
+            {
+                if (entry.Entity is RequestAirSeaModel airSeaEntity)
+                {
+                    airSeaEntity.UpdatedAt = DateTime.UtcNow;
+                }
+                else if (entry.Entity is RequestPickUpModel pickUpEntity)
+                {
+                    pickUpEntity.UpdatedAt = DateTime.UtcNow;
+                }
+                else if (entry.Entity is RequestPullOutReturnPickUpModel pullOutEntity)
+                {
+                    pullOutEntity.UpdatedAt = DateTime.UtcNow;
+                }
+            }
+
+            return await base.SaveChangesAsync(cancellationToken);
+        }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Services;
-using MDMPI.App.Core.Logistic.Entities;
 using MDMPI.App.Core.Logistic.Interfaces;
 using MDMPI.App.Data.Logistic.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -51,7 +50,7 @@ namespace MDMPI.App.Data.Common.Repositories
         /// </summary>
         public async Task<bool> InsertRemarkAndCancelRequestForStandardDeliveryAsync(long requestId, string user, string remarks)
         {
-            return await InsertRemarkAndCancelRequestAsync(_db.a_tblRequestStandardDelivery, requestId, user,   remarks);
+            return await InsertRemarkAndCancelRequestAsync(_db.a_tblRequestStandardDelivery, requestId, user, remarks);
         }
 
         /// <summary>
@@ -65,7 +64,7 @@ namespace MDMPI.App.Data.Common.Repositories
         /// <summary>
         /// Inserts a remark for a request and cancels the request atomically (AirSea).
         /// </summary>
-        public async Task<bool> InsertRemarkAndCancelRequestForAirSea(long requestId,string user, string remarks)
+        public async Task<bool> InsertRemarkAndCancelRequestForAirSea(long requestId, string user, string remarks)
         {
             return await InsertRemarkAndCancelRequestAsync(_db.a_tblRequestAirSea, requestId, user, remarks);
         }
@@ -91,8 +90,8 @@ namespace MDMPI.App.Data.Common.Repositories
                 {
                     RequestID = requestId,
                     Remarks = remarks,
-                    UserUpdated = user, 
-                    Date = DateTime.UtcNow
+                    UserUpdated = user,
+                    Date = GetPhilippineNow()
                 };
 
                 _db.a_tblRequestRemarks.Add(remark);
@@ -149,6 +148,32 @@ namespace MDMPI.App.Data.Common.Repositories
                 await Helper.RollbackTransactionAsync(transaction, _logger, ex, $"Error inserting remark and cancelling request for ID: {requestId}");
                 return false;
             }
+        }
+
+        // Helper to get current Philippine time. Tries cross-platform timezone IDs and falls back to UTC+8.
+        private DateTime GetPhilippineNow()
+        {
+            // Try common timezone identifiers for different platforms
+            var tzCandidates = new[] { "Asia/Manila", "Singapore Standard Time" };
+            foreach (var tzId in tzCandidates)
+            {
+                try
+                {
+                    var tz = TimeZoneInfo.FindSystemTimeZoneById(tzId);
+                    return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, tz);
+                }
+                catch (TimeZoneNotFoundException)
+                {
+                    // try next
+                }
+                catch (InvalidTimeZoneException)
+                {
+                    // try next
+                }
+            }
+
+            // As a last resort, apply offset for UTC+8
+            return DateTime.UtcNow.AddHours(8);
         }
     }
 }

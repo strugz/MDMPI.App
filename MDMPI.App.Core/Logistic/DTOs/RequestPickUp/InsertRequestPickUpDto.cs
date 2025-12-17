@@ -10,5 +10,6 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestPickUp
         public List<string>? DocumentReference { get; set; }
         public DateTime? DatePickUp { get; set; }
         public string? Status { get; set; } // default in DB is 'New Request' if not supplied
+        public string? CreatedBy { get; set; }
     }
 }

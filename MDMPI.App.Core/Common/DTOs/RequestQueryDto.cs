@@ -15,10 +15,13 @@ namespace MDMPI.App.Core.Common.DTOs
         GettingsSupliesReady,
         ItemPrepared,
         ItemPacked,
+        ReadyForShipment,
+        EndorsedToGuard,
         ForDelivery,
         InTransit,
         Delivered,
         Received,
+        PickedUp,
         Cancelled,
         All
     }

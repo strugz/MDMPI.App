@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace MDMPI.App.Core.Logistic.DTOs.RequestAirSea
 {
     public class InsertRequestAirSeaDto
@@ -10,5 +7,6 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestAirSea
         public List<string>? DocumentReference { get; set; }
         public DateTime? DatePickUp { get; set; }
         public string? Status { get; set; }
+        public string? CreatedBy { get; set; }
     }
 }

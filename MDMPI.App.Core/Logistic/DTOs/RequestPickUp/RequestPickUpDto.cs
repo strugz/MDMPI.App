@@ -19,6 +19,7 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestPickUp
         public string? Status { get; set; }
         public string? ReleasedBy { get; set; }
         public string? ReceivedBy { get; set; }
+        public string? CreatedBy { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         [JsonPropertyName("Client")]

@@ -1,4 +1,3 @@
-using Azure.Core;
 using MDMPI.App.Common.Utilities;
 using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.Entities;
@@ -75,6 +74,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     RequestStatusFilter.GettingsSupliesReady => "Getting Supplies Ready",
                     RequestStatusFilter.ItemPrepared => "Item Prepared",
                     RequestStatusFilter.ItemPacked => "Item Packed",
+                    RequestStatusFilter.EndorsedToGuard => "Endorsed To Guard",
                     RequestStatusFilter.ForDelivery => "For Delivery",
                     RequestStatusFilter.InTransit => "In Transit",
                     RequestStatusFilter.Delivered => "Delivered",
@@ -95,17 +95,22 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     RequestID = r.RequestID,
                     ItemCategoryID = r.ItemCategoryID,
                     ClientID = r.ClientID,
-                    DocumentReference = r.DocumentReference != null 
-                    ? r.DocumentReference.Select(dr => dr.Reference).ToList()! 
+                    DocumentReference = r.DocumentReference != null
+                    ? r.DocumentReference.Select(dr => dr.Reference).ToList()!
                     : new List<string>(),
                     MobileID = r.MobileID,
-                    RiderName = r.RiderName,
+                    ReceivedBy = r.ReceivedBy,
+                    WaybillNumber = r.WaybillNumber,
+                    TripTicketNumber = r.TripTicketNumber,
+                    Driver = r.Driver,
+                    Helper = r.Helper,
                     DatePickUp = r.DatePickUp,
                     ItemPreparedAt = r.ItemPreparedAt,
                     ItemPreparedEndAt = r.ItemPreparedEndAt,
                     PreparedBy = r.PreparedBy,
                     Status = r.Status,
                     Remarks = r.Remarks,
+                    CreatedBy = r.CreatedBy,
                     CreatedAt = r.CreatedAt,
                     UpdatedAt = r.UpdatedAt,
                     Client = r.Client == null ? null : new ACCMSTDto
@@ -145,6 +150,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     RequestID = newRequestIdLong,
                     ItemCategoryID = dto.ItemCategoryID,
                     ClientID = dto.ClientID,
+                    CreatedBy = dto.CreatedBy,
                     DatePickUp = dto.DatePickUp,
                     Status = string.IsNullOrWhiteSpace(dto.Status) ? "New Request" : dto.Status,
                     CreatedAt = DateTime.UtcNow
@@ -182,26 +188,24 @@ namespace MDMPI.App.Data.Logistic.Repositories
 
             try
             {
-                _logger.LogInformation("Updating air/sea request with ID: {RequestID}", dto.RequestID);
-
                 var entity = await _db.a_tblRequestAirSea.FirstOrDefaultAsync(x => x.RequestID == dto.RequestID);
 
                 if (entity is null)
                 {
-                    _logger.LogWarning("Air/Sea request with ID: {RequestID} not found.", dto.RequestID);
                     return false;
                 }
 
                 Helper.UpdateIfNotNull(v => entity.Status = v, dto.Status);
-                Helper.UpdateIfNotNull(v => entity.RiderName = v, dto.RiderName);
+                Helper.UpdateIfNotNull(v => entity.ReceivedBy = v, dto.ReceivedBy);
+                Helper.UpdateIfNotNull(v => entity.WaybillNumber = v, dto.WaybillNumber);
+                Helper.UpdateIfNotNull(v => entity.TripTicketNumber = v, dto.TripTicketNumber);
+                Helper.UpdateIfNotNull(v => entity.Driver = v, dto.Driver);
+                Helper.UpdateIfNotNull(v => entity.Helper = v, dto.Helper);
                 Helper.UpdateIfNotNull(v => entity.ItemPreparedAt = v, dto.ItemPreparedAt);
                 Helper.UpdateIfNotNull(v => entity.ItemPreparedEndAt = v, dto.ItemPreparedEndAt);
                 Helper.UpdateIfNotNull(v => entity.PreparedBy = v, dto.PreparedBy);
                 Helper.UpdateIfNotNull(v => entity.MobileID = v, dto.MobileID);
                 Helper.UpdateIfNotNull(v => entity.Remarks = v, dto.Remarks);
-
-                // Set UpdatedAt each time UpdateAsync is used
-                entity.UpdatedAt = DateTime.UtcNow;
 
                 await _db.SaveChangesAsync();
                 await transaction.CommitAsync();
