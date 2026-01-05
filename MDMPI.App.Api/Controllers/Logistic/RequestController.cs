@@ -89,12 +89,12 @@ namespace MDMPI.App.Api.Controllers.Logistic
         [HttpPost]
         public async Task<ActionResult> PostRequest([FromBody] InsertRequestDto value)
         {
-            var result = await _requestRepository.InsertRequest(value);
-            if (!result)
+            var inserted = await _requestRepository.InsertRequest(value);
+            if (inserted is null)
             {
                 return BadRequest("Insert failed.");
             }
-            return Ok();
+            return CreatedAtAction(nameof(GetRequestAll), new { id = inserted.ID }, inserted);
         }
 
         [HttpPatch]

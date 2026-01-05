@@ -9,6 +9,8 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestStandard
     public class InsertRequestDto
     {
         public string? RequestClientID { get; set; }
+        public long? FormCategoryID { get; set; }
+        public long? ItemCategoryID { get; set; }
         public string? RequestShippingMethod { get; set; } = string.Empty;
         public string? RequestDeliveryTerms { get; set; } = string.Empty;
         public string? RequestDeliveryDate { get; set; }

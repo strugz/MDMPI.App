@@ -15,6 +15,10 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestStandard
         public string? ID { get; set; }
         [JsonPropertyName("ClientID")]
         public string? ClientID { get; set; }
+        [JsonPropertyName("FormCategoryID")]
+        public long? FormCategoryID { get; set; }
+        [JsonPropertyName("ItemCategoryID")]
+        public long? ItemCategoryID { get; set; }
         [JsonPropertyName("ShippingMethod")]
         public string? ShippingMethod { get; set; }
         [JsonPropertyName("DeliveryTerms")]

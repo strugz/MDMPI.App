@@ -8,7 +8,7 @@ namespace MDMPI.App.Core.Logistic.Interfaces
     public interface IRequestAirSeaRepository
     {
         Task<List<RequestAirSeaDto>> GetAllAsync(RequestQueryDto query);
-        Task<bool> InsertAsync(InsertRequestAirSeaDto dto);
+        Task<RequestAirSeaDto?> InsertAsync(InsertRequestAirSeaDto dto);
         Task<bool> UpdateAsync(UpdateRequestAirSeaDto dto);
     }
 }

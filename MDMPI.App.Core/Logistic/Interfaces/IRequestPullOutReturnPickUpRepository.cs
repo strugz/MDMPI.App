@@ -6,7 +6,7 @@ namespace MDMPI.App.Core.Logistic.Interfaces
     public interface IRequestPullOutReturnPickUpRepository
     {
         Task<List<RequestPullOutReturnPickUpDto>> GetAllAsync(RequestQueryDto query);
-        Task<bool> InsertAsync(InsertRequestPullOutReturnPickUpDto dto);
+        Task<RequestPullOutReturnPickUpDto?> InsertAsync(InsertRequestPullOutReturnPickUpDto dto);
         Task<bool> UpdateAsync(UpdateRequestPullOutReturnPickUpDto dto);
     }
 }

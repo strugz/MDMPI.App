@@ -7,7 +7,7 @@ namespace MDMPI.App.Core.Logistic.Interfaces
     public interface IRequestRepository
     {
         Task<List<RequestStandardDto>> GetAllRequestsAsync(RequestQueryDto query);
-        Task<bool> InsertRequest(InsertRequestDto dto);
+        Task<RequestStandardDto?> InsertRequest(InsertRequestDto dto);
         Task<bool> UpdateRequest(UpdateRequestDto dto);
     }
 }

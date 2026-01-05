@@ -111,9 +111,9 @@ namespace MDMPI.App.Data.Logistic.Repositories
         }
 
         /// <summary>
-        /// Inserts a new pull-out/return/pick-up request into the database, including document references if provided.
+        /// Inserts a new pull-out/return/pick-up request into the database, including document references if provided, and returns the inserted DTO.
         /// </summary>
-        public async Task<bool> InsertAsync(InsertRequestPullOutReturnPickUpDto dto)
+        public async Task<RequestPullOutReturnPickUpDto?> InsertAsync(InsertRequestPullOutReturnPickUpDto dto)
         {
             using var transaction = await _db.Database.BeginTransactionAsync();
 
@@ -141,13 +141,63 @@ namespace MDMPI.App.Data.Logistic.Repositories
 
                 await transaction.CommitAsync();
                 _logger.LogInformation("Inserted new request with ID: {RequestID}", request.RequestID);
-                return true;
+
+                var inserted = await _db.a_tblRequestPullOutReturnPickUp
+                    .AsNoTracking()
+                    .Where(r => r.RequestID == request.RequestID)
+                    .Select(r => new RequestPullOutReturnPickUpDto
+                    {
+                        RequestID = r.RequestID,
+                        ClientID = r.ClientID,
+                        ClientContactPerson = r.ClientContactPerson,
+                        FormCategoryID = r.FormCategoryID,
+                        SlipNo = r.SlipNo,
+                        IRRFNumber = r.IRRFNumber,
+                        IRRFDate = r.IRRFDate,
+                        ReasonForReturn = r.ReasonForReturn,
+                        ReleasedBy = r.ReleasedBy,
+                        ItemCategoryID = r.ItemCategoryID,
+                        PullOutDate = r.PullOutDate,
+                        PullOutDateEndAt = r.PullOutDateEndAt,
+                        PullOutDateStartAt = r.PullOutDateStartAt,
+                        RequestStatus = r.RequestStatus,
+                        TripTicketNumber = r.TripTicketNumber,
+                        Driver = r.Driver,
+                        Helper = r.Helper,
+                        ReceivedBy = r.ReceivedBy,
+                        MobileID = r.MobileID,
+                        MobileName = r.Mobile != null ? r.Mobile.MobileName : null,
+                        CreatedAt = r.CreatedAt,
+                        UpdatedAt = r.UpdatedAt,
+                        CreatedBy = r.CreatedBy,
+                        RequestedBy = r.RequestedBy,
+                        DocumentReference = _db.a_tblRequestDocumentReference
+                            .Where(dr => dr.RequestID == r.RequestID)
+                            .Select(dr => dr.Reference!)
+                            .ToList(),
+                        Client = r.Client == null ? null : new ACCMSTDto
+                        {
+                            ACCMID = r.Client.ACCMID,
+                            ACCMSC = r.Client.ACCMSC,
+                            ACCMNM = r.Client.ACCMNM.ToProperCase(),
+                            ACCMBC = r.Client.ACCMBC,
+                            ACCMAD = r.Client.ACCMAD,
+                            ACCMPH = r.Client.ACCMPH,
+                            ACCMEM = r.Client.ACCMEM,
+                            ACCMWS = r.Client.ACCMWS,
+                            ACCSTS = r.Client.ACCSTS,
+                            ACCOWN = r.Client.ACCOWN
+                        }
+                    })
+                    .FirstOrDefaultAsync();
+
+                return inserted;
             }
 
             catch (Exception ex)
             {
                 await Helper.RollbackTransactionAsync(transaction, _logger, ex, "inserting PullOut/Return/PickUp");
-                return false;
+                return null;
             }
         }
 

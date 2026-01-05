@@ -47,10 +47,10 @@ namespace MDMPI.App.Api.Controllers.Logistic
         [HttpPost]
         public async Task<IActionResult> Insert([FromBody] InsertRequestPullOutReturnPickUpDto dto)
         {
-            var id = await _repository.InsertAsync(dto);
-            if (id == false)
+            var inserted = await _repository.InsertAsync(dto);
+            if (inserted is null)
                 return BadRequest("Insert failed.");
-            return Ok();
+            return CreatedAtAction(nameof(GetRequestAll), new { id = inserted.RequestID }, inserted);
         }
 
         [HttpPatch]

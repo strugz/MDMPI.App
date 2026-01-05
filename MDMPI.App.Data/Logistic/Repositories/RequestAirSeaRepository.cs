@@ -107,6 +107,8 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     DatePickUp = r.DatePickUp,
                     ItemPreparedAt = r.ItemPreparedAt,
                     ItemPreparedEndAt = r.ItemPreparedEndAt,
+                    DispatchedAt = r.DispatchedAt,
+                    DropOffAt = r.DropOffAt,
                     PreparedBy = r.PreparedBy,
                     Status = r.Status,
                     Remarks = r.Remarks,
@@ -134,7 +136,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
             return result;
         }
 
-        public async Task<bool> InsertAsync(InsertRequestAirSeaDto dto)
+        public async Task<RequestAirSeaDto?> InsertAsync(InsertRequestAirSeaDto dto)
         {
             using var transaction = await _db.Database.BeginTransactionAsync();
 
@@ -173,12 +175,58 @@ namespace MDMPI.App.Data.Logistic.Repositories
 
                 await transaction.CommitAsync();
                 _logger.LogInformation("Inserted air/sea request with ID: {RequestID}", entity.RequestID);
-                return true;
+
+                var inserted = await _db.a_tblRequestAirSea
+                    .AsNoTracking()
+                    .Where(r => r.RequestID == entity.RequestID)
+                    .Select(r => new RequestAirSeaDto
+                    {
+                        RequestID = r.RequestID,
+                        ItemCategoryID = r.ItemCategoryID,
+                        ClientID = r.ClientID,
+                        DocumentReference = _db.a_tblRequestDocumentReference
+                            .Where(dr => dr.RequestID == r.RequestID)
+                            .Select(dr => dr.Reference!)
+                            .ToList(),
+                        MobileID = r.MobileID,
+                        ReceivedBy = r.ReceivedBy,
+                        WaybillNumber = r.WaybillNumber,
+                        TripTicketNumber = r.TripTicketNumber,
+                        Driver = r.Driver,
+                        Helper = r.Helper,
+                        DatePickUp = r.DatePickUp,
+                        ItemPreparedAt = r.ItemPreparedAt,
+                        ItemPreparedEndAt = r.ItemPreparedEndAt,
+                        DispatchedAt = r.DispatchedAt,
+                        DropOffAt = r.DropOffAt,
+                        PreparedBy = r.PreparedBy,
+                        Status = r.Status,
+                        Remarks = r.Remarks,
+                        CreatedBy = r.CreatedBy,
+                        CreatedAt = r.CreatedAt,
+                        UpdatedAt = r.UpdatedAt,
+                        Client = r.Client == null ? null : new ACCMSTDto
+                        {
+                            ACCMID = r.Client.ACCMID,
+                            ACCMSC = r.Client.ACCMSC,
+                            ACCMNM = r.Client.ACCMNM.ToProperCase(),
+                            ACCMBC = r.Client.ACCMBC,
+                            ACCMAD = r.Client.ACCMAD,
+                            ACCMPH = r.Client.ACCMPH,
+                            ACCMEM = r.Client.ACCMEM,
+                            ACCMWS = r.Client.ACCMWS,
+                            ACCSTS = r.Client.ACCSTS,
+                            ACCOWN = r.Client.ACCOWN
+                        }
+                    })
+                    .FirstOrDefaultAsync();
+
+                return inserted;
             }
             catch (Exception ex)
             {
                 await Helper.RollbackTransactionAsync(transaction, _logger, ex, "inserting Air/Sea request");
-                return false;
+                return null;
             }
         }
 
@@ -203,6 +251,8 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 Helper.UpdateIfNotNull(v => entity.Helper = v, dto.Helper);
                 Helper.UpdateIfNotNull(v => entity.ItemPreparedAt = v, dto.ItemPreparedAt);
                 Helper.UpdateIfNotNull(v => entity.ItemPreparedEndAt = v, dto.ItemPreparedEndAt);
+                Helper.UpdateIfNotNull(v => entity.DispatchedAt = v, dto.DispatchedAt);
+                Helper.UpdateIfNotNull(v => entity.DropOffAt = v, dto.DropOffAt);
                 Helper.UpdateIfNotNull(v => entity.PreparedBy = v, dto.PreparedBy);
                 Helper.UpdateIfNotNull(v => entity.MobileID = v, dto.MobileID);
                 Helper.UpdateIfNotNull(v => entity.Remarks = v, dto.Remarks);

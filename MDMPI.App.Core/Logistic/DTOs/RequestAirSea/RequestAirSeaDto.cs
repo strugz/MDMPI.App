@@ -18,6 +18,8 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestAirSea
         public DateTime? DatePickUp { get; set; }
         public DateTime? ItemPreparedAt { get; set; }
         public DateTime? ItemPreparedEndAt { get; set; }
+        public DateTime? DispatchedAt { get; set; }
+        public DateTime? DropOffAt { get; set; }
         public string? PreparedBy { get; set; }
         public string? Status { get; set; }
         public string? Remarks { get; set; }

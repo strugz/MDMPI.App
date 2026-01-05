@@ -31,7 +31,7 @@ namespace MDMPI.App.Tests.Logistic
         public async Task Insert_ReturnsBadRequest_WhenInsertFails()
         {
             var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
-            mockRepo.Setup(r => r.InsertAsync(It.IsAny<InsertRequestPullOutReturnPickUpDto>())).ReturnsAsync(false);
+            mockRepo.Setup(r => r.InsertAsync(It.IsAny<InsertRequestPullOutReturnPickUpDto>())).ReturnsAsync((RequestPullOutReturnPickUpDto?)null);
             var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
             var mockRemarks = new Mock<IRequestRemarksRepository>();
             var mockImage = new Mock<IImagePathTypeRepository>();

@@ -108,6 +108,8 @@ namespace MDMPI.App.Core.Common.Services
             {
                 RequestID = requestId,
                 RequestClientID = dto.RequestClientID,
+                FormCategoryID = dto.FormCategoryID,
+                ItemCategoryID = dto.ItemCategoryID,
                 RequestShippingMethod = dto.RequestShippingMethod,
                 RequestDeliveryTerms = dto.RequestDeliveryTerms,
                 RequestDeliveryDate = DateOnly.TryParse(dto.RequestDeliveryDate, out var deliveryDate) ? deliveryDate : null,

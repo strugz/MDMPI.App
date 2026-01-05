@@ -43,9 +43,9 @@ namespace MDMPI.App.Tests.Logistic
                     Status = null
                 };
 
-                var ok = await repo.InsertAsync(dto);
+                var inserted = await repo.InsertAsync(dto);
 
-                Assert.True(ok);
+                Assert.NotNull(inserted);
                 var saved = await db.a_tblRequestPickUpMDMPI.AsNoTracking().FirstOrDefaultAsync();
                 Assert.NotNull(saved);
                 Assert.Equal(1000, saved!.RequestID);

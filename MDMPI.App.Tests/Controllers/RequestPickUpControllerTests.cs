@@ -36,7 +36,7 @@ namespace MDMPI.App.Tests.Controllers
         public async void Insert_ReturnsBadRequest_WhenInsertFails()
         {
             var mockRepo = new Mock<IRequestPickUpRepository>();
-            mockRepo.Setup(r => r.InsertAsync(It.IsAny<InsertRequestPickUpDto>())).ReturnsAsync(false);
+            mockRepo.Setup(r => r.InsertAsync(It.IsAny<InsertRequestPickUpDto>())).ReturnsAsync((RequestPickUpDto?)null);
             var mockImage = new Mock<IImagePathTypeRepository>();
             var mockRemarks = new Mock<IRequestRemarksRepository>();
             var mockMobile = new Mock<IMobileRepository>();

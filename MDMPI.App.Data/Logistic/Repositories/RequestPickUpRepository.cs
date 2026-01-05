@@ -129,7 +129,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
             return result;
         }
 
-        public async Task<bool> InsertAsync(InsertRequestPickUpDto dto)
+        public async Task<RequestPickUpDto?> InsertAsync(InsertRequestPickUpDto dto)
         {
             using var transaction = await _db.Database.BeginTransactionAsync();
 
@@ -168,12 +168,52 @@ namespace MDMPI.App.Data.Logistic.Repositories
 
                 await transaction.CommitAsync();
                 _logger.LogInformation("Inserted pickup request with ID: {RequestID}", entity.RequestID);
-                return true;
+
+                var inserted = await _db.a_tblRequestPickUpMDMPI
+                    .AsNoTracking()
+                    .Where(r => r.RequestID == entity.RequestID)
+                    .Select(r => new RequestPickUpDto
+                    {
+                        RequestID = r.RequestID,
+                        ClientID = r.ClientID,
+                        ItemCategoryID = r.ItemCategoryID,
+                        DocumentReference = _db.a_tblRequestDocumentReference
+                            .Where(dr => dr.RequestID == r.RequestID)
+                            .Select(dr => dr.Reference!)
+                            .ToList(),
+                        PreparedBy = r.PreparedBy,
+                        ItemPreparedAt = r.ItemPreparedAt,
+                        ItemPreparedEndAt = r.ItemPreparedEndAt,
+                        DatePickUp = r.DatePickUp,
+                        Remarks = r.Remarks,
+                        Status = r.Status,
+                        ReleasedBy = r.ReleasedBy,
+                        ReceivedBy = r.ReceivedBy,
+                        CreatedBy = r.CreatedBy,
+                        CreatedAt = r.CreatedAt,
+                        UpdatedAt = r.UpdatedAt,
+                        Client = r.Client == null ? null : new ACCMSTDto
+                        {
+                            ACCMID = r.Client.ACCMID,
+                            ACCMSC = r.Client.ACCMSC,
+                            ACCMNM = r.Client.ACCMNM.ToProperCase(),
+                            ACCMBC = r.Client.ACCMBC,
+                            ACCMAD = r.Client.ACCMAD,
+                            ACCMPH = r.Client.ACCMPH,
+                            ACCMEM = r.Client.ACCMEM,
+                            ACCMWS = r.Client.ACCMWS,
+                            ACCSTS = r.Client.ACCSTS,
+                            ACCOWN = r.Client.ACCOWN
+                        }
+                    })
+                    .FirstOrDefaultAsync();
+
+                return inserted;
             }
             catch (Exception ex)
             {
                 await Helper.RollbackTransactionAsync(transaction, _logger, ex, "inserting PickUp request");
-                return false;
+                return null;
             }
         }
 

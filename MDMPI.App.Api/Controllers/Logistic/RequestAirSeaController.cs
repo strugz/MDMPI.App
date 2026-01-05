@@ -54,13 +54,13 @@ namespace MDMPI.App.Api.Controllers.Logistic
                 return ValidationProblem(ModelState);
             }
 
-            var success = await _repository.InsertAsync(dto);
-            if (!success)
+            var inserted = await _repository.InsertAsync(dto);
+            if (inserted is null)
             {
                 return BadRequest("Insert failed.");
             }
 
-            return Ok();
+            return CreatedAtAction(nameof(GetAll), new { id = inserted.RequestID }, inserted);
         }
 
         [HttpPatch]

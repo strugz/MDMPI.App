@@ -11,6 +11,8 @@ namespace MDMPI.App.Core.Logistic.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long RequestID { get; set; }
         public string? RequestClientID { get; set; }
+        public long? FormCategoryID { get; set; }
+        public long? ItemCategoryID { get; set; }
         public string? RequestShippingMethod { get; set; }
         public string? RequestDeliveryTerms { get; set; }
         public DateOnly? RequestDeliveryDate { get; set; } // [date]
