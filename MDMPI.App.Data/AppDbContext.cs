@@ -9,7 +9,6 @@ namespace MDMPI.App.Data
     public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
         public DbSet<RequestStandardModel> a_tblRequestStandardDelivery { get; set; }
         public DbSet<DocumentReferenceModel> a_tblRequestDocumentReference { get; set; }
         public DbSet<ImagePathModel> a_tblRequestImagePath { get; set; }

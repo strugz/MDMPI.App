@@ -7,17 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Collection\**" />
     <Compile Remove="Engineer\**" />
     <Compile Remove="Ims\**" />
     <Compile Remove="ProductSpecialist\**" />
     <Compile Remove="Sales\**" />
-    <EmbeddedResource Remove="Collection\**" />
     <EmbeddedResource Remove="Engineer\**" />
     <EmbeddedResource Remove="Ims\**" />
     <EmbeddedResource Remove="ProductSpecialist\**" />
     <EmbeddedResource Remove="Sales\**" />
-    <None Remove="Collection\**" />
     <None Remove="Engineer\**" />
     <None Remove="Ims\**" />
     <None Remove="ProductSpecialist\**" />
@@ -26,6 +23,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Collection\DTOs\" />
+    <Folder Include="Collection\Interfaces\" />
   </ItemGroup>
 
 </Project>
