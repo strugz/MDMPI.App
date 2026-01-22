@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MDMPI.App.Core.CommonOldEntities.Entities;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MDMPI.App.Core.Collection.Entities
 {
-    internal class CollectionTransactionDetails
+    public class CollectionTransactionDetailsModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -47,5 +48,11 @@ namespace MDMPI.App.Core.Collection.Entities
         public DateTime? created_at { get; set; }
 
         public DateTime? updated_at { get; set; }
+        
+        [MaxLength(20)]
+        public string? Status { get; set; }
+
+        [ForeignKey("ClientID")]
+        public ACCMSTModel? Client { get; set; }
     }
 }

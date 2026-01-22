@@ -7,22 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Controllers\Collection\**" />
     <Compile Remove="Controllers\Engineer\**" />
     <Compile Remove="Controllers\Ims\**" />
     <Compile Remove="Controllers\ProductSpecialist\**" />
     <Compile Remove="Controllers\Sales\**" />
-    <Content Remove="Controllers\Collection\**" />
     <Content Remove="Controllers\Engineer\**" />
     <Content Remove="Controllers\Ims\**" />
     <Content Remove="Controllers\ProductSpecialist\**" />
     <Content Remove="Controllers\Sales\**" />
-    <EmbeddedResource Remove="Controllers\Collection\**" />
     <EmbeddedResource Remove="Controllers\Engineer\**" />
     <EmbeddedResource Remove="Controllers\Ims\**" />
     <EmbeddedResource Remove="Controllers\ProductSpecialist\**" />
     <EmbeddedResource Remove="Controllers\Sales\**" />
-    <None Remove="Controllers\Collection\**" />
     <None Remove="Controllers\Engineer\**" />
     <None Remove="Controllers\Ims\**" />
     <None Remove="Controllers\ProductSpecialist\**" />

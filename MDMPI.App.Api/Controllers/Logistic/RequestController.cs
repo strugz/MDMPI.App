@@ -1,8 +1,6 @@
 ﻿using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
 using MDMPI.App.Core.Logistic.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using Microsoft.AspNetCore.Http;
 using MDMPI.App.Api.Models;
 using MDMPI.App.Core.Common.DTOs;
 

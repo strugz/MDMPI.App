@@ -1,3 +1,4 @@
+using MDMPI.App.Core.CommonOldEntities.DTOs;
 using System;
 
 namespace MDMPI.App.Core.Collection.Dtos
@@ -10,13 +11,9 @@ namespace MDMPI.App.Core.Collection.Dtos
         public string CollectorID { get; set; } = string.Empty;
         public DateTime CollectionDate { get; set; }
         public string VisitType { get; set; } = string.Empty;
-        public string? Bank { get; set; }
-        public string? CheckNo { get; set; }
-        public DateTime? CheckDate { get; set; }
-        public decimal? Amount { get; set; }
-        public string? SalesInvoiceReferenceForPayment { get; set; }
-        public string? SummaryOfVisit { get; set; }
         public DateTime? created_at { get; set; }
         public DateTime? updated_at { get; set; }
+        public string? Status { get; set; }
+        public ACCMSTDto? Client { get; set; }
     }
 }

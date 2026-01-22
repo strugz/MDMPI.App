@@ -26,6 +26,14 @@ namespace MDMPI.App.Core.Common.DTOs
         All
     }
 
+    public enum CollectionStatusFilter
+    {
+        Pending,
+        Completed,
+        Overdue,
+        All
+    }
+
     public class RequestQueryDto
     {
         public int Page { get; set; } = 1;

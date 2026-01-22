@@ -3,6 +3,8 @@ using MDMPI.App.Core.CommonOldEntities.Entities;
 using MDMPI.App.Core.Logistic.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Internal;
+using MDMPI.App.Core.Collection.Entities;
 
 namespace MDMPI.App.Data
 {
@@ -21,6 +23,8 @@ namespace MDMPI.App.Data
         public DbSet<RequestAirSeaModel> a_tblRequestAirSea { get; set; }
         public DbSet<CategoryModel> a_tblCategory { get; set; }
 
+        public DbSet<CollectionTransactionDetailsModel> a_tblCollectionTransactionDetails { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -36,6 +40,9 @@ namespace MDMPI.App.Data
 
             modelBuilder.Entity<RequestAirSeaModel>()
                 .ToTable("a_tblRequestAirSea");
+
+            modelBuilder.Entity<CollectionTransactionDetailsModel>()
+                .ToTable("a_tblCollectionTransactionDetails", b => b.UseSqlOutputClause(false));
         }
 
         // call from a repository or controller

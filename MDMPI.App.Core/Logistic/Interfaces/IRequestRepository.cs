@@ -1,6 +1,5 @@
 ﻿using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
-using MDMPI.App.Core.Logistic.Entities;
 
 namespace MDMPI.App.Core.Logistic.Interfaces
 {
