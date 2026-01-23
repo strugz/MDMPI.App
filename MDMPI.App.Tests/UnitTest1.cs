@@ -7,6 +7,7 @@ using MDMPI.App.Core.Logistic.Interfaces;
 using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
 using MDMPI.App.Core.Logistic.DTOs.RequestPickUp;
+using MDMPI.App.Core.Common.Interfaces;
 
 namespace MDMPI.App.Tests
 {

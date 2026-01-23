@@ -1,5 +1,5 @@
 using MDMPI.App.Core.Common.DTOs;
-using MDMPI.App.Core.Logistic.Interfaces;
+using MDMPI.App.Core.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace MDMPI.App.Data.Common.Repositories

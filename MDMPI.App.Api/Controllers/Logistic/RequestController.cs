@@ -3,6 +3,7 @@ using MDMPI.App.Core.Logistic.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using MDMPI.App.Api.Models;
 using MDMPI.App.Core.Common.DTOs;
+using MDMPI.App.Core.Common.Interfaces;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -120,6 +121,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
                 return BadRequest("RequestID and type are required.");
             }
             var imageBytes = await _imagePathTypeRepository.GetRequestImage(requestid, type);
+
             if (imageBytes == null)
             {
                 return NotFound();

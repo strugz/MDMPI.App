@@ -1,6 +1,7 @@
 using MDMPI.App.Common.Utilities;
 using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.Entities;
+using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
 using MDMPI.App.Core.CommonOldEntities.DTOs;
 using MDMPI.App.Core.Logistic.DTOs.RequestPullOutReturnPickUp;

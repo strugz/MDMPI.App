@@ -1,5 +1,6 @@
 using MDMPI.App.Api.Models;
 using MDMPI.App.Core.Common.DTOs;
+using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Logistic.DTOs.RequestPullOutReturnPickUp;
 using MDMPI.App.Core.Logistic.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,6 @@ namespace MDMPI.App.Api.Controllers.Logistic
         private readonly IRequestPullOutReturnPickUpRepository _repository;
         private readonly ILogger<RequestPullOutReturnPickUpController> _logger;
         private readonly IRequestRemarksRepository _requestRemarksRepository;
-        private readonly IImagePathTypeRepository _imagePathType_repository; // placeholder
         private readonly IImagePathTypeRepository _imagePathTypeRepository;
 
         public RequestPullOutReturnPickUpController(IRequestPullOutReturnPickUpRepository repository, ILogger<RequestPullOutReturnPickUpController> logger, IRequestRemarksRepository requestRemarksRepository, IImagePathTypeRepository imagePathTypeRepository)
@@ -21,7 +21,6 @@ namespace MDMPI.App.Api.Controllers.Logistic
             _repository = repository;
             _logger = logger;
             _requestRemarksRepository = requestRemarksRepository;
-            _imagePathType_repository = imagePathTypeRepository; // placeholder
             _imagePathTypeRepository = imagePathTypeRepository;
         }
 

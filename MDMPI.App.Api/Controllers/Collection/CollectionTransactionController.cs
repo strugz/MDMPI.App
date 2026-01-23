@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MDMPI.App.Core.Collection.Interfaces;
+﻿using MDMPI.App.Api.Models;
 using MDMPI.App.Core.Collection.Dtos;
+using MDMPI.App.Core.Collection.Interfaces;
+using MDMPI.App.Core.Logistic.Interfaces;
+using MDMPI.App.Core.Common.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MDMPI.App.Api.Controllers.Collection
 {
@@ -9,10 +12,11 @@ namespace MDMPI.App.Api.Controllers.Collection
     public class CollectionTransactionController : ControllerBase
     {
         private readonly ICollectionTransactionDetailsRepository _repo;
-
-        public CollectionTransactionController(ICollectionTransactionDetailsRepository repo)
+        private readonly IImagePathTypeRepository _imagePathTypeRepository;
+        public CollectionTransactionController(ICollectionTransactionDetailsRepository repo, IImagePathTypeRepository imagePathTypeRepository)
         {
             _repo = repo;
+            _imagePathTypeRepository = imagePathTypeRepository;
         }
 
         /// <summary>
@@ -62,6 +66,54 @@ namespace MDMPI.App.Api.Controllers.Collection
             if (ok == null) return NotFound();
 
             return NoContent();
+        }
+
+        [HttpGet("image")]
+        public async Task<ActionResult> GetImage([FromQuery] string requestID, [FromQuery] string type)
+        {
+            if (string.IsNullOrEmpty(requestID) || string.IsNullOrEmpty(type))
+            {
+                return BadRequest("RequestID and Type are required.");
+            }
+            var result = await _imagePathTypeRepository.GetRequestImage(requestID, type);
+            if (result == null)
+            {
+                return NotFound("Image not found.");
+            }
+            return Ok(new { path = result });
+        }
+
+        [HttpPost("upload-image")]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> UploadImage([FromForm] UploadImageRequestDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            var image = dto.Image;
+            if (image == null || image.Length == 0)
+            {
+                return BadRequest("No image file provided.");
+            }
+
+            using var ms = new MemoryStream();
+            await image.CopyToAsync(ms);
+            var imageBytes = ms.ToArray();
+
+
+            var result = await _imagePathTypeRepository.UploadImageAsync(imageBytes, dto.RequestID!, dto.Type!);
+
+            if (result == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Failed to upload image.");
+            }
+
+            return Ok(new { path = result });
         }
     }
 }

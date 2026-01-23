@@ -1,6 +1,6 @@
 ﻿using MDMPI.App.Core.Common.DTOs;
 
-namespace MDMPI.App.Core.Logistic.Interfaces
+namespace MDMPI.App.Core.Common.Interfaces
 {
     public interface IRequestRemarksRepository
     {

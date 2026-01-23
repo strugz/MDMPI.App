@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MDMPI.App.Core.Logistic.Interfaces;
 using MDMPI.App.Core.Common.DTOs;
+using MDMPI.App.Core.Common.Interfaces;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

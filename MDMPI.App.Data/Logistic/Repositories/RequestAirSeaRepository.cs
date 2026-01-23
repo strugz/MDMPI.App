@@ -1,6 +1,7 @@
 using MDMPI.App.Common.Utilities;
 using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.Entities;
+using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
 using MDMPI.App.Core.CommonOldEntities.DTOs;
 using MDMPI.App.Core.Logistic.DTOs.RequestAirSea;
@@ -11,18 +12,15 @@ using Microsoft.Extensions.Logging;
 
 namespace MDMPI.App.Data.Logistic.Repositories
 {
-    public class RequestAirSeaRepository : IRequestAirSeaRepository
+    public class RequestAirSeaRepository(
+        AppDbContext db,
+        ILogger<RequestAirSeaRepository> logger,
+        IRequestIdGenerator requestIdGenerator
+    ) : IRequestAirSeaRepository
     {
-        private readonly AppDbContext _db;
-        private readonly ILogger<RequestAirSeaRepository> _logger;
-        private readonly IRequestIdGenerator _requestIdGenerator;
-
-        public RequestAirSeaRepository(AppDbContext db, ILogger<RequestAirSeaRepository> logger, IRequestIdGenerator requestIdGenerator)
-        {
-            _db = db;
-            _logger = logger;
-            _requestIdGenerator = requestIdGenerator;
-        }
+        private readonly AppDbContext _db = db;
+        private readonly ILogger<RequestAirSeaRepository> _logger = logger;
+        private readonly IRequestIdGenerator _requestIdGenerator = requestIdGenerator;
 
         public async Task<List<RequestAirSeaDto>> GetAllAsync(RequestQueryDto query)
         {

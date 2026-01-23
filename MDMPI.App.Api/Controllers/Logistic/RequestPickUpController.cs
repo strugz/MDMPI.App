@@ -3,6 +3,7 @@ using MDMPI.App.Core.Logistic.DTOs.RequestPickUp;
 using MDMPI.App.Core.Logistic.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using MDMPI.App.Api.Models;
+using MDMPI.App.Core.Common.Interfaces;
 
 namespace MDMPI.App.Api.Controllers.Logistic
 {

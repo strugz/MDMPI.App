@@ -1,4 +1,5 @@
 using MDMPI.App.Core.Collection.Interfaces;
+using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
 using MDMPI.App.Core.Logistic.Interfaces;
 using MDMPI.App.Data;

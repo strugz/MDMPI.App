@@ -1,4 +1,4 @@
-﻿namespace MDMPI.App.Core.Logistic.Interfaces
+﻿namespace MDMPI.App.Core.Common.Interfaces
 {
     public interface IRequestIdGenerator
     {

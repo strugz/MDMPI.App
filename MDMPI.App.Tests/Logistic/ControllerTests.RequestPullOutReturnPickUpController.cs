@@ -6,6 +6,7 @@ using MDMPI.App.Api.Controllers.Logistic;
 using MDMPI.App.Core.Logistic.Interfaces;
 using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Logistic.DTOs.RequestPullOutReturnPickUp;
+using MDMPI.App.Core.Common.Interfaces;
 
 namespace MDMPI.App.Tests.Logistic
 {

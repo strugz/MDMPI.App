@@ -1,4 +1,5 @@
 using MDMPI.App.Core.Common.DTOs;
+using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Logistic.DTOs.RequestPickUp;
 using MDMPI.App.Data;
 using MDMPI.App.Data.Logistic.Repositories;
@@ -22,7 +23,7 @@ namespace MDMPI.App.Tests.Logistic
             return (db, conn);
         }
 
-        private class FixedIdGenerator : MDMPI.App.Core.Logistic.Interfaces.IRequestIdGenerator
+        private class FixedIdGenerator : IRequestIdGenerator
         {
             private long _next;
             public FixedIdGenerator(long start) { _next = start; }

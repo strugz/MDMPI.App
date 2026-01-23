@@ -1,6 +1,6 @@
 ﻿using MDMPI.App.Core.Common.Entities;
+using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
-using MDMPI.App.Core.Logistic.Interfaces;
 using MDMPI.App.Data.Logistic.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

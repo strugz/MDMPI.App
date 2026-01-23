@@ -11,6 +11,7 @@ using MDMPI.App.Api.Models;
 using MDMPI.App.Core.Logistic.Interfaces;
 using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
+using MDMPI.App.Core.Common.Interfaces;
 
 namespace MDMPI.App.Tests.Controllers
 {
