@@ -8,6 +8,7 @@ using MDMPI.App.Data.Common.Repositories;
 using MDMPI.App.Data.Common.Services;
 using MDMPI.App.Data.Logistic.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Register application services
 builder.Services.AddSingleton<ImageService>();
+
+// Register Gemini AI service
+builder.Services.Configure<GeminiSettings>(builder.Configuration.GetSection(GeminiSettings.SectionName));
+builder.Services.AddHttpClient<IGeminiService, GeminiService>();
 
 builder.Services.AddScoped<IRequestRepository, RequestRepository>();
 

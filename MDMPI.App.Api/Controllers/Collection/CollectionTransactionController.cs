@@ -57,7 +57,7 @@ namespace MDMPI.App.Api.Controllers.Collection
         /// <summary>
         /// Updates an existing collection transaction record.
         /// </summary>
-        [HttpPut]
+        [HttpPatch]
         public async Task<IActionResult> Update([FromBody] UpdateCollectionTransactionDetailsDto dto)
         {
             if (dto == null) return BadRequest();
