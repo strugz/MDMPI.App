@@ -1,17 +1,13 @@
-using System.IO;
-using System.Text;
-using System.Collections.Generic;
-using Xunit;
-using Moq;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http;
 using MDMPI.App.Api.Controllers.Logistic;
 using MDMPI.App.Api.Models;
-using MDMPI.App.Core.Logistic.Interfaces;
 using MDMPI.App.Core.Common.DTOs;
-using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
 using MDMPI.App.Core.Common.Interfaces;
+using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
+using MDMPI.App.Core.Logistic.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using System.Text;
 
 namespace MDMPI.App.Tests.Controllers
 {
