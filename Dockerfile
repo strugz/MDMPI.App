@@ -2,10 +2,18 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY *.csproj ./
+# Copy csproj from subfolder
+COPY MDMPI.App.Api/*.csproj ./MDMPI.App.Api/
+WORKDIR /src/MDMPI.App.Api
+
+# Restore dependencies
 RUN dotnet restore
 
-COPY . ./
+# Copy full project
+COPY . .
+WORKDIR /src/MDMPI.App.Api
+
+# Publish
 RUN dotnet publish -c Release -o /app/publish
 
 # -------- RUNTIME STAGE --------
@@ -14,6 +22,7 @@ WORKDIR /app
 
 COPY --from=build /app/publish .
 
+# Required for Render
 ENV ASPNETCORE_URLS=http://+:10000
 
-ENTRYPOINT ["dotnet", "MDMPI.App.dll"]
+ENTRYPOINT ["dotnet", "MDMPI.App.Api.dll"]
