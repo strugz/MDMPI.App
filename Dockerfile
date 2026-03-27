@@ -2,17 +2,21 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy csproj
+# Copy ALL project files first (for restore optimization)
 COPY MDMPI.App.Api/*.csproj ./MDMPI.App.Api/
-WORKDIR /src/MDMPI.App.Api
+COPY MDMPI.App.Common/*.csproj ./MDMPI.App.Common/
+COPY MDMPI.App.Core/*.csproj ./MDMPI.App.Core/
+COPY MDMPI.App.Data/*.csproj ./MDMPI.App.Data/
 
+# Restore dependencies
+WORKDIR /src/MDMPI.App.Api
 RUN dotnet restore
 
-# Copy full solution
+# Copy everything else
 COPY . .
 WORKDIR /src/MDMPI.App.Api
 
-# 🔥 FIXED LINE
+# Publish ONLY API project
 RUN dotnet publish MDMPI.App.Api.csproj -c Release -o /app/publish
 
 # -------- RUNTIME STAGE --------
