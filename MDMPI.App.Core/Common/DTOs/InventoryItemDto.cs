@@ -51,7 +51,6 @@ namespace MDMPI.App.Core.Common.DTOs
                 {
                     PropertyNameCaseInsensitive = true
                 };
-                // Re-use converter for Qty parsing
                 options.Converters.Add(new StringToDecimalConverter());
 
                 var items = JsonSerializer.Deserialize<List<InventoryItemDto>>(content, options);
