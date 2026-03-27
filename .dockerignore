@@ -1,2 +1,10 @@
+# Ignore build outputs
+**/bin/
+**/obj/
+
+# Ignore test project
+MDMPI.App.Tests/
+**/MDMPI.App.Tests/
+
 MDMPI.App.Tests/
 **/MDMPI.App.Tests/
