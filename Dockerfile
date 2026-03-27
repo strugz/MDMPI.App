@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy csproj
-COPY MDMPI.App.Api/*.csproj
+COPY MDMPI.App.Api/*.csproj ./MDMPI.App.Api/
 WORKDIR /src/MDMPI.App.Api
 
 RUN dotnet restore
