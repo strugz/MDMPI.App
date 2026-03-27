@@ -10,6 +10,8 @@ using MDMPI.App.Data.Logistic.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
+var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -58,6 +60,16 @@ builder.Services.AddScoped<ICollectionTransactionDetailsRepository, CollectionRe
 // register category repository
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy => policy
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -73,4 +85,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+app.UseCors("AllowAll");
+
+app.Run($"http://0.0.0.0:{port}");
+
+/*app.Run();*/
