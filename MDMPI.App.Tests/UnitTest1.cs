@@ -21,8 +21,8 @@ namespace MDMPI.App.Tests
             var mockMobile = new Mock<IMobileRepository>();
             var mockRemarks = new Mock<IRequestRemarksRepository>();
             var mockImage = new Mock<IImagePathTypeRepository>();
-
-            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object);
+            var mockItem = new Mock<IItemRepository>();
+            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object, mockItem.Object);
 
             var result = await controller.GetRequestAll();
 

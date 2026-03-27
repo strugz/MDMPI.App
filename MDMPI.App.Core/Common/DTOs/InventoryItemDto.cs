@@ -15,7 +15,6 @@ namespace MDMPI.App.Core.Common.DTOs
         public string Description { get; set; } = string.Empty;
 
         [JsonPropertyName("Qty")]
-        [JsonConverter(typeof(StringToDecimalConverter))]
         public decimal Qty { get; set; }
 
         [JsonPropertyName("Unit")]

@@ -1,6 +1,7 @@
 ﻿using MDMPI.App.Common.Utilities;
 using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.Entities;
+using MDMPI.App.Core.Common.Entities.Item;
 using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
 using MDMPI.App.Core.CommonOldEntities.DTOs;
@@ -16,12 +17,21 @@ namespace MDMPI.App.Data.Logistic.Repositories
         private readonly AppDbContext _db;
         private readonly ILogger<RequestRepository> _logger;
         private readonly IRequestIdGenerator _requestIdGenerator;
+        private readonly IItemIdGenerator _itemIdGenerator;
+        private readonly IBatchIdGenerator _batchIdGenerator;
 
-        public RequestRepository(AppDbContext db, ILogger<RequestRepository> logger, IRequestIdGenerator requestIdGenerator)
+        public RequestRepository(
+            AppDbContext db,
+            ILogger<RequestRepository> logger,
+            IRequestIdGenerator requestIdGenerator,
+            IItemIdGenerator itemIdGenerator,
+            IBatchIdGenerator batchIdGenerator)
         {
             _db = db;
             _logger = logger;
             _requestIdGenerator = requestIdGenerator;
+            _itemIdGenerator = itemIdGenerator;
+            _batchIdGenerator = batchIdGenerator;
         }
 
         /// <summary>
@@ -121,7 +131,6 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 _logger.LogInformation("Inserting new request for ClientID: {ClientID}", dto.RequestClientID);
 
                 var newRequestId = await _requestIdGenerator.GenerateAsync();
-
                 var request = Helper.BuildRequestStandardModel(dto, newRequestId);
 
                 _db.a_tblRequestStandardDelivery.Add(request);

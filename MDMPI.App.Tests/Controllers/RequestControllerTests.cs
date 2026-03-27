@@ -25,8 +25,9 @@ namespace MDMPI.App.Tests.Controllers
             var mockMobile = new Mock<IMobileRepository>();
             var mockRemarks = new Mock<IRequestRemarksRepository>();
             var mockImage = new Mock<IImagePathTypeRepository>();
+            var mockItem = new Mock<IItemRepository>();
 
-            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object);
+            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object, mockItem.Object);
 
             var result = await controller.GetRequestAll();
 
@@ -41,8 +42,8 @@ namespace MDMPI.App.Tests.Controllers
             var mockMobile = new Mock<IMobileRepository>();
             var mockRemarks = new Mock<IRequestRemarksRepository>();
             var mockImage = new Mock<IImagePathTypeRepository>();
-
-            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object);
+            var mockItem = new Mock<IItemRepository>();
+            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object, mockItem.Object);
 
             var result = await controller.GetRequestAll();
 
@@ -57,8 +58,8 @@ namespace MDMPI.App.Tests.Controllers
             var mockRemarks = new Mock<IRequestRemarksRepository>();
             mockRemarks.Setup(r => r.GetAllRemarks(It.IsAny<long>())).ReturnsAsync(new RemarksDto { Remarks = "x" });
             var mockImage = new Mock<IImagePathTypeRepository>();
-
-            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object);
+            var mockItem = new Mock<IItemRepository>();
+            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object, mockItem.Object);
 
             var result = await controller.GetCancelledRemarks(1);
 
@@ -72,8 +73,8 @@ namespace MDMPI.App.Tests.Controllers
             var mockMobile = new Mock<IMobileRepository>();
             var mockRemarks = new Mock<IRequestRemarksRepository>();
             var mockImage = new Mock<IImagePathTypeRepository>();
-
-            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object);
+            var mockItem = new Mock<IItemRepository>();
+            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object, mockItem.Object);
 
             var result = await controller.CancelRequest(0, "JCA", "x");
 
@@ -88,8 +89,8 @@ namespace MDMPI.App.Tests.Controllers
             var mockRemarks = new Mock<IRequestRemarksRepository>();
             mockRemarks.Setup(r => r.InsertRemarkAndCancelRequestForStandardDeliveryAsync(It.IsAny<long>(), "JCA", It.IsAny<string>())).ReturnsAsync(true);
             var mockImage = new Mock<IImagePathTypeRepository>();
-
-            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object);
+            var mockItem = new Mock<IItemRepository>();
+            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object, mockItem.Object);
 
             var result = await controller.CancelRequest(1, "JCA", "x");
 
@@ -105,8 +106,8 @@ namespace MDMPI.App.Tests.Controllers
             mockMobile.Setup(m => m.GetAllMobilesAsync()).ReturnsAsync(new List<MobileDto> { new MobileDto { MobileID = 1, MobileName = "m1" } });
             var mockRemarks = new Mock<IRequestRemarksRepository>();
             var mockImage = new Mock<IImagePathTypeRepository>();
-
-            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object);
+            var mockItem = new Mock<IItemRepository>();
+            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object, mockItem.Object);
 
             var result = await controller.GetMobile();
 
@@ -122,8 +123,8 @@ namespace MDMPI.App.Tests.Controllers
             var mockImage = new Mock<IImagePathTypeRepository>();
             var bytes = new byte[] { 1 };
             mockImage.Setup(m => m.GetRequestImage(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(bytes);
-
-            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object);
+            var mockItem = new Mock<IItemRepository>();
+            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object, mockItem.Object);
 
             var result = await controller.GetRequestImage("1", "t");
 
@@ -137,14 +138,14 @@ namespace MDMPI.App.Tests.Controllers
             var mockMobile = new Mock<IMobileRepository>();
             var mockRemarks = new Mock<IRequestRemarksRepository>();
             var mockImage = new Mock<IImagePathTypeRepository>();
-
+            var mockItem = new Mock<IItemRepository>();
             var content = Encoding.UTF8.GetBytes("abc");
             var stream = new MemoryStream(content);
             IFormFile file = new FormFile(stream, 0, content.Length, "Image", "test.png") { Headers = new HeaderDictionary(), ContentType = "image/png" };
 
             mockImage.Setup(m => m.UploadImageAsync(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync("/path");
 
-            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object);
+            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object, mockItem.Object);
 
             var dto = new UploadImageRequestDto { Image = file, RequestID = "1", Type = "Proof" };
 

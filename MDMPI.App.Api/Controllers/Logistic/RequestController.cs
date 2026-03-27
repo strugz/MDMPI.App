@@ -1,9 +1,10 @@
-﻿using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
-using MDMPI.App.Core.Logistic.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using MDMPI.App.Api.Models;
+﻿using MDMPI.App.Api.Models;
 using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.Interfaces;
+using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
+using MDMPI.App.Core.Logistic.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using System.Numerics;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,13 +18,20 @@ namespace MDMPI.App.Api.Controllers.Logistic
         private readonly IMobileRepository _mobileRepository;
         private readonly IRequestRemarksRepository _requestRemarksRepository;
         private readonly IImagePathTypeRepository _imagePathTypeRepository;
+        private readonly IItemRepository _itemRepository;
 
-        public RequestController(IRequestRepository requestRepository, IMobileRepository mobileRepository, IRequestRemarksRepository requestRemarksRepository, IImagePathTypeRepository imagePathTypeRepository)
+        public RequestController(
+            IRequestRepository requestRepository,
+            IMobileRepository mobileRepository,
+            IRequestRemarksRepository requestRemarksRepository,
+            IImagePathTypeRepository imagePathTypeRepository,
+            IItemRepository itemRepository)
         {
             _requestRepository = requestRepository;
             _mobileRepository = mobileRepository;
             _requestRemarksRepository = requestRemarksRepository;
             _imagePathTypeRepository = imagePathTypeRepository;
+            _itemRepository = itemRepository;
         }
 
         [HttpGet]
@@ -89,10 +97,15 @@ namespace MDMPI.App.Api.Controllers.Logistic
         public async Task<ActionResult> PostRequest([FromBody] InsertRequestDto value)
         {
             var inserted = await _requestRepository.InsertRequest(value);
+
             if (inserted is null)
             {
                 return BadRequest("Insert failed.");
             }
+
+            await _itemRepository.InsertItemsAsync(long.Parse(inserted.ID!), value.Items!);
+
+
             return CreatedAtAction(nameof(GetRequestAll), new { id = inserted.ID }, inserted);
         }
 

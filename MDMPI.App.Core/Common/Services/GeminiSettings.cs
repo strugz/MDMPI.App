@@ -12,7 +12,7 @@ namespace MDMPI.App.Core.Common.Services
         /// <summary>
         /// The Gemini model to use (e.g., "gemini-2.5-flash").
         /// </summary>
-        public string Model { get; set; } = "gemini-2.5-flash";
+        public string Model { get; set; } = "gemini-2.5-flash-lite";
         
         /// <summary>
         /// The default prompt to send to Gemini for each request.

@@ -18,24 +18,6 @@ namespace MDMPI.App.Api.Controllers.Common
         }
 
         /// <summary>
-        /// Analyzes an uploaded image using Google Gemini AI.
-        /// Accepts a JSON body with base64-encoded image data.
-        /// </summary>
-        [HttpPost("analyze")]
-        public async Task<ActionResult<GeminiAnalyzeImageResponseDto>> AnalyzeImage([FromBody] GeminiAnalyzeImageRequestDto request)
-        {
-            if (string.IsNullOrEmpty(request.ImageBase64))
-                return BadRequest("Image data is required.");
-
-            var result = await _geminiService.AnalyzeImageAsync(request);
-
-            if (!result.Success)
-                return StatusCode(502, result);
-
-            return Ok(result);
-        }
-
-        /// <summary>
         /// Analyzes an uploaded image file using Google Gemini AI.
         /// Accepts multipart/form-data with an image file and optional prompt.
         /// </summary>

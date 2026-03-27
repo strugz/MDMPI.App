@@ -36,6 +36,13 @@ builder.Services.AddScoped<IRequestPullOutReturnPickUpRepository, RequestPullOut
 
 builder.Services.AddScoped<IRequestIdGenerator, RequestIdGenerator>();
 
+// Register item & batch id generators
+builder.Services.AddScoped<IItemIdGenerator, ItemIdGenerator>();
+builder.Services.AddScoped<IBatchIdGenerator, BatchIdGenerator>();
+
+// Register item repository
+builder.Services.AddScoped<IItemRepository, ItemRepository>();
+
 builder.Services.AddScoped<IRequestRemarksRepository, RequestRemarksRepository>();
 
 builder.Services.AddScoped<IImagePathTypeRepository, ImagePathTypeRepository>();

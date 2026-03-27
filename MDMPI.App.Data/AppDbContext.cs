@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.Internal;
 using MDMPI.App.Core.Collection.Entities;
+using MDMPI.App.Core.Common.Entities.Item;
 
 namespace MDMPI.App.Data
 {
@@ -25,6 +26,14 @@ namespace MDMPI.App.Data
 
         public DbSet<CollectionTransactionDetailsModel> a_tblCollectionTransactionDetails { get; set; }
 
+        // New DB sets for standard request items & batches
+        public DbSet<ItemModel> a_tblRequestStandardItem { get; set; }
+        public DbSet<ItemBatchModel> a_tblRequestStandardItemBatch { get; set; }
+
+        // Counter DbSets for item & batch id generators
+        public DbSet<ItemCounterModel> a_tblItemCounters { get; set; }
+        public DbSet<BatchCounterModel> a_tblBatchCounters { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -43,6 +52,20 @@ namespace MDMPI.App.Data
 
             modelBuilder.Entity<CollectionTransactionDetailsModel>()
                 .ToTable("a_tblCollectionTransactionDetails", b => b.UseSqlOutputClause(false));
+
+            // map new entities to database table names (adjust names if your DB uses different table names)
+            modelBuilder.Entity<ItemModel>()
+                .ToTable("a_tblRequestStandardItem");
+
+            modelBuilder.Entity<ItemBatchModel>()
+                .ToTable("a_tblRequestStandardItemBatch");
+
+            // map counter tables used by the generators
+            modelBuilder.Entity<ItemCounterModel>()
+                .ToTable("a_tblItemCounters");
+
+            modelBuilder.Entity<BatchCounterModel>()
+                .ToTable("a_tblBatchCounters");
         }
 
         // call from a repository or controller
