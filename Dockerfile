@@ -17,7 +17,7 @@ COPY . .
 WORKDIR /src/MDMPI.App.Api
 
 # Publish ONLY API project
-RUN dotnet publish MDMPI.App.Api.csproj -c Release -o /app/publish
+RUN dotnet publish MDMPI.App.Api.csproj -c Release -o /app/publish /p:UseAppHost=false
 
 # -------- RUNTIME STAGE --------
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
