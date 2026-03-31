@@ -61,14 +61,14 @@ builder.Services.AddScoped<ICollectionTransactionDetailsRepository, CollectionRe
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll",
-        policy => policy
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader());
-});
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAll",
+//        policy => policy
+//            .AllowAnyOrigin()
+//            .AllowAnyMethod()
+//            .AllowAnyHeader());
+//});
 
 var app = builder.Build();
 
@@ -85,8 +85,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseCors("AllowAll");
+//app.UseCors("AllowAll");
 
-app.Run($"http://0.0.0.0:{port}");
+//app.Run($"http://0.0.0.0:{port}");
 
-/*app.Run();*/
+app.Run();
