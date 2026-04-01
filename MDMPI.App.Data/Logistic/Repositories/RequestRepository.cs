@@ -39,76 +39,51 @@ namespace MDMPI.App.Data.Logistic.Repositories
         /// </summary>
         public async Task<List<RequestStandardHistoryDto>> GetAllRequestHistory(long requestId)
         {
+            if (requestId <= 0)
+            {
+                _logger.LogWarning("Request history lookup skipped due to invalid RequestID: {RequestID}", requestId);
+                return new List<RequestStandardHistoryDto>();
+            }
+
             _logger.LogInformation("Fetching history for RequestID: {RequestID}", requestId);
 
-            var historyEntries = await _db.a_tblRequestStandardDeliveryHistory
+            var history = await _db.a_tblRequestStandardDeliveryHistory
                 .AsNoTracking()
                 .Where(h => h.RequestID == requestId)
                 .OrderByDescending(h => h.ChangedAt)
-                .Select(h => new
+                .ThenByDescending(h => h.HistoryID)
+                .Select(h => new RequestStandardHistoryDto
                 {
-                    h.HistoryID,
-                    h.ActionType,
-                    h.ChangedAt,
-                    h.ChangedBy,
-                    h.RequestID,
-                    h.ItemCategoryID,
-                    h.FormCategoryID,
-                    h.RequestClientID,
-                    h.RequestShippingMethod,
-                    h.RequestDeliveryTerms,
-                    h.RequestDeliveryDate,
-                    h.RequestPreference,
-                    h.RequestStatus,
-                    h.RequestBy,
-                    h.RequestCreatedBy,
-                    h.RequestItemPreparedBy,
-                    h.RequestDeliveredBy,
-                    h.RequestCreatedAt,
-                    h.RequestItemPreparedAt,
-                    h.RequestItemPreparedEndAt,
-                    h.RequestDeliveredAt,
-                    h.RequestDeliveredEndAt,
-                    h.LocationStartedAt,
-                    h.LocationEndAt,
-                    h.MobileID,
-                    h.RequestDriverHelper,
-                    h.Receiver,
-                    h.RequestTripTicketNumber
+                    HistoryID = h.HistoryID,
+                    ActionType = h.ActionType,
+                    ChangedAt = h.ChangedAt,
+                    ChangedBy = h.ChangedBy,
+                    RequestID = h.RequestID,
+                    ItemCategoryID = h.ItemCategoryID,
+                    FormCategoryID = h.FormCategoryID,
+                    RequestClientID = h.RequestClientID,
+                    RequestShippingMethod = h.RequestShippingMethod,
+                    RequestDeliveryTerms = h.RequestDeliveryTerms,
+                    RequestDeliveryDate = h.RequestDeliveryDate,
+                    RequestPreference = h.RequestPreference,
+                    RequestStatus = h.RequestStatus,
+                    RequestBy = h.RequestBy,
+                    RequestCreatedBy = h.RequestCreatedBy,
+                    RequestItemPreparedBy = h.RequestItemPreparedBy,
+                    RequestDeliveredBy = h.RequestDeliveredBy,
+                    RequestCreatedAt = h.RequestCreatedAt,
+                    RequestItemPreparedAt = h.RequestItemPreparedAt,
+                    RequestItemPreparedEndAt = h.RequestItemPreparedEndAt,
+                    RequestDeliveredAt = h.RequestDeliveredAt,
+                    RequestDeliveredEndAt = h.RequestDeliveredEndAt,
+                    LocationStartedAt = h.LocationStartedAt,
+                    LocationEndAt = h.LocationEndAt,
+                    MobileID = h.MobileID,
+                    RequestDriverHelper = h.RequestDriverHelper,
+                    Receiver = h.Receiver,
+                    RequestTripTicketNumber = h.RequestTripTicketNumber
                 })
                 .ToListAsync();
-
-            var history = historyEntries.Select(h => new RequestStandardHistoryDto
-            {
-                HistoryID = h.HistoryID,
-                ActionType = h.ActionType,
-                ChangedAt = h.ChangedAt,
-                ChangedBy = h.ChangedBy,
-                RequestID = h.RequestID.HasValue ? (int?)Convert.ToInt32(h.RequestID.Value) : null,
-                ItemCategoryID = h.ItemCategoryID,
-                FormCategoryID = h.FormCategoryID,
-                RequestClientID = h.RequestClientID,
-                RequestShippingMethod = h.RequestShippingMethod,
-                RequestDeliveryTerms = h.RequestDeliveryTerms,
-                RequestDeliveryDate = h.RequestDeliveryDate,
-                RequestPreference = h.RequestPreference,
-                RequestStatus = h.RequestStatus,
-                RequestBy = h.RequestBy,
-                RequestCreatedBy = h.RequestCreatedBy,
-                RequestItemPreparedBy = h.RequestItemPreparedBy,
-                RequestDeliveredBy = h.RequestDeliveredBy,
-                RequestCreatedAt = h.RequestCreatedAt,
-                RequestItemPreparedAt = h.RequestItemPreparedAt,
-                RequestItemPreparedEndAt = h.RequestItemPreparedEndAt,
-                RequestDeliveredAt = h.RequestDeliveredAt,
-                RequestDeliveredEndAt = h.RequestDeliveredEndAt,
-                LocationStartedAt = h.LocationStartedAt,
-                LocationEndAt = h.LocationEndAt,
-                MobileID = h.MobileID,
-                RequestDriverHelper = h.RequestDriverHelper,
-                Receiver = h.Receiver,
-                RequestTripTicketNumber = h.RequestTripTicketNumber
-            }).ToList();
 
             _logger.LogInformation("Fetched {Count} history records for RequestID: {RequestID}", history.Count, requestId);
             return history;
