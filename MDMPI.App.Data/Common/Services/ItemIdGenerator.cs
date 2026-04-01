@@ -5,6 +5,7 @@ using MDMPI.App.Core.Common.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MDMPI.App.Core.Common.Interfaces;
+using MDMPI.App.Core.Common.Entities.Item;
 
 namespace MDMPI.App.Data.Common.Services
 {

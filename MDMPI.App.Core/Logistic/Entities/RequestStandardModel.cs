@@ -33,6 +33,7 @@ namespace MDMPI.App.Core.Logistic.Entities
         public string? RequestDriverHelper { get; set; }
         public string? Receiver { get; set; }
         public string? RequestTripTicketNumber { get; set; }
+        public string? UpdatedBy { get; set; }
 
         /// <summary>
         /// Enriched to support multiple document references

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MDMPI.App.Core.Common.Entities
+namespace MDMPI.App.Core.Common.Entities.Item
 {
     [Table("a_tblItemCounters")]
     public class ItemCounterModel

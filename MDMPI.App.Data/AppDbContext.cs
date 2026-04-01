@@ -34,6 +34,9 @@ namespace MDMPI.App.Data
         public DbSet<ItemCounterModel> a_tblItemCounters { get; set; }
         public DbSet<BatchCounterModel> a_tblBatchCounters { get; set; }
 
+        // History table for standard requests
+        public DbSet<RequestStandardHistoryModel> a_tblRequestStandardDeliveryHistory { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -42,16 +45,19 @@ namespace MDMPI.App.Data
                 .ToTable("a_tblRequestStandardDelivery", b => b.UseSqlOutputClause(false));
 
             modelBuilder.Entity<RequestPullOutReturnPickUpModel>()
-                .ToTable("a_tblRequestPullOutReturnPickUp");
+                .ToTable("a_tblRequestPullOutReturnPickUp", b => b.UseSqlOutputClause(false));
 
             modelBuilder.Entity<RequestPickUpModel>()
-                .ToTable("a_tblRequestPickUpMDMPI");
+                .ToTable("a_tblRequestPickUpMDMPI", b => b.UseSqlOutputClause(false));
 
             modelBuilder.Entity<RequestAirSeaModel>()
-                .ToTable("a_tblRequestAirSea");
+                .ToTable("a_tblRequestAirSea", b => b.UseSqlOutputClause(false));
 
             modelBuilder.Entity<CollectionTransactionDetailsModel>()
                 .ToTable("a_tblCollectionTransactionDetails", b => b.UseSqlOutputClause(false));
+
+            modelBuilder.Entity<RequestStandardHistoryModel>()
+                .ToTable("a_tblRequestStandardDeliveryHistory", b => b.UseSqlOutputClause(false));
 
             // map new entities to database table names (adjust names if your DB uses different table names)
             modelBuilder.Entity<ItemModel>()

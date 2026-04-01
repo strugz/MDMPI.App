@@ -142,6 +142,22 @@ namespace MDMPI.App.Api.Controllers.Logistic
             return File(imageBytes, "image/png");
         }
 
+        [HttpGet("history/{requestid}")]
+        public async Task<ActionResult> GetRequestHistory(long requestid)
+        {
+            if (requestid <= 0)
+            {
+                return BadRequest("RequestID is required and must be greater than zero.");
+            }
+
+            var result = await _requestRepository.GetAllRequestHistory(requestid);
+            if (result == null || result.Count == 0)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
         [HttpPost("upload-image")]
         [Consumes("multipart/form-data")]
         [ProducesResponseType(StatusCodes.Status200OK)]

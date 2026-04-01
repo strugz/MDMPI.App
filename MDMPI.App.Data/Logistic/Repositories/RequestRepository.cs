@@ -35,6 +35,86 @@ namespace MDMPI.App.Data.Logistic.Repositories
         }
 
         /// <summary>
+        /// Gets history records for a specific request.
+        /// </summary>
+        public async Task<List<RequestStandardHistoryDto>> GetAllRequestHistory(long requestId)
+        {
+            _logger.LogInformation("Fetching history for RequestID: {RequestID}", requestId);
+
+            var historyEntries = await _db.a_tblRequestStandardDeliveryHistory
+                .AsNoTracking()
+                .Where(h => h.RequestID == requestId)
+                .OrderByDescending(h => h.ChangedAt)
+                .Select(h => new
+                {
+                    h.HistoryID,
+                    h.ActionType,
+                    h.ChangedAt,
+                    h.ChangedBy,
+                    h.RequestID,
+                    h.ItemCategoryID,
+                    h.FormCategoryID,
+                    h.RequestClientID,
+                    h.RequestShippingMethod,
+                    h.RequestDeliveryTerms,
+                    h.RequestDeliveryDate,
+                    h.RequestPreference,
+                    h.RequestStatus,
+                    h.RequestBy,
+                    h.RequestCreatedBy,
+                    h.RequestItemPreparedBy,
+                    h.RequestDeliveredBy,
+                    h.RequestCreatedAt,
+                    h.RequestItemPreparedAt,
+                    h.RequestItemPreparedEndAt,
+                    h.RequestDeliveredAt,
+                    h.RequestDeliveredEndAt,
+                    h.LocationStartedAt,
+                    h.LocationEndAt,
+                    h.MobileID,
+                    h.RequestDriverHelper,
+                    h.Receiver,
+                    h.RequestTripTicketNumber
+                })
+                .ToListAsync();
+
+            var history = historyEntries.Select(h => new RequestStandardHistoryDto
+            {
+                HistoryID = h.HistoryID,
+                ActionType = h.ActionType,
+                ChangedAt = h.ChangedAt,
+                ChangedBy = h.ChangedBy,
+                RequestID = h.RequestID.HasValue ? (int?)Convert.ToInt32(h.RequestID.Value) : null,
+                ItemCategoryID = h.ItemCategoryID,
+                FormCategoryID = h.FormCategoryID,
+                RequestClientID = h.RequestClientID,
+                RequestShippingMethod = h.RequestShippingMethod,
+                RequestDeliveryTerms = h.RequestDeliveryTerms,
+                RequestDeliveryDate = h.RequestDeliveryDate,
+                RequestPreference = h.RequestPreference,
+                RequestStatus = h.RequestStatus,
+                RequestBy = h.RequestBy,
+                RequestCreatedBy = h.RequestCreatedBy,
+                RequestItemPreparedBy = h.RequestItemPreparedBy,
+                RequestDeliveredBy = h.RequestDeliveredBy,
+                RequestCreatedAt = h.RequestCreatedAt,
+                RequestItemPreparedAt = h.RequestItemPreparedAt,
+                RequestItemPreparedEndAt = h.RequestItemPreparedEndAt,
+                RequestDeliveredAt = h.RequestDeliveredAt,
+                RequestDeliveredEndAt = h.RequestDeliveredEndAt,
+                LocationStartedAt = h.LocationStartedAt,
+                LocationEndAt = h.LocationEndAt,
+                MobileID = h.MobileID,
+                RequestDriverHelper = h.RequestDriverHelper,
+                Receiver = h.Receiver,
+                RequestTripTicketNumber = h.RequestTripTicketNumber
+            }).ToList();
+
+            _logger.LogInformation("Fetched {Count} history records for RequestID: {RequestID}", history.Count, requestId);
+            return history;
+        }
+
+        /// <summary>
         /// Gets all requests as DTOs with paging, sorting, and date filtering.
         /// </summary>
         public async Task<List<RequestStandardDto>> GetAllRequestsAsync(RequestQueryDto query)
@@ -253,5 +333,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 return false;
             }
         }
+
+
     }
 }

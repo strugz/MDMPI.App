@@ -33,6 +33,7 @@ namespace MDMPI.App.Core.Logistic.Entities
         public string? CreatedBy { get; set; }
         public string? RequestedBy { get; set; }
         public long? MobileID { get; set; }
+        public string? UpdatedBy { get; set; }
 
         [ForeignKey("RequestID")]
         public List<DocumentReferenceModel>? DocumentReference { get; set; }

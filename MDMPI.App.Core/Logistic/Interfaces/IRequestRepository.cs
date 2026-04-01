@@ -8,5 +8,6 @@ namespace MDMPI.App.Core.Logistic.Interfaces
         Task<List<RequestStandardDto>> GetAllRequestsAsync(RequestQueryDto query);
         Task<RequestStandardDto?> InsertRequest(InsertRequestDto dto);
         Task<bool> UpdateRequest(UpdateRequestDto dto);
+        Task<List<RequestStandardHistoryDto>> GetAllRequestHistory(long requestId);
     }
 }

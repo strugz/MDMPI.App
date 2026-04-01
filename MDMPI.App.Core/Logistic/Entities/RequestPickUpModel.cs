@@ -42,6 +42,7 @@ namespace MDMPI.App.Core.Logistic.Entities
 
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public string? UpdatedBy { get; set; }
 
         // Navigation properties
         [ForeignKey("RequestID")]
