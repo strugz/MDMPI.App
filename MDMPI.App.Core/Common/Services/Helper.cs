@@ -118,6 +118,7 @@ namespace MDMPI.App.Core.Common.Services
                 RequestBy = dto.RequestBy,
                 RequestCreatedBy = dto.RequestCreatedBy,
                 RequestCreatedAt = DateTime.UtcNow,
+                UpdatedBy = dto.UpdatedBy
             };
         }
 

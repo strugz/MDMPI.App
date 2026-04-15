@@ -45,5 +45,7 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestStandard
 
         [JsonPropertyName("items")]
         public List<InsertItemDto>? Items { get; set; }
+        [JsonPropertyName("UpdatedBy")]
+        public string? UpdatedBy { get; set; }
     }
 }

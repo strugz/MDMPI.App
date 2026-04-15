@@ -24,5 +24,6 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestStandard
         public string? RequestDeliveredEndAt { get; set; }
         public string? LocationStartedAt { get; set; }
         public string? LocationEndAt { get; set; }
+        public string? UpdatedBy { get; set; }
     }
 }

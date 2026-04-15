@@ -37,6 +37,7 @@ builder.Services.AddScoped<IMobileRepository, MobileRepository>();
 builder.Services.AddScoped<IRequestPullOutReturnPickUpRepository, RequestPullOutReturnPickUpRepository>();
 
 builder.Services.AddScoped<IRequestIdGenerator, RequestIdGenerator>();
+builder.Services.AddScoped<IBackloadIdGenerator, BackloadIdGenerator>();
 
 // Register item & batch id generators
 builder.Services.AddScoped<IItemIdGenerator, ItemIdGenerator>();
@@ -52,6 +53,8 @@ builder.Services.AddScoped<IImagePathTypeRepository, ImagePathTypeRepository>();
 builder.Services.AddScoped<IRequestPickUpRepository, RequestPickUpRepository>();
 
 builder.Services.AddScoped<IRequestAirSeaRepository, RequestAirSeaRepository>();
+
+builder.Services.AddScoped<IRequestBackloadRepository, RequestBackloadRepository>();
 
 // Register application for Collection Module
 

@@ -17,8 +17,6 @@ namespace MDMPI.App.Data.Logistic.Repositories
         private readonly AppDbContext _db;
         private readonly ILogger<RequestRepository> _logger;
         private readonly IRequestIdGenerator _requestIdGenerator;
-        private readonly IItemIdGenerator _itemIdGenerator;
-        private readonly IBatchIdGenerator _batchIdGenerator;
 
         public RequestRepository(
             AppDbContext db,
@@ -30,8 +28,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
             _db = db;
             _logger = logger;
             _requestIdGenerator = requestIdGenerator;
-            _itemIdGenerator = itemIdGenerator;
-            _batchIdGenerator = batchIdGenerator;
+
         }
 
         /// <summary>
@@ -249,7 +246,8 @@ namespace MDMPI.App.Data.Logistic.Repositories
                             ACCMWS = r.Client.ACCMWS,
                             ACCSTS = r.Client.ACCSTS,
                             ACCOWN = r.Client.ACCOWN
-                        }
+                        },
+                       UpdatedBy = r.UpdatedBy
                     })
                     .FirstOrDefaultAsync();
 
@@ -295,6 +293,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 Helper.UpdateIfNotNull(v => request.RequestDeliveredEndAt = DateTime.TryParse(v, out var dt) ? dt : (DateTime?)null, dto.RequestDeliveredEndAt);
                 Helper.UpdateIfNotNull(v => request.LocationStartedAt = v, dto.LocationStartedAt);
                 Helper.UpdateIfNotNull(v => request.LocationEndAt = v, dto.LocationEndAt);
+                Helper.UpdateIfNotNull(v => request.UpdatedBy = v, dto.UpdatedBy);
 
                 await _db.SaveChangesAsync();
                 await transaction.CommitAsync();

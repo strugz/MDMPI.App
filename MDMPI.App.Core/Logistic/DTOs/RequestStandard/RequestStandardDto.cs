@@ -61,6 +61,8 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestStandard
         public string? LocationStartedAt { get; set; }
         [JsonPropertyName("LocationEndAt")]
         public string? LocationEndAt { get; set; }
+        [JsonPropertyName("UpdatedBy")]
+        public string? UpdatedBy  { get; set; }
 
         // Enriched
         [JsonPropertyName("Client")]

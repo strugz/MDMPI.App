@@ -19,7 +19,9 @@ namespace MDMPI.App.Data
         public DbSet<ACCMSTModel> ACCMST_ { get; set; }
         public DbSet<MobileModel> a_tblMobile { get; set; }
         public DbSet<RequestPullOutReturnPickUpModel> a_tblRequestPullOutReturnPickUp { get; set; }
+        public DbSet<RequestBackloadModel> a_tblRequestBackload { get; set; }
         public DbSet<RequestCounterModel> a_tblRequestCounters { get; set; }
+        public DbSet<BackloadCounterModel> a_tblBackloadCounters { get; set; }
         public DbSet<RequestPickUpModel> a_tblRequestPickUpMDMPI { get; set; }
         public DbSet<RequestAirSeaModel> a_tblRequestAirSea { get; set; }
         public DbSet<CategoryModel> a_tblCategory { get; set; }
@@ -46,6 +48,12 @@ namespace MDMPI.App.Data
 
             modelBuilder.Entity<RequestPullOutReturnPickUpModel>()
                 .ToTable("a_tblRequestPullOutReturnPickUp", b => b.UseSqlOutputClause(false));
+
+            modelBuilder.Entity<RequestBackloadModel>()
+                .ToTable("a_tblRequestBackload", b => b.UseSqlOutputClause(false));
+
+            modelBuilder.Entity<BackloadCounterModel>()
+                .ToTable("a_tblBackloadCounters");
 
             modelBuilder.Entity<RequestPickUpModel>()
                 .ToTable("a_tblRequestPickUpMDMPI", b => b.UseSqlOutputClause(false));
