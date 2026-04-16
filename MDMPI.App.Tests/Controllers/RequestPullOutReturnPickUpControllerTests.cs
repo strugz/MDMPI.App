@@ -17,16 +17,24 @@ namespace MDMPI.App.Tests.Controllers
 {
     public class RequestPullOutReturnPickUpControllerTests
     {
+        private RequestPullOutReturnPickUpController CreateController(
+            Mock<IRequestPullOutReturnPickUpService>? mockService = null,
+            Mock<IRemarksService>? mockRemarks = null,
+            Mock<IImageService>? mockImage = null)
+        {
+            return new RequestPullOutReturnPickUpController(
+                (mockService ?? new Mock<IRequestPullOutReturnPickUpService>()).Object,
+                (mockRemarks ?? new Mock<IRemarksService>()).Object,
+                (mockImage ?? new Mock<IImageService>()).Object);
+        }
+
         [Fact]
         public async Task GetRequestAll_ReturnsOk_WhenRepositoryReturnsData()
         {
-            var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
-            mockRepo.Setup(r => r.GetAllAsync(It.IsAny<RequestQueryDto>())).ReturnsAsync(new List<RequestPullOutReturnPickUpDto> { new RequestPullOutReturnPickUpDto() });
-            var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockImage = new Mock<IImagePathTypeRepository>();
+            var mockService = new Mock<IRequestPullOutReturnPickUpService>();
+            mockService.Setup(r => r.GetAllAsync(It.IsAny<RequestQueryDto>())).ReturnsAsync(new List<RequestPullOutReturnPickUpDto> { new RequestPullOutReturnPickUpDto() });
 
-            var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
+            var controller = CreateController(mockService: mockService);
 
             var result = await controller.GetRequestAll();
 
@@ -36,13 +44,10 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async Task Insert_ReturnsBadRequest_WhenInsertFails()
         {
-            var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
-            mockRepo.Setup(r => r.InsertAsync(It.IsAny<InsertRequestPullOutReturnPickUpDto>())).ReturnsAsync((RequestPullOutReturnPickUpDto?)null);
-            var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockImage = new Mock<IImagePathTypeRepository>();
+            var mockService = new Mock<IRequestPullOutReturnPickUpService>();
+            mockService.Setup(r => r.InsertAsync(It.IsAny<InsertRequestPullOutReturnPickUpDto>())).ReturnsAsync((RequestPullOutReturnPickUpDto?)null);
 
-            var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
+            var controller = CreateController(mockService: mockService);
 
             var result = await controller.Insert(new InsertRequestPullOutReturnPickUpDto());
 
@@ -52,12 +57,7 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async Task Update_ReturnsBadRequest_WhenRequestIdInvalid()
         {
-            var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
-            var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockImage = new Mock<IImagePathTypeRepository>();
-
-            var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
+            var controller = CreateController();
 
             var dto = new UpdateRequestPullOutReturnPickUpDto { RequestID = 0 };
 
@@ -69,13 +69,10 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async Task Update_ReturnsNotFound_WhenUpdateFails()
         {
-            var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
-            mockRepo.Setup(r => r.UpdateAsync(It.IsAny<UpdateRequestPullOutReturnPickUpDto>())).ReturnsAsync(false);
-            var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockImage = new Mock<IImagePathTypeRepository>();
+            var mockService = new Mock<IRequestPullOutReturnPickUpService>();
+            mockService.Setup(r => r.UpdateAsync(It.IsAny<UpdateRequestPullOutReturnPickUpDto>())).ReturnsAsync(false);
 
-            var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
+            var controller = CreateController(mockService: mockService);
 
             var dto = new UpdateRequestPullOutReturnPickUpDto { RequestID = 123 };
 
@@ -87,13 +84,10 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async Task GetCancelledRemarks_ReturnsOk_WhenRemarksExist()
         {
-            var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
-            var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
+            var mockRemarks = new Mock<IRemarksService>();
             mockRemarks.Setup(r => r.GetAllRemarks(It.IsAny<long>())).ReturnsAsync(new RemarksDto { Remarks = "a" });
-            var mockImage = new Mock<IImagePathTypeRepository>();
 
-            var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
+            var controller = CreateController(mockRemarks: mockRemarks);
 
             var result = await controller.GetCancelledRemarks(1);
 
@@ -103,13 +97,10 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async Task GetCancelledRemarks_ReturnsNotFound_WhenRemarksNull()
         {
-            var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
-            var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
+            var mockRemarks = new Mock<IRemarksService>();
             mockRemarks.Setup(r => r.GetAllRemarks(It.IsAny<long>())).ReturnsAsync((RemarksDto?)null);
-            var mockImage = new Mock<IImagePathTypeRepository>();
 
-            var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
+            var controller = CreateController(mockRemarks: mockRemarks);
 
             var result = await controller.GetCancelledRemarks(1);
 
@@ -119,12 +110,7 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async Task CancelRequest_ReturnsBadRequest_WhenIdInvalid()
         {
-            var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
-            var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockImage = new Mock<IImagePathTypeRepository>();
-
-            var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
+            var controller = CreateController();
 
             var result = await controller.CancelRequest(0, "JCA", "x");
 
@@ -134,13 +120,10 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async Task CancelRequest_ReturnsNotFound_WhenInsertRemarkReturnsFalse()
         {
-            var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
-            var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            mockRemarks.Setup(r => r.InsertRemarkAndCancelRequestForPullOutReturnPickUp(It.IsAny<long>(), "JCA", It.IsAny<string>())).ReturnsAsync(false);
-            var mockImage = new Mock<IImagePathTypeRepository>();
+            var mockRemarks = new Mock<IRemarksService>();
+            mockRemarks.Setup(r => r.CancelPullOutReturnPickUpAsync(It.IsAny<long>(), "JCA", It.IsAny<string>())).ReturnsAsync(false);
 
-            var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
+            var controller = CreateController(mockRemarks: mockRemarks);
 
             var result = await controller.CancelRequest(1, "JCA", "x");
 
@@ -150,13 +133,10 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async Task CancelRequest_ReturnsOk_WhenInsertRemarkSucceeds()
         {
-            var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
-            var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            mockRemarks.Setup(r => r.InsertRemarkAndCancelRequestForPullOutReturnPickUp(It.IsAny<long>(), "JCA", It.IsAny<string>())).ReturnsAsync(true);
-            var mockImage = new Mock<IImagePathTypeRepository>();
+            var mockRemarks = new Mock<IRemarksService>();
+            mockRemarks.Setup(r => r.CancelPullOutReturnPickUpAsync(It.IsAny<long>(), "JCA", It.IsAny<string>())).ReturnsAsync(true);
 
-            var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
+            var controller = CreateController(mockRemarks: mockRemarks);
 
             var result = await controller.CancelRequest(1, "JCA", "x");
 
@@ -168,12 +148,7 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async Task GetRequestImage_ReturnsBadRequest_WhenArgsMissing()
         {
-            var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
-            var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockImage = new Mock<IImagePathTypeRepository>();
-
-            var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
+            var controller = CreateController();
 
             var result = await controller.GetRequestImage(null!, null!);
 
@@ -183,13 +158,10 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async Task GetRequestImage_ReturnsNotFound_WhenImageNull()
         {
-            var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
-            var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockImage = new Mock<IImagePathTypeRepository>();
-            mockImage.Setup(m => m.GetRequestImage(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((byte[]?)null);
+            var mockImage = new Mock<IImageService>();
+            mockImage.Setup(m => m.GetRequestImageAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((byte[]?)null);
 
-            var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
+            var controller = CreateController(mockImage: mockImage);
 
             var result = await controller.GetRequestImage("1", "t");
 
@@ -199,14 +171,11 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async Task GetRequestImage_ReturnsFile_WhenImageExists()
         {
-            var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
-            var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockImage = new Mock<IImagePathTypeRepository>();
+            var mockImage = new Mock<IImageService>();
             var bytes = new byte[] { 1, 2, 3 };
-            mockImage.Setup(m => m.GetRequestImage(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(bytes);
+            mockImage.Setup(m => m.GetRequestImageAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(bytes);
 
-            var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
+            var controller = CreateController(mockImage: mockImage);
 
             var result = await controller.GetRequestImage("1", "t");
 
@@ -216,12 +185,7 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async Task UploadImage_ReturnsValidationProblem_WhenModelStateInvalid()
         {
-            var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
-            var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockImage = new Mock<IImagePathTypeRepository>();
-
-            var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
+            var controller = CreateController();
             controller.ModelState.AddModelError("Image", "required");
 
             var dto = new UploadImageRequestDto();
@@ -235,12 +199,7 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async Task UploadImage_ReturnsBadRequest_WhenNoImage()
         {
-            var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
-            var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockImage = new Mock<IImagePathTypeRepository>();
-
-            var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
+            var controller = CreateController();
 
             var dto = new UploadImageRequestDto { Image = null, RequestID = "1", Type = "Proof" };
 
@@ -252,10 +211,7 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async Task UploadImage_ReturnsOk_WhenUploadSucceeds()
         {
-            var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
-            var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockImage = new Mock<IImagePathTypeRepository>();
+            var mockImage = new Mock<IImageService>();
 
             var content = Encoding.UTF8.GetBytes("abc");
             var stream = new MemoryStream(content);
@@ -263,7 +219,7 @@ namespace MDMPI.App.Tests.Controllers
 
             mockImage.Setup(m => m.UploadImageAsync(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync("/path");
 
-            var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
+            var controller = CreateController(mockImage: mockImage);
 
             var dto = new UploadImageRequestDto { Image = file, RequestID = "1", Type = "Proof" };
 
@@ -275,10 +231,7 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async Task UploadImage_ReturnsServerError_WhenUploadFails()
         {
-            var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
-            var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockImage = new Mock<IImagePathTypeRepository>();
+            var mockImage = new Mock<IImageService>();
 
             var content = Encoding.UTF8.GetBytes("abc");
             var stream = new MemoryStream(content);
@@ -286,7 +239,7 @@ namespace MDMPI.App.Tests.Controllers
 
             mockImage.Setup(m => m.UploadImageAsync(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((string?)null);
 
-            var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
+            var controller = CreateController(mockImage: mockImage);
 
             var dto = new UploadImageRequestDto { Image = file, RequestID = "1", Type = "Proof" };
 

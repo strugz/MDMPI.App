@@ -11,17 +11,17 @@ namespace MDMPI.App.Api.Controllers.Logistic
     [ApiController]
     public class RequestAirSeaController : ControllerBase
     {
-        private readonly IRequestAirSeaRepository _repository;
-        private readonly IImagePathTypeRepository _imagePathTypeRepository;
-        private readonly IRequestRemarksRepository _requestRemarksRepository;
-        private readonly IMobileRepository _mobileRepository;
+        private readonly IRequestAirSeaService _airSeaService;
+        private readonly IImageService _imageService;
+        private readonly IRemarksService _remarksService;
+        private readonly IMobileService _mobileService;
 
-        public RequestAirSeaController(IRequestAirSeaRepository repository, IImagePathTypeRepository imagePathTypeRepository, IRequestRemarksRepository requestRemarksRepository, IMobileRepository mobileRepository)
+        public RequestAirSeaController(IRequestAirSeaService airSeaService, IImageService imageService, IRemarksService remarksService, IMobileService mobileService)
         {
-            _repository = repository;
-            _imagePathTypeRepository = imagePathTypeRepository;
-            _requestRemarksRepository = requestRemarksRepository;
-            _mobileRepository = mobileRepository;
+            _airSeaService = airSeaService;
+            _imageService = imageService;
+            _remarksService = remarksService;
+            _mobileService = mobileService;
         }
 
         [HttpGet]
@@ -39,7 +39,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
                 PageSize = pageSize
             };
 
-            var result = await _repository.GetAllAsync(query);
+            var result = await _airSeaService.GetAllAsync(query);
             if (result == null)
             {
                 return NotFound();
@@ -55,7 +55,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
                 return ValidationProblem(ModelState);
             }
 
-            var inserted = await _repository.InsertAsync(dto);
+            var inserted = await _airSeaService.InsertAsync(dto);
             if (inserted is null)
             {
                 return BadRequest("Insert failed.");
@@ -72,7 +72,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
                 return BadRequest("RequestID is required.");
             }
 
-            var success = await _repository.UpdateAsync(dto);
+            var success = await _airSeaService.UpdateAsync(dto);
             if (!success)
             {
                 return NotFound("Request not found or update failed.");
@@ -84,7 +84,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
         [HttpGet("cancel/{requestid}")]
         public async Task<ActionResult> GetCancelledRemarks(long requestid)
         {
-            var result = await _requestRemarksRepository.GetAllRemarks(requestid);
+            var result = await _remarksService.GetAllRemarks(requestid);
             if (result == null)
             {
                 return NotFound();
@@ -100,7 +100,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
                 return BadRequest("RequestID is required and must be greater than zero.");
             }
 
-            var result = await _requestRemarksRepository.InsertRemarkAndCancelRequestForAirSea(requestid, user, remarks);
+            var result = await _remarksService.CancelAirSeaAsync(requestid, user, remarks);
             if (!result)
             {
                 return NotFound("Request not found or cancel failed.");
@@ -112,7 +112,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
         [HttpGet("mobile")]
         public async Task<ActionResult> GetMobile()
         {
-            var result = await _mobileRepository.GetAllMobilesAsync();
+            var result = await _mobileService.GetAllMobilesAsync();
             if (result == null)
             {
                 return NotFound();
@@ -127,7 +127,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
             {
                 return BadRequest("RequestID and type are required.");
             }
-            var imageBytes = await _imagePathTypeRepository.GetRequestImage(requestid, type);
+            var imageBytes = await _imageService.GetRequestImageAsync(requestid, type);
             if (imageBytes == null)
             {
                 return NotFound();
@@ -160,7 +160,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
                 return BadRequest("Type must be 'Signature' or 'Proof'.");
             }
 
-            var filePath = await _imagePathTypeRepository.UploadImageAsync(imageBytes, dto.RequestID!, dto.Type!);
+            var filePath = await _imageService.UploadImageAsync(imageBytes, dto.RequestID!, dto.Type!);
             if (filePath == null)
             {
                 return StatusCode(500, "Failed to upload image.");

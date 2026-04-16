@@ -16,13 +16,12 @@ namespace MDMPI.App.Tests
         [Fact]
         public async Task RequestController_GetRequestAll_ReturnsOk_WhenRepositoryReturnsData()
         {
-            var mockRepo = new Mock<IRequestRepository>();
-            mockRepo.Setup(r => r.GetAllRequestsAsync(It.IsAny<RequestQueryDto>())).ReturnsAsync(new List<RequestStandardDto> { new RequestStandardDto() });
-            var mockMobile = new Mock<IMobileRepository>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockImage = new Mock<IImagePathTypeRepository>();
-            var mockItem = new Mock<IItemRepository>();
-            var controller = new RequestController(mockRepo.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object, mockItem.Object);
+            var mockService = new Mock<IRequestService>();
+            mockService.Setup(r => r.GetAllRequestsAsync(It.IsAny<RequestQueryDto>())).ReturnsAsync(new List<RequestStandardDto> { new RequestStandardDto() });
+            var mockMobile = new Mock<IMobileService>();
+            var mockRemarks = new Mock<IRemarksService>();
+            var mockImage = new Mock<IImageService>();
+            var controller = new RequestController(mockService.Object, mockMobile.Object, mockRemarks.Object, mockImage.Object);
 
             var result = await controller.GetRequestAll();
 
@@ -32,13 +31,13 @@ namespace MDMPI.App.Tests
         [Fact]
         public async Task RequestPickUpController_GetAll_ReturnsNotFound_WhenRepoReturnsNull()
         {
-            var mockRepo = new Mock<IRequestPickUpRepository>();
-            mockRepo.Setup(r => r.GetAllAsync(It.IsAny<RequestQueryDto>())).ReturnsAsync((List<RequestPickUpDto>?)null);
-            var mockImage = new Mock<IImagePathTypeRepository>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockMobile = new Mock<IMobileRepository>();
+            var mockService = new Mock<IRequestPickUpService>();
+            mockService.Setup(r => r.GetAllAsync(It.IsAny<RequestQueryDto>())).ReturnsAsync((List<RequestPickUpDto>?)null);
+            var mockImage = new Mock<IImageService>();
+            var mockRemarks = new Mock<IRemarksService>();
+            var mockMobile = new Mock<IMobileService>();
 
-            var controller = new RequestPickUpController(mockRepo.Object, mockImage.Object, mockRemarks.Object, mockMobile.Object);
+            var controller = new RequestPickUpController(mockService.Object, mockImage.Object, mockRemarks.Object, mockMobile.Object);
 
             var result = await controller.GetAll();
 

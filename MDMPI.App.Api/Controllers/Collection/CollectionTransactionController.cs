@@ -1,7 +1,6 @@
 ﻿using MDMPI.App.Api.Models;
 using MDMPI.App.Core.Collection.Dtos;
 using MDMPI.App.Core.Collection.Interfaces;
-using MDMPI.App.Core.Logistic.Interfaces;
 using MDMPI.App.Core.Common.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,12 +10,12 @@ namespace MDMPI.App.Api.Controllers.Collection
     [ApiController]
     public class CollectionTransactionController : ControllerBase
     {
-        private readonly ICollectionTransactionDetailsRepository _repo;
-        private readonly IImagePathTypeRepository _imagePathTypeRepository;
-        public CollectionTransactionController(ICollectionTransactionDetailsRepository repo, IImagePathTypeRepository imagePathTypeRepository)
+        private readonly ICollectionTransactionService _service;
+        private readonly IImageService _imageService;
+        public CollectionTransactionController(ICollectionTransactionService service, IImageService imageService)
         {
-            _repo = repo;
-            _imagePathTypeRepository = imagePathTypeRepository;
+            _service = service;
+            _imageService = imageService;
         }
 
         /// <summary>
@@ -25,7 +24,7 @@ namespace MDMPI.App.Api.Controllers.Collection
         [HttpGet]
         public async Task<ActionResult<List<CollectionTransactionDetailsDto>>> GetAll()
         {
-            var items = await _repo.GetAllAsync();
+            var items = await _service.GetAllAsync();
             return Ok(items);
         }
 
@@ -35,7 +34,7 @@ namespace MDMPI.App.Api.Controllers.Collection
         [HttpGet("{id}", Name = "GetById")]
         public async Task<ActionResult<CollectionTransactionDetailsDto>> GetById(long id)
         {
-            var item = await _repo.GetByIdAsync(id);
+            var item = await _service.GetByIdAsync(id);
             if (item == null) return NotFound();
             return Ok(item);
         }
@@ -48,7 +47,7 @@ namespace MDMPI.App.Api.Controllers.Collection
         {
             if (dto == null) return BadRequest();
 
-            var created = await _repo.InsertAsync(dto);
+            var created = await _service.CreateAsync(dto);
             if (created == null) return BadRequest("Unable to create record");
 
             return CreatedAtRoute("GetById", new { id = created.ID }, created);
@@ -62,7 +61,7 @@ namespace MDMPI.App.Api.Controllers.Collection
         {
             if (dto == null) return BadRequest();
 
-            var ok = await _repo.UpdateAsync(dto);
+            var ok = await _service.UpdateAsync(dto);
             if (ok == null) return NotFound();
 
             return NoContent();
@@ -75,7 +74,7 @@ namespace MDMPI.App.Api.Controllers.Collection
             {
                 return BadRequest("RequestID and Type are required.");
             }
-            var result = await _imagePathTypeRepository.GetRequestImage(requestID, type);
+            var result = await _imageService.GetRequestImageAsync(requestID, type);
             if (result == null)
             {
                 return NotFound("Image not found.");
@@ -106,7 +105,7 @@ namespace MDMPI.App.Api.Controllers.Collection
             var imageBytes = ms.ToArray();
 
 
-            var result = await _imagePathTypeRepository.UploadImageAsync(imageBytes, dto.RequestID!, dto.Type!);
+            var result = await _imageService.UploadImageAsync(imageBytes, dto.RequestID!, dto.Type!);
 
             if (result == null)
             {

@@ -14,24 +14,21 @@ namespace MDMPI.App.Api.Controllers.Logistic
     [ApiController]
     public class RequestController : ControllerBase
     {
-        private readonly IRequestRepository _requestRepository;
-        private readonly IMobileRepository _mobileRepository;
-        private readonly IRequestRemarksRepository _requestRemarksRepository;
-        private readonly IImagePathTypeRepository _imagePathTypeRepository;
-        private readonly IItemRepository _itemRepository;
+        private readonly IRequestService _requestService;
+        private readonly IMobileService _mobileService;
+        private readonly IRemarksService _remarksService;
+        private readonly IImageService _imageService;
 
         public RequestController(
-            IRequestRepository requestRepository,
-            IMobileRepository mobileRepository,
-            IRequestRemarksRepository requestRemarksRepository,
-            IImagePathTypeRepository imagePathTypeRepository,
-            IItemRepository itemRepository)
+            IRequestService requestService,
+            IMobileService mobileService,
+            IRemarksService remarksService,
+            IImageService imageService)
         {
-            _requestRepository = requestRepository;
-            _mobileRepository = mobileRepository;
-            _requestRemarksRepository = requestRemarksRepository;
-            _imagePathTypeRepository = imagePathTypeRepository;
-            _itemRepository = itemRepository;
+            _requestService = requestService;
+            _mobileService = mobileService;
+            _remarksService = remarksService;
+            _imageService = imageService;
         }
 
         [HttpGet]
@@ -45,7 +42,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
                 DateFilter = dateFilter
             };
 
-            var result = await _requestRepository.GetAllRequestsAsync(query);
+            var result = await _requestService.GetAllRequestsAsync(query);
 
             if (result == null)
             {
@@ -57,7 +54,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
         [HttpGet("cancel/{requestid}")]
         public async Task<ActionResult> GetCancelledRemarks(long requestid)
         {
-            var result = await _requestRemarksRepository.GetAllRemarks(requestid);
+            var result = await _remarksService.GetAllRemarks(requestid);
             if (result == null)
             {
                 return NotFound();
@@ -73,7 +70,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
                 return BadRequest("RequestID is required and must be greater than zero.");
             }
 
-            var result = await _requestRemarksRepository.InsertRemarkAndCancelRequestForStandardDeliveryAsync(requestid, user, remarks);
+            var result = await _remarksService.CancelStandardDeliveryAsync(requestid, user, remarks);
             if (!result)
             {
                 return NotFound("Request not found or cancel failed.");
@@ -85,7 +82,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
         [HttpGet("mobile")]
         public async Task<ActionResult> GetMobile()
         {
-            var result = await _mobileRepository.GetAllMobilesAsync();
+            var result = await _mobileService.GetAllMobilesAsync();
             if (result == null)
             {
                 return NotFound();
@@ -96,15 +93,12 @@ namespace MDMPI.App.Api.Controllers.Logistic
         [HttpPost]
         public async Task<ActionResult> PostRequest([FromBody] InsertRequestDto value)
         {
-            var inserted = await _requestRepository.InsertRequest(value);
+            var inserted = await _requestService.CreateRequestWithItemsAsync(value);
 
             if (inserted is null)
             {
                 return BadRequest("Insert failed.");
             }
-
-            await _itemRepository.InsertItemsAsync(long.Parse(inserted.ID!), value.Items!);
-
 
             return CreatedAtAction(nameof(GetRequestAll), new { id = inserted.ID }, inserted);
         }
@@ -118,7 +112,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
                 return BadRequest("RequestID is required and must be greater than zero.");
             }
 
-            var result = await _requestRepository.UpdateRequest(value);
+            var result = await _requestService.UpdateRequestAsync(value);
             if (!result)
             {
                 return NotFound("Request not found or update failed.");
@@ -133,7 +127,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
             {
                 return BadRequest("RequestID and type are required.");
             }
-            var imageBytes = await _imagePathTypeRepository.GetRequestImage(requestid, type);
+            var imageBytes = await _imageService.GetRequestImageAsync(requestid, type);
 
             if (imageBytes == null)
             {
@@ -150,7 +144,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
                 return BadRequest("RequestID is required and must be greater than zero.");
             }
 
-            var result = await _requestRepository.GetAllRequestHistory(requestid);
+            var result = await _requestService.GetRequestHistoryAsync(requestid);
             if (result == null || result.Count == 0)
             {
                 return NotFound();
@@ -178,7 +172,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
             await image.CopyToAsync(ms);
             byte[] imageBytes = ms.ToArray();
 
-            var filePath = await _imagePathTypeRepository.UploadImageAsync(imageBytes, dto.RequestID!, dto.Type!);
+            var filePath = await _imageService.UploadImageAsync(imageBytes, dto.RequestID!, dto.Type!);
             if (filePath == null)
             {
                 return StatusCode(500, "Failed to upload image.");

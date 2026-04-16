@@ -15,13 +15,12 @@ namespace MDMPI.App.Tests.Logistic
         [Fact]
         public async Task GetRequestAll_ReturnsOk_WhenRepositoryReturnsData()
         {
-            var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
-            mockRepo.Setup(r => r.GetAllAsync(It.IsAny<RequestQueryDto>())).ReturnsAsync(new List<RequestPullOutReturnPickUpDto> { new RequestPullOutReturnPickUpDto() });
-            var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockImage = new Mock<IImagePathTypeRepository>();
+            var mockService = new Mock<IRequestPullOutReturnPickUpService>();
+            mockService.Setup(r => r.GetAllAsync(It.IsAny<RequestQueryDto>())).ReturnsAsync(new List<RequestPullOutReturnPickUpDto> { new RequestPullOutReturnPickUpDto() });
+            var mockRemarks = new Mock<IRemarksService>();
+            var mockImage = new Mock<IImageService>();
 
-            var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
+            var controller = new RequestPullOutReturnPickUpController(mockService.Object, mockRemarks.Object, mockImage.Object);
 
             var result = await controller.GetRequestAll();
 
@@ -31,13 +30,12 @@ namespace MDMPI.App.Tests.Logistic
         [Fact]
         public async Task Insert_ReturnsBadRequest_WhenInsertFails()
         {
-            var mockRepo = new Mock<IRequestPullOutReturnPickUpRepository>();
-            mockRepo.Setup(r => r.InsertAsync(It.IsAny<InsertRequestPullOutReturnPickUpDto>())).ReturnsAsync((RequestPullOutReturnPickUpDto?)null);
-            var mockLogger = new Mock<ILogger<RequestPullOutReturnPickUpController>>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockImage = new Mock<IImagePathTypeRepository>();
+            var mockService = new Mock<IRequestPullOutReturnPickUpService>();
+            mockService.Setup(r => r.InsertAsync(It.IsAny<InsertRequestPullOutReturnPickUpDto>())).ReturnsAsync((RequestPullOutReturnPickUpDto?)null);
+            var mockRemarks = new Mock<IRemarksService>();
+            var mockImage = new Mock<IImageService>();
 
-            var controller = new RequestPullOutReturnPickUpController(mockRepo.Object, mockLogger.Object, mockRemarks.Object, mockImage.Object);
+            var controller = new RequestPullOutReturnPickUpController(mockService.Object, mockRemarks.Object, mockImage.Object);
 
             var result = await controller.Insert(new InsertRequestPullOutReturnPickUpDto());
 

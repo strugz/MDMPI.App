@@ -10,13 +10,13 @@ namespace MDMPI.App.Api.Controllers.Common
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly ICategoryRepository _repo;
-        public CategoryController(ICategoryRepository repo) => _repo = repo;
+        private readonly ICategoryService _service;
+        public CategoryController(ICategoryService service) => _service = service;
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var cats = await _repo.GetAllCategoriesAsync();
+            var cats = await _service.GetAllCategoriesAsync();
             return Ok(cats);
         }
     }

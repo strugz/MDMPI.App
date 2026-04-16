@@ -20,13 +20,13 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async void GetAll_ReturnsOk_WhenRepositoryReturnsData()
         {
-            var mockRepo = new Mock<IRequestPickUpRepository>();
-            mockRepo.Setup(r => r.GetAllAsync(It.IsAny<RequestQueryDto>())).ReturnsAsync(new List<RequestPickUpDto> { new RequestPickUpDto() });
-            var mockImage = new Mock<IImagePathTypeRepository>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockMobile = new Mock<IMobileRepository>();
+            var mockService = new Mock<IRequestPickUpService>();
+            mockService.Setup(r => r.GetAllAsync(It.IsAny<RequestQueryDto>())).ReturnsAsync(new List<RequestPickUpDto> { new RequestPickUpDto() });
+            var mockImage = new Mock<IImageService>();
+            var mockRemarks = new Mock<IRemarksService>();
+            var mockMobile = new Mock<IMobileService>();
 
-            var controller = new RequestPickUpController(mockRepo.Object, mockImage.Object, mockRemarks.Object, mockMobile.Object);
+            var controller = new RequestPickUpController(mockService.Object, mockImage.Object, mockRemarks.Object, mockMobile.Object);
 
             var result = await controller.GetAll();
 
@@ -36,13 +36,13 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async void Insert_ReturnsBadRequest_WhenInsertFails()
         {
-            var mockRepo = new Mock<IRequestPickUpRepository>();
-            mockRepo.Setup(r => r.InsertAsync(It.IsAny<InsertRequestPickUpDto>())).ReturnsAsync((RequestPickUpDto?)null);
-            var mockImage = new Mock<IImagePathTypeRepository>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockMobile = new Mock<IMobileRepository>();
+            var mockService = new Mock<IRequestPickUpService>();
+            mockService.Setup(r => r.InsertAsync(It.IsAny<InsertRequestPickUpDto>())).ReturnsAsync((RequestPickUpDto?)null);
+            var mockImage = new Mock<IImageService>();
+            var mockRemarks = new Mock<IRemarksService>();
+            var mockMobile = new Mock<IMobileService>();
 
-            var controller = new RequestPickUpController(mockRepo.Object, mockImage.Object, mockRemarks.Object, mockMobile.Object);
+            var controller = new RequestPickUpController(mockService.Object, mockImage.Object, mockRemarks.Object, mockMobile.Object);
 
             var result = await controller.Insert(new InsertRequestPickUpDto());
 
@@ -52,13 +52,13 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async void GetMobile_ReturnsOk_WhenMobileRepoReturnsData()
         {
-            var mockRepo = new Mock<IRequestPickUpRepository>();
-            var mockImage = new Mock<IImagePathTypeRepository>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockMobile = new Mock<IMobileRepository>();
+            var mockService = new Mock<IRequestPickUpService>();
+            var mockImage = new Mock<IImageService>();
+            var mockRemarks = new Mock<IRemarksService>();
+            var mockMobile = new Mock<IMobileService>();
             mockMobile.Setup(m => m.GetAllMobilesAsync()).ReturnsAsync(new List<MobileDto> { new MobileDto { MobileID = 1, MobileName = "m1" } });
 
-            var controller = new RequestPickUpController(mockRepo.Object, mockImage.Object, mockRemarks.Object, mockMobile.Object);
+            var controller = new RequestPickUpController(mockService.Object, mockImage.Object, mockRemarks.Object, mockMobile.Object);
 
             var result = await controller.GetMobile();
 

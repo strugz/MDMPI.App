@@ -1,7 +1,9 @@
 using MDMPI.App.Core.Collection.Interfaces;
+using MDMPI.App.Core.Collection.Services;
 using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
 using MDMPI.App.Core.Logistic.Interfaces;
+using MDMPI.App.Core.Logistic.Services;
 using MDMPI.App.Data;
 using MDMPI.App.Data.Collection.Repositories;
 using MDMPI.App.Data.Common.Repositories;
@@ -30,38 +32,35 @@ builder.Services.AddSingleton<ImageService>();
 builder.Services.Configure<GeminiSettings>(builder.Configuration.GetSection(GeminiSettings.SectionName));
 builder.Services.AddHttpClient<IGeminiService, GeminiService>();
 
+// ── Repositories (Infrastructure) ──
 builder.Services.AddScoped<IRequestRepository, RequestRepository>();
-
 builder.Services.AddScoped<IMobileRepository, MobileRepository>();
-
 builder.Services.AddScoped<IRequestPullOutReturnPickUpRepository, RequestPullOutReturnPickUpRepository>();
-
 builder.Services.AddScoped<IRequestIdGenerator, RequestIdGenerator>();
 builder.Services.AddScoped<IBackloadIdGenerator, BackloadIdGenerator>();
-
-// Register item & batch id generators
 builder.Services.AddScoped<IItemIdGenerator, ItemIdGenerator>();
 builder.Services.AddScoped<IBatchIdGenerator, BatchIdGenerator>();
-
-// Register item repository
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
-
 builder.Services.AddScoped<IRequestRemarksRepository, RequestRemarksRepository>();
-
 builder.Services.AddScoped<IImagePathTypeRepository, ImagePathTypeRepository>();
-
 builder.Services.AddScoped<IRequestPickUpRepository, RequestPickUpRepository>();
-
 builder.Services.AddScoped<IRequestAirSeaRepository, RequestAirSeaRepository>();
-
 builder.Services.AddScoped<IRequestBackloadRepository, RequestBackloadRepository>();
-
-// Register application for Collection Module
-
 builder.Services.AddScoped<ICollectionTransactionDetailsRepository, CollectionRepository>();
-
-// register category repository
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+// ── Services (Use Cases / Application Layer) ──
+builder.Services.AddScoped<IRequestService, RequestService>();
+builder.Services.AddScoped<IRequestPickUpService, RequestPickUpService>();
+builder.Services.AddScoped<IRequestPullOutReturnPickUpService, RequestPullOutReturnPickUpService>();
+builder.Services.AddScoped<IRequestAirSeaService, RequestAirSeaService>();
+builder.Services.AddScoped<IRequestBackloadService, RequestBackloadService>();
+builder.Services.AddScoped<IRemarksService, RemarksService>();
+builder.Services.AddScoped<IImageService, ImageUploadService>();
+builder.Services.AddScoped<IMobileService, MobileService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IItemService, MDMPI.App.Core.Common.Services.ItemService>();
+builder.Services.AddScoped<ICollectionTransactionService, CollectionTransactionService>();
 
 
 //builder.Services.AddCors(options =>

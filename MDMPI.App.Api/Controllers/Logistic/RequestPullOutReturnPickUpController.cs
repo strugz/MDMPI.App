@@ -11,17 +11,15 @@ namespace MDMPI.App.Api.Controllers.Logistic
     [ApiController]
     public class RequestPullOutReturnPickUpController : ControllerBase
     {
-        private readonly IRequestPullOutReturnPickUpRepository _repository;
-        private readonly ILogger<RequestPullOutReturnPickUpController> _logger;
-        private readonly IRequestRemarksRepository _requestRemarksRepository;
-        private readonly IImagePathTypeRepository _imagePathTypeRepository;
+        private readonly IRequestPullOutReturnPickUpService _service;
+        private readonly IRemarksService _remarksService;
+        private readonly IImageService _imageService;
 
-        public RequestPullOutReturnPickUpController(IRequestPullOutReturnPickUpRepository repository, ILogger<RequestPullOutReturnPickUpController> logger, IRequestRemarksRepository requestRemarksRepository, IImagePathTypeRepository imagePathTypeRepository)
+        public RequestPullOutReturnPickUpController(IRequestPullOutReturnPickUpService service, IRemarksService remarksService, IImageService imageService)
         {
-            _repository = repository;
-            _logger = logger;
-            _requestRemarksRepository = requestRemarksRepository;
-            _imagePathTypeRepository = imagePathTypeRepository;
+            _service = service;
+            _remarksService = remarksService;
+            _imageService = imageService;
         }
 
         [HttpGet]
@@ -35,7 +33,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
                 StatusFilter = statusFilter
             };
 
-            var result = await _repository.GetAllAsync(query);
+            var result = await _service.GetAllAsync(query);
             if (result == null)
             {
                 return NotFound();
@@ -46,7 +44,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
         [HttpPost]
         public async Task<IActionResult> Insert([FromBody] InsertRequestPullOutReturnPickUpDto dto)
         {
-            var inserted = await _repository.InsertAsync(dto);
+            var inserted = await _service.InsertAsync(dto);
             if (inserted is null)
                 return BadRequest("Insert failed.");
             return CreatedAtAction(nameof(GetRequestAll), new { id = inserted.RequestID }, inserted);
@@ -60,7 +58,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
                 return BadRequest("RequestID is required and must be greater than zero.");
             }
 
-            var success = await _repository.UpdateAsync(dto);
+            var success = await _service.UpdateAsync(dto);
             if (!success)
             {
                 return NotFound("Request not found or update failed.");
@@ -71,7 +69,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
         [HttpGet("cancel/{requestid}")]
         public async Task<ActionResult> GetCancelledRemarks(long requestid)
         {
-            var result = await _requestRemarksRepository.GetAllRemarks(requestid);
+            var result = await _remarksService.GetAllRemarks(requestid);
             if (result == null)
             {
                 return NotFound();
@@ -87,7 +85,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
                 return BadRequest("RequestID is required and must be greater than zero.");
             }
 
-            var result = await _requestRemarksRepository.InsertRemarkAndCancelRequestForPullOutReturnPickUp(requestid,user, remarks);
+            var result = await _remarksService.CancelPullOutReturnPickUpAsync(requestid, user, remarks);
             if (!result)
             {
                 return NotFound("Request not found or cancel failed.");
@@ -103,7 +101,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
             {
                 return BadRequest("RequestID and type are required.");
             }
-            var imageBytes = await _imagePathTypeRepository.GetRequestImage(requestid, type);
+            var imageBytes = await _imageService.GetRequestImageAsync(requestid, type);
             if (imageBytes == null)
             {
                 return NotFound();
@@ -131,7 +129,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
             await image.CopyToAsync(ms);
             byte[] imageBytes = ms.ToArray();
 
-            var filePath = await _imagePathTypeRepository.UploadImageAsync(imageBytes, dto.RequestID!, dto.Type!);
+            var filePath = await _imageService.UploadImageAsync(imageBytes, dto.RequestID!, dto.Type!);
             if (filePath == null)
             {
                 return StatusCode(500, "Failed to upload image.");

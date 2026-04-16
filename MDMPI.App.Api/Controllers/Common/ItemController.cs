@@ -8,12 +8,12 @@ namespace MDMPI.App.Api.Controllers.Common
     [Route("api/[controller]")]
     public class ItemController : ControllerBase
     {
-        private readonly IItemRepository _itemRepository;
+        private readonly IItemService _itemService;
         private readonly ILogger<ItemController> _logger;
 
-        public ItemController(IItemRepository itemRepository, ILogger<ItemController> logger)
+        public ItemController(IItemService itemService, ILogger<ItemController> logger)
         {
-            _itemRepository = itemRepository;
+            _itemService = itemService;
             _logger = logger;
         }
 
@@ -26,7 +26,7 @@ namespace MDMPI.App.Api.Controllers.Common
             if (requestId <= 0)
                 return BadRequest("requestId must be greater than zero.");
 
-            var items = await _itemRepository.GetItemsByRequestIdAsync(requestId);
+            var items = await _itemService.GetItemsByRequestIdAsync(requestId);
             return Ok(items);
         }
 
@@ -42,7 +42,7 @@ namespace MDMPI.App.Api.Controllers.Common
             if (items is null)
                 return BadRequest("Items payload is required.");
 
-            var result = await _itemRepository.InsertItemsAsync(requestId, items);
+            var result = await _itemService.InsertItemsAsync(requestId, items);
             if (!result)
             {
                 _logger.LogWarning("Failed to insert items for RequestID: {RequestID}", requestId);
@@ -64,7 +64,7 @@ namespace MDMPI.App.Api.Controllers.Common
             if (items is null)
                 return BadRequest("Items payload is required.");
 
-            var result = await _itemRepository.UpdateItemsAsync(requestId, items);
+            var result = await _itemService.UpdateItemsAsync(requestId, items);
             if (!result)
             {
                 _logger.LogWarning("Failed to update items for RequestID: {RequestID}", requestId);

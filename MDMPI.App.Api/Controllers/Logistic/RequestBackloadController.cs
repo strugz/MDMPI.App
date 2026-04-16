@@ -9,12 +9,12 @@ namespace MDMPI.App.Api.Controllers.Logistic
     [ApiController]
     public class RequestBackloadController : ControllerBase
     {
-        private readonly IRequestBackloadRepository _repository;
+        private readonly IRequestBackloadService _service;
         private readonly ILogger<RequestBackloadController> _logger;
 
-        public RequestBackloadController(IRequestBackloadRepository repository, ILogger<RequestBackloadController> logger)
+        public RequestBackloadController(IRequestBackloadService service, ILogger<RequestBackloadController> logger)
         {
-            _repository = repository;
+            _service = service;
             _logger = logger;
         }
 
@@ -29,7 +29,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
                 StatusFilter = statusFilter
             };
 
-            var result = await _repository.GetAllAsync(query);
+            var result = await _service.GetAllAsync(query);
             if (result == null)
                 return NotFound();
             return Ok(result);
@@ -38,7 +38,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
         [HttpPost]
         public async Task<IActionResult> Insert([FromBody] InsertRequestBackloadDto dto)
         {
-            var inserted = await _repository.InsertAsync(dto);
+            var inserted = await _service.InsertAsync(dto);
             if (inserted is null)
                 return BadRequest("Insert failed.");
             return CreatedAtAction(nameof(GetAll), new { id = inserted.BackLoadID }, inserted);

@@ -13,13 +13,13 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async void GetAll_ReturnsOk_WhenRepositoryReturnsData()
         {
-            var mockRepo = new Mock<IRequestAirSeaRepository>();
-            mockRepo.Setup(r => r.GetAllAsync(It.IsAny<RequestQueryDto>())).ReturnsAsync(new List<RequestAirSeaDto> { new RequestAirSeaDto() });
-            var mockImage = new Mock<IImagePathTypeRepository>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockMobile = new Mock<IMobileRepository>();
+            var mockService = new Mock<IRequestAirSeaService>();
+            mockService.Setup(r => r.GetAllAsync(It.IsAny<RequestQueryDto>())).ReturnsAsync(new List<RequestAirSeaDto> { new RequestAirSeaDto() });
+            var mockImage = new Mock<IImageService>();
+            var mockRemarks = new Mock<IRemarksService>();
+            var mockMobile = new Mock<IMobileService>();
 
-            var controller = new RequestAirSeaController(mockRepo.Object, mockImage.Object, mockRemarks.Object, mockMobile.Object);
+            var controller = new RequestAirSeaController(mockService.Object, mockImage.Object, mockRemarks.Object, mockMobile.Object);
 
             var result = await controller.GetAll();
 
@@ -29,13 +29,13 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async void Insert_ReturnsBadRequest_WhenInsertFails()
         {
-            var mockRepo = new Mock<IRequestAirSeaRepository>();
-            mockRepo.Setup(r => r.InsertAsync(It.IsAny<InsertRequestAirSeaDto>())).ReturnsAsync((RequestAirSeaDto?)null);
-            var mockImage = new Mock<IImagePathTypeRepository>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockMobile = new Mock<IMobileRepository>();
+            var mockService = new Mock<IRequestAirSeaService>();
+            mockService.Setup(r => r.InsertAsync(It.IsAny<InsertRequestAirSeaDto>())).ReturnsAsync((RequestAirSeaDto?)null);
+            var mockImage = new Mock<IImageService>();
+            var mockRemarks = new Mock<IRemarksService>();
+            var mockMobile = new Mock<IMobileService>();
 
-            var controller = new RequestAirSeaController(mockRepo.Object, mockImage.Object, mockRemarks.Object, mockMobile.Object);
+            var controller = new RequestAirSeaController(mockService.Object, mockImage.Object, mockRemarks.Object, mockMobile.Object);
 
             var result = await controller.Insert(new InsertRequestAirSeaDto());
 
@@ -45,13 +45,13 @@ namespace MDMPI.App.Tests.Controllers
         [Fact]
         public async void GetMobile_ReturnsOk_WhenMobileRepoReturnsData()
         {
-            var mockRepo = new Mock<IRequestAirSeaRepository>();
-            var mockImage = new Mock<IImagePathTypeRepository>();
-            var mockRemarks = new Mock<IRequestRemarksRepository>();
-            var mockMobile = new Mock<IMobileRepository>();
+            var mockService = new Mock<IRequestAirSeaService>();
+            var mockImage = new Mock<IImageService>();
+            var mockRemarks = new Mock<IRemarksService>();
+            var mockMobile = new Mock<IMobileService>();
             mockMobile.Setup(m => m.GetAllMobilesAsync()).ReturnsAsync(new List<MobileDto> { new MobileDto { MobileID = 1, MobileName = "m1" } });
 
-            var controller = new RequestAirSeaController(mockRepo.Object, mockImage.Object, mockRemarks.Object, mockMobile.Object);
+            var controller = new RequestAirSeaController(mockService.Object, mockImage.Object, mockRemarks.Object, mockMobile.Object);
 
             var result = await controller.GetMobile();
 
