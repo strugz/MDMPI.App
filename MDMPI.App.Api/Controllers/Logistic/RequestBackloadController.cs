@@ -19,7 +19,11 @@ namespace MDMPI.App.Api.Controllers.Logistic
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20, [FromQuery] RequestDateFilter dateFilter = RequestDateFilter.All, [FromQuery] RequestStatusFilter statusFilter = RequestStatusFilter.All)
+        public async Task<ActionResult> GetAll(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 20,
+            [FromQuery] RequestDateFilter dateFilter = RequestDateFilter.All,
+            [FromQuery] RequestStatusFilter statusFilter = RequestStatusFilter.All)
         {
             var query = new RequestQueryDto
             {

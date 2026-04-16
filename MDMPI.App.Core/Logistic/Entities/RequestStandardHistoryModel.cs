@@ -49,9 +49,9 @@ namespace MDMPI.App.Core.Logistic.Entities
 
         public DateTime? RequestDeliveredEndAt { get; set; }
 
-        public DateTime? LocationStartedAt { get; set; }
+        public string? LocationStartedAt { get; set; }
 
-        public DateTime? LocationEndAt { get; set; }
+        public string? LocationEndAt { get; set; }
 
         public long? MobileID { get; set; }
 

@@ -5,6 +5,7 @@ using MDMPI.App.Core.Logistic.DTOs.RequestBackload;
 using MDMPI.App.Core.Logistic.Entities;
 using MDMPI.App.Core.Logistic.Interfaces;
 using MDMPI.App.Core.Common.Services;
+using MDMPI.App.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -113,7 +114,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
             }
             catch (Exception ex)
             {
-                await Helper.RollbackTransactionAsync(transaction, _logger, ex, "inserting backload record");
+                await TransactionHelper.RollbackTransactionAsync(transaction, _logger, ex, "inserting backload record");
                 return null;
             }
         }

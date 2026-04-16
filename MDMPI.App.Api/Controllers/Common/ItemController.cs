@@ -51,10 +51,9 @@ namespace MDMPI.App.Api.Controllers.Common
 
             return Ok();
         }
-
-        /// <summary>
         /// Update items (and reconcile their batches) for a request.
-        /// </summary>
+        /// </summary>        /// <summary>
+
         [HttpPut("request/{requestId:long}")]
         public async Task<ActionResult> UpdateForRequest(long requestId, [FromBody] List<UpdateItemDto> items)
         {

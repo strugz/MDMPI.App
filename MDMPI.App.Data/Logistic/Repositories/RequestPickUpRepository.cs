@@ -4,6 +4,7 @@ using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
 using MDMPI.App.Core.CommonOldEntities.DTOs;
+using MDMPI.App.Data.Common;
 using MDMPI.App.Core.Logistic.DTOs.RequestPickUp;
 using MDMPI.App.Core.Logistic.Entities;
 using MDMPI.App.Core.Logistic.Interfaces;
@@ -213,7 +214,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
             }
             catch (Exception ex)
             {
-                await Helper.RollbackTransactionAsync(transaction, _logger, ex, "inserting PickUp request");
+                await TransactionHelper.RollbackTransactionAsync(transaction, _logger, ex, "inserting PickUp request");
                 return null;
             }
         }
@@ -289,7 +290,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
             }
             catch (Exception ex)
             {
-                await Helper.RollbackTransactionAsync(transaction, _logger, ex, "updating PickUp request");
+                await TransactionHelper.RollbackTransactionAsync(transaction, _logger, ex, "updating PickUp request");
                 return false;
             }
         }

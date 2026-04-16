@@ -2,6 +2,7 @@
 using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
+using MDMPI.App.Data.Common;
 using MDMPI.App.Data.Logistic.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -145,7 +146,7 @@ namespace MDMPI.App.Data.Common.Repositories
             }
             catch (Exception ex)
             {
-                await Helper.RollbackTransactionAsync(transaction, _logger, ex, $"Error inserting remark and cancelling request for ID: {requestId}");
+                await TransactionHelper.RollbackTransactionAsync(transaction, _logger, ex, $"Error inserting remark and cancelling request for ID: {requestId}");
                 return false;
             }
         }

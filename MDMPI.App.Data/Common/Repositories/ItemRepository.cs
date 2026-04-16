@@ -4,6 +4,7 @@ using MDMPI.App.Core.Common.DTOs.Item;
 using MDMPI.App.Core.Common.Entities.Item;
 using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
+using MDMPI.App.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -120,7 +121,7 @@ namespace MDMPI.App.Data.Common.Repositories
             }
             catch (Exception ex)
             {
-                await Helper.RollbackTransactionAsync(transaction, _logger, ex, $"Error inserting items for RequestID: {requestId}");
+                await TransactionHelper.RollbackTransactionAsync(transaction, _logger, ex, $"Error inserting items for RequestID: {requestId}");
                 return false;
             }
         }
@@ -219,7 +220,7 @@ namespace MDMPI.App.Data.Common.Repositories
             }
             catch (Exception ex)
             {
-                await Helper.RollbackTransactionAsync(transaction, _logger, ex, $"Error updating items for RequestID: {requestId}");
+                await TransactionHelper.RollbackTransactionAsync(transaction, _logger, ex, $"Error updating items for RequestID: {requestId}");
                 return false;
             }
         }

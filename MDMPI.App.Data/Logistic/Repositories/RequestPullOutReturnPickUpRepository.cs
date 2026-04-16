@@ -4,6 +4,7 @@ using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
 using MDMPI.App.Core.CommonOldEntities.DTOs;
+using MDMPI.App.Data.Common;
 using MDMPI.App.Core.Logistic.DTOs.RequestPullOutReturnPickUp;
 using MDMPI.App.Core.Logistic.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -197,7 +198,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
 
             catch (Exception ex)
             {
-                await Helper.RollbackTransactionAsync(transaction, _logger, ex, "inserting PullOut/Return/PickUp");
+                await TransactionHelper.RollbackTransactionAsync(transaction, _logger, ex, "inserting PullOut/Return/PickUp");
                 return null;
             }
         }

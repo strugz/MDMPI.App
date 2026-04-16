@@ -5,6 +5,7 @@ using MDMPI.App.Core.Common.Entities.Item;
 using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
 using MDMPI.App.Core.CommonOldEntities.DTOs;
+using MDMPI.App.Data.Common;
 using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
 using MDMPI.App.Core.Logistic.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -255,7 +256,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
             }
             catch (Exception ex)
             {
-                await Helper.RollbackTransactionAsync(transaction, _logger, ex, $"Error inserting request for ClientID: {dto.RequestClientID}");
+                await TransactionHelper.RollbackTransactionAsync(transaction, _logger, ex, $"Error inserting request for ClientID: {dto.RequestClientID}");
                 return null;
             }
         }
@@ -303,7 +304,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
             }
             catch (Exception ex)
             {
-                await Helper.RollbackTransactionAsync(transaction, _logger, ex, $"Error updating request with ID: {dto.RequestID}");
+                await TransactionHelper.RollbackTransactionAsync(transaction, _logger, ex, $"Error updating request with ID: {dto.RequestID}");
                 return false;
             }
         }

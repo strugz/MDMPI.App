@@ -1,6 +1,7 @@
 ﻿using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
+using MDMPI.App.Data.Common;
 using MDMPI.App.Data.Logistic.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -140,7 +141,7 @@ namespace MDMPI.App.Data.Common.Repositories
                 }
                 catch (Exception dbEx)
                 {
-                    await Helper.RollbackTransactionAsync(transaction, _logger, dbEx, $"Error saving image record for RequestID {requestId}");
+                    await TransactionHelper.RollbackTransactionAsync(transaction, _logger, dbEx, $"Error saving image record for RequestID {requestId}");
                     return null;
                 }
             }
