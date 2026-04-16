@@ -1,9 +1,6 @@
 ﻿using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Interfaces;
-using MDMPI.App.Core.Common.Services;
-using MDMPI.App.Data.Common;
-using MDMPI.App.Data.Logistic.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
@@ -13,9 +10,9 @@ namespace MDMPI.App.Data.Common.Repositories
     public class RequestRemarksRepository : IRequestRemarksRepository
     {
         private readonly AppDbContext _db;
-        private readonly ILogger<RequestRepository> _logger;
+        private readonly ILogger<RequestRemarksRepository> _logger;
 
-        public RequestRemarksRepository(AppDbContext db, ILogger<RequestRepository> logger)
+                public RequestRemarksRepository(AppDbContext db, ILogger<RequestRemarksRepository> logger)
         {
             _db = db;
             _logger = logger;

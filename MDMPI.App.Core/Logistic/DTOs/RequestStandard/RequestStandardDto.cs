@@ -1,5 +1,5 @@
-﻿using MDMPI.App.Core.Common.DTOs;
-using MDMPI.App.Core.CommonOldEntities.DTOs;
+using MDMPI.App.Core.Common.DTOs;
+using MDMPI.App.Core.Common.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;

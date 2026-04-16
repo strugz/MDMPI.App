@@ -3,7 +3,7 @@ using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
-using MDMPI.App.Core.CommonOldEntities.DTOs;
+using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Data.Common;
 using MDMPI.App.Core.Logistic.DTOs.RequestAirSea;
 using MDMPI.App.Core.Logistic.Entities;
@@ -242,19 +242,19 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     return false;
                 }
 
-                Helper.UpdateIfNotNull(v => entity.Status = v, dto.Status);
-                Helper.UpdateIfNotNull(v => entity.ReceivedBy = v, dto.ReceivedBy);
-                Helper.UpdateIfNotNull(v => entity.WaybillNumber = v, dto.WaybillNumber);
-                Helper.UpdateIfNotNull(v => entity.TripTicketNumber = v, dto.TripTicketNumber);
-                Helper.UpdateIfNotNull(v => entity.Driver = v, dto.Driver);
-                Helper.UpdateIfNotNull(v => entity.Helper = v, dto.Helper);
-                Helper.UpdateIfNotNull(v => entity.ItemPreparedAt = v, dto.ItemPreparedAt);
-                Helper.UpdateIfNotNull(v => entity.ItemPreparedEndAt = v, dto.ItemPreparedEndAt);
-                Helper.UpdateIfNotNull(v => entity.DispatchedAt = v, dto.DispatchedAt);
-                Helper.UpdateIfNotNull(v => entity.DropOffAt = v, dto.DropOffAt);
-                Helper.UpdateIfNotNull(v => entity.PreparedBy = v, dto.PreparedBy);
-                Helper.UpdateIfNotNull(v => entity.MobileID = v, dto.MobileID);
-                Helper.UpdateIfNotNull(v => entity.Remarks = v, dto.Remarks);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.Status = v, dto.Status);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.ReceivedBy = v, dto.ReceivedBy);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.WaybillNumber = v, dto.WaybillNumber);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.TripTicketNumber = v, dto.TripTicketNumber);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.Driver = v, dto.Driver);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.Helper = v, dto.Helper);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.ItemPreparedAt = v, dto.ItemPreparedAt);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.ItemPreparedEndAt = v, dto.ItemPreparedEndAt);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.DispatchedAt = v, dto.DispatchedAt);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.DropOffAt = v, dto.DropOffAt);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.PreparedBy = v, dto.PreparedBy);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.MobileID = v, dto.MobileID);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.Remarks = v, dto.Remarks);
 
                 await _db.SaveChangesAsync();
                 await transaction.CommitAsync();

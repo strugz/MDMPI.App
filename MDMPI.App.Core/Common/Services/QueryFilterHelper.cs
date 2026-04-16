@@ -1,4 +1,4 @@
-﻿using MDMPI.App.Core.Common.DTOs;
+using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Logistic.DTOs.RequestPullOutReturnPickUp;
 using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
@@ -12,7 +12,7 @@ using System.Linq.Expressions;
 
 namespace MDMPI.App.Core.Common.Services
 {
-    public class Helper
+    public class QueryFilterHelper
     {
         public static void UpdateIfNotNull<T>(Action<T> setter, T? value)
         {

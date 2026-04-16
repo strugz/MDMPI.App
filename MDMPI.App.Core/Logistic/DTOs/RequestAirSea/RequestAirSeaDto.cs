@@ -1,4 +1,4 @@
-using MDMPI.App.Core.CommonOldEntities.DTOs;
+using MDMPI.App.Core.Common.DTOs;
 using System.Text.Json.Serialization;
 
 namespace MDMPI.App.Core.Logistic.DTOs.RequestAirSea

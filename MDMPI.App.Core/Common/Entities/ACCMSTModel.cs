@@ -1,14 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MDMPI.App.Core.CommonOldEntities.DTOs
+namespace MDMPI.App.Core.Common.Entities
 {
-    public class ACCMSTDto
+    public class ACCMSTModel
     {
+        [Key]
         public string? ACCMID { get; set; }        // Client ID
         public string? ACCMSC { get; set; }        // Short Code
         public string? ACCMNM { get; set; }        // Name

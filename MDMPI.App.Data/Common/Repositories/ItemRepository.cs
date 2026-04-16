@@ -146,10 +146,10 @@ namespace MDMPI.App.Data.Common.Repositories
                     if (item is null)
                         continue;
 
-                    Helper.UpdateIfNotNull(v => item.ItemCode = v, dto.ItemCode);
-                    Helper.UpdateIfNotNull(v => item.Description = v, dto.Description);
-                    Helper.UpdateIfNotNull(v => item.Qty = v, dto.Qty);
-                    Helper.UpdateIfNotNull(v => item.Unit = v, dto.Unit);
+                    QueryFilterHelper.UpdateIfNotNull(v => item.ItemCode = v, dto.ItemCode);
+                    QueryFilterHelper.UpdateIfNotNull(v => item.Description = v, dto.Description);
+                    QueryFilterHelper.UpdateIfNotNull(v => item.Qty = v, dto.Qty);
+                    QueryFilterHelper.UpdateIfNotNull(v => item.Unit = v, dto.Unit);
 
                     // Handle batches for this item
                     if (dto.Batch is not null)
@@ -180,8 +180,8 @@ namespace MDMPI.App.Data.Common.Repositories
                                 if (batch is null)
                                     continue;
 
-                                Helper.UpdateIfNotNull(v => batch.BatchSerial = v, bDto.BatchSerial);
-                                Helper.UpdateIfNotNull(v => batch.BatchQuantity = v, bDto.BatchQuantity);
+                                QueryFilterHelper.UpdateIfNotNull(v => batch.BatchSerial = v, bDto.BatchSerial);
+                                QueryFilterHelper.UpdateIfNotNull(v => batch.BatchQuantity = v, bDto.BatchQuantity);
                                 if (!string.IsNullOrWhiteSpace(bDto.ExpiryDate))
                                 {
                                     if (DateOnly.TryParse(bDto.ExpiryDate, out var d))

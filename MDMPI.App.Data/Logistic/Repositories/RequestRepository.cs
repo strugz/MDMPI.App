@@ -1,10 +1,10 @@
-﻿using MDMPI.App.Common.Utilities;
+using MDMPI.App.Common.Utilities;
 using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Entities.Item;
 using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
-using MDMPI.App.Core.CommonOldEntities.DTOs;
+using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Data.Common;
 using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
 using MDMPI.App.Core.Logistic.Interfaces;
@@ -95,7 +95,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
             _logger.LogInformation("Fetching requests with filters: {@Query}", query);
             var requests = _db.a_tblRequestStandardDelivery.AsNoTracking();
 
-            requests = Helper.ApplyDateFilterAny(
+            requests = QueryFilterHelper.ApplyDateFilterAny(
                 requests,
                 query.DateFilter,
                 r => r.RequestDeliveryDate.HasValue ? r.RequestDeliveryDate.Value : null
@@ -184,7 +184,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 _logger.LogInformation("Inserting new request for ClientID: {ClientID}", dto.RequestClientID);
 
                 var newRequestId = await _requestIdGenerator.GenerateAsync();
-                var request = Helper.BuildRequestStandardModel(dto, newRequestId);
+                var request = QueryFilterHelper.BuildRequestStandardModel(dto, newRequestId);
 
                 _db.a_tblRequestStandardDelivery.Add(request);
                 await _db.SaveChangesAsync();
@@ -281,20 +281,20 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 }
 
                 // Conditionally update scalar fields
-                Helper.UpdateIfNotNull(v => request.RequestStatus = v, dto.RequestStatus);
-                Helper.UpdateIfNotNull(v => request.RequestItemPreparedBy = v, dto.RequestItemPreparedBy);
-                Helper.UpdateIfNotNull(v => request.RequestDeliveredBy = v, dto.RequestDeliveredBy);
-                Helper.UpdateIfNotNull(v => request.RequestDriverHelper = v, dto.RequestDriverHelper);
-                Helper.UpdateIfNotNull(v => request.MobileID = v, dto.MobileID);
-                Helper.UpdateIfNotNull(v => request.Receiver = v, dto.Receiver);
-                Helper.UpdateIfNotNull(v => request.RequestTripTicketNumber = v, dto.RequestTripTicketNumber);
-                Helper.UpdateIfNotNull(v => request.RequestItemPreparedAt = DateTime.TryParse(v, out var dt) ? dt : (DateTime?)null, dto.RequestItemPreparedAt);
-                Helper.UpdateIfNotNull(v => request.RequestItemPreparedEndAt = DateTime.TryParse(v, out var dt) ? dt : (DateTime?)null, dto.RequestItemPreparedEndAt);
-                Helper.UpdateIfNotNull(v => request.RequestDeliveredAt = DateTime.TryParse(v, out var dt) ? dt : (DateTime?)null, dto.RequestDeliveredAt);
-                Helper.UpdateIfNotNull(v => request.RequestDeliveredEndAt = DateTime.TryParse(v, out var dt) ? dt : (DateTime?)null, dto.RequestDeliveredEndAt);
-                Helper.UpdateIfNotNull(v => request.LocationStartedAt = v, dto.LocationStartedAt);
-                Helper.UpdateIfNotNull(v => request.LocationEndAt = v, dto.LocationEndAt);
-                Helper.UpdateIfNotNull(v => request.UpdatedBy = v, dto.UpdatedBy);
+                QueryFilterHelper.UpdateIfNotNull(v => request.RequestStatus = v, dto.RequestStatus);
+                QueryFilterHelper.UpdateIfNotNull(v => request.RequestItemPreparedBy = v, dto.RequestItemPreparedBy);
+                QueryFilterHelper.UpdateIfNotNull(v => request.RequestDeliveredBy = v, dto.RequestDeliveredBy);
+                QueryFilterHelper.UpdateIfNotNull(v => request.RequestDriverHelper = v, dto.RequestDriverHelper);
+                QueryFilterHelper.UpdateIfNotNull(v => request.MobileID = v, dto.MobileID);
+                QueryFilterHelper.UpdateIfNotNull(v => request.Receiver = v, dto.Receiver);
+                QueryFilterHelper.UpdateIfNotNull(v => request.RequestTripTicketNumber = v, dto.RequestTripTicketNumber);
+                QueryFilterHelper.UpdateIfNotNull(v => request.RequestItemPreparedAt = DateTime.TryParse(v, out var dt) ? dt : (DateTime?)null, dto.RequestItemPreparedAt);
+                QueryFilterHelper.UpdateIfNotNull(v => request.RequestItemPreparedEndAt = DateTime.TryParse(v, out var dt) ? dt : (DateTime?)null, dto.RequestItemPreparedEndAt);
+                QueryFilterHelper.UpdateIfNotNull(v => request.RequestDeliveredAt = DateTime.TryParse(v, out var dt) ? dt : (DateTime?)null, dto.RequestDeliveredAt);
+                QueryFilterHelper.UpdateIfNotNull(v => request.RequestDeliveredEndAt = DateTime.TryParse(v, out var dt) ? dt : (DateTime?)null, dto.RequestDeliveredEndAt);
+                QueryFilterHelper.UpdateIfNotNull(v => request.LocationStartedAt = v, dto.LocationStartedAt);
+                QueryFilterHelper.UpdateIfNotNull(v => request.LocationEndAt = v, dto.LocationEndAt);
+                QueryFilterHelper.UpdateIfNotNull(v => request.UpdatedBy = v, dto.UpdatedBy);
 
                 await _db.SaveChangesAsync();
                 await transaction.CommitAsync();

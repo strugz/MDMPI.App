@@ -1,5 +1,5 @@
-﻿using MDMPI.App.Core.Common.Entities;
-using MDMPI.App.Core.CommonOldEntities.DTOs;
+using MDMPI.App.Core.Common.Entities;
+using MDMPI.App.Core.Common.DTOs;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;

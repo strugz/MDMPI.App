@@ -1,5 +1,4 @@
-﻿using MDMPI.App.Core.Common.Entities;
-using MDMPI.App.Core.CommonOldEntities.Entities;
+using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Logistic.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;

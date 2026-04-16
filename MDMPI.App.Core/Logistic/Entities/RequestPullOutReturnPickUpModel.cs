@@ -1,5 +1,5 @@
-﻿using MDMPI.App.Core.Common.Entities;
-using MDMPI.App.Core.CommonOldEntities.Entities;
+using MDMPI.App.Core.Common.Entities;
+using MDMPI.App.Core.Common.Entities;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

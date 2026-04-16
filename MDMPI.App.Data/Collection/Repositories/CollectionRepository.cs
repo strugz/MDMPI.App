@@ -1,9 +1,9 @@
-﻿using MDMPI.App.Core.Collection.Interfaces;
+using MDMPI.App.Core.Collection.Interfaces;
 using MDMPI.App.Core.Collection.Dtos;
 using MDMPI.App.Core.Collection.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using MDMPI.App.Core.CommonOldEntities.DTOs;
+using MDMPI.App.Core.Common.DTOs;
 
 namespace MDMPI.App.Data.Collection.Repositories
 {

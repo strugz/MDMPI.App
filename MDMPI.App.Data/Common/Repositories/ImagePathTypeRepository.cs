@@ -1,8 +1,6 @@
 ﻿using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
-using MDMPI.App.Data.Common;
-using MDMPI.App.Data.Logistic.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -16,9 +14,9 @@ namespace MDMPI.App.Data.Common.Repositories
     public class ImagePathTypeRepository : IImagePathTypeRepository
     {
         private readonly AppDbContext _db;
-        private readonly ILogger<RequestRepository> _logger;
+        private readonly ILogger<ImagePathTypeRepository> _logger;
 
-        public ImagePathTypeRepository(AppDbContext db, ILogger<RequestRepository> logger)
+        public ImagePathTypeRepository(AppDbContext db, ILogger<ImagePathTypeRepository> logger)
         {
             _db = db;
             _logger = logger;

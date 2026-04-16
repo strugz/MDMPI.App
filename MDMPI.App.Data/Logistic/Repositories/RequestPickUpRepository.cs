@@ -3,7 +3,7 @@ using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
-using MDMPI.App.Core.CommonOldEntities.DTOs;
+using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Data.Common;
 using MDMPI.App.Core.Logistic.DTOs.RequestPickUp;
 using MDMPI.App.Core.Logistic.Entities;
@@ -237,8 +237,8 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 }
 
                 // Always allowed updates when provided
-                Helper.UpdateIfNotNull(v => entity.PreparedBy = v, dto.PreparedBy);
-                Helper.UpdateIfNotNull(v => entity.ItemPreparedAt = v, dto.ItemPreparedAt);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.PreparedBy = v, dto.PreparedBy);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.ItemPreparedAt = v, dto.ItemPreparedAt);
 
                 // Handle status change and UpdatedAt
                 var incomingStatus = dto.Status;
@@ -256,15 +256,15 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 if (string.Equals(effectiveStatus, "Item Packed", StringComparison.OrdinalIgnoreCase)
                     || string.Equals(effectiveStatus, "Item Prepared", StringComparison.OrdinalIgnoreCase))
                 {
-                    Helper.UpdateIfNotNull(v => entity.ItemPreparedEndAt = v, dto.ItemPreparedEndAt);
+                    QueryFilterHelper.UpdateIfNotNull(v => entity.ItemPreparedEndAt = v, dto.ItemPreparedEndAt);
                 }
 
                 // Remarks and ReceivedBy only if status is Delivered or Received
                 if (string.Equals(effectiveStatus, "Delivered", StringComparison.OrdinalIgnoreCase)
                     || string.Equals(effectiveStatus, "Received", StringComparison.OrdinalIgnoreCase))
                 {
-                    Helper.UpdateIfNotNull(v => entity.Remarks = v, dto.Remarks);
-                    Helper.UpdateIfNotNull(v => entity.ReceivedBy = v, dto.ReceivedBy);
+                    QueryFilterHelper.UpdateIfNotNull(v => entity.Remarks = v, dto.Remarks);
+                    QueryFilterHelper.UpdateIfNotNull(v => entity.ReceivedBy = v, dto.ReceivedBy);
                 }
 
                 // Replace document references if provided

@@ -3,7 +3,7 @@ using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
-using MDMPI.App.Core.CommonOldEntities.DTOs;
+using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Data.Common;
 using MDMPI.App.Core.Logistic.DTOs.RequestPullOutReturnPickUp;
 using MDMPI.App.Core.Logistic.Interfaces;
@@ -34,7 +34,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
             var requests = _db.a_tblRequestPullOutReturnPickUp.AsNoTracking();
 
             // PullOutDate is DateOnly? on the model, pass it directly to the helper
-            requests = Helper.ApplyDateFilterAny(
+            requests = QueryFilterHelper.ApplyDateFilterAny(
                 requests,
                 query.DateFilter,
                 r => r.PullOutDate
@@ -125,7 +125,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
 
                 var newRequestId = await _requestIdGenerator.GenerateAsync();
 
-                var request = Helper.BuilbRequestPullOutReturnPickUpModel(dto, newRequestId);
+                var request = QueryFilterHelper.BuilbRequestPullOutReturnPickUpModel(dto, newRequestId);
 
                 _db.a_tblRequestPullOutReturnPickUp.Add(request);
                 await _db.SaveChangesAsync();
@@ -224,17 +224,17 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     return false;
                 }
 
-                Helper.UpdateIfNotNull(v => request.ClientContactPerson = v, dto.ClientContactPerson);
-                Helper.UpdateIfNotNull(v => request.ReasonForReturn = v, dto.ReasonForReturn);
-                Helper.UpdateIfNotNull(v => request.ReleasedBy = v, dto.ReleasedBy);
-                Helper.UpdateIfNotNull(v => request.PullOutDateStartAt = v, dto.PullOutDateStartAt);
-                Helper.UpdateIfNotNull(v => request.PullOutDateEndAt = v, dto.PullOutDateEndAt);
-                Helper.UpdateIfNotNull(v => request.MobileID = v, dto.MobileID);
-                Helper.UpdateIfNotNull(v => request.RequestStatus = v, dto.RequestStatus);
-                Helper.UpdateIfNotNull(v => request.TripTicketNumber = v, dto.TripTicketNumber);
-                Helper.UpdateIfNotNull(v => request.Driver = v, dto.Driver);
-                Helper.UpdateIfNotNull(v => request.Helper = v, dto.Helper);
-                Helper.UpdateIfNotNull(v => request.ReceivedBy = v, dto.ReceivedBy);
+                QueryFilterHelper.UpdateIfNotNull(v => request.ClientContactPerson = v, dto.ClientContactPerson);
+                QueryFilterHelper.UpdateIfNotNull(v => request.ReasonForReturn = v, dto.ReasonForReturn);
+                QueryFilterHelper.UpdateIfNotNull(v => request.ReleasedBy = v, dto.ReleasedBy);
+                QueryFilterHelper.UpdateIfNotNull(v => request.PullOutDateStartAt = v, dto.PullOutDateStartAt);
+                QueryFilterHelper.UpdateIfNotNull(v => request.PullOutDateEndAt = v, dto.PullOutDateEndAt);
+                QueryFilterHelper.UpdateIfNotNull(v => request.MobileID = v, dto.MobileID);
+                QueryFilterHelper.UpdateIfNotNull(v => request.RequestStatus = v, dto.RequestStatus);
+                QueryFilterHelper.UpdateIfNotNull(v => request.TripTicketNumber = v, dto.TripTicketNumber);
+                QueryFilterHelper.UpdateIfNotNull(v => request.Driver = v, dto.Driver);
+                QueryFilterHelper.UpdateIfNotNull(v => request.Helper = v, dto.Helper);
+                QueryFilterHelper.UpdateIfNotNull(v => request.ReceivedBy = v, dto.ReceivedBy);
                 request.UpdatedAt = DateTime.UtcNow;
                 var requestId = request.RequestID;
 
