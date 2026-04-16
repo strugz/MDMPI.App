@@ -8,5 +8,6 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestBackload
         public long? RequestID { get; set; }
         public string? Remarks { get; set; }
         public DateTime? DateReported { get; set; }
+        public DateOnly? DeliveryDate { get; set; }
     }
 }

@@ -13,5 +13,8 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestBackload
 
         [JsonPropertyName("DateReported")]
         public DateTime? DateReported { get; set; }
+
+        [JsonPropertyName("DeliveryDate")]
+        public DateOnly? DeliveryDate { get; set; }
     }
 }

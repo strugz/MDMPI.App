@@ -15,6 +15,8 @@ namespace MDMPI.App.Core.Logistic.Entities
         public string? Remarks { get; set; }
 
         public DateTime? DateReported { get; set; }
+        
+        public DateOnly? DeliveryDate { get; set; }
 
         [ForeignKey("RequestID")]
         public RequestStandardModel? Request { get; set; }

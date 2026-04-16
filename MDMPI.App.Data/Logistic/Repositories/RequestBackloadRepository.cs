@@ -72,7 +72,8 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 BackLoadID = r.BackLoadID,
                 RequestID = r.RequestID,
                 Remarks = r.Remarks,
-                DateReported = r.DateReported
+                DateReported = r.DateReported,
+                DeliveryDate = r.DeliveryDate
             }).ToListAsync();
 
             _logger.LogInformation("Fetched {Count} backload records.", result.Count);
@@ -93,7 +94,8 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     BackLoadID = backloadId,
                     RequestID = dto.RequestID,
                     Remarks = dto.Remarks,
-                    DateReported = dto.DateReported
+                    DateReported = DateTime.Now,
+                    DeliveryDate = dto.DeliveryDate
                 };
 
                 _db.a_tblRequestBackload.Add(model);
@@ -106,7 +108,8 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     BackLoadID = model.BackLoadID,
                     RequestID = model.RequestID,
                     Remarks = model.Remarks,
-                    DateReported = model.DateReported
+                    DateReported = model.DateReported,
+                    DeliveryDate = model.DeliveryDate
                 };
 
                 _logger.LogInformation("Inserted backload with ID: {BackLoadID}", model.BackLoadID);
