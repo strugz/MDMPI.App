@@ -38,6 +38,9 @@ namespace MDMPI.App.Data
         // History table for standard requests
         public DbSet<RequestStandardHistoryModel> a_tblRequestStandardDeliveryHistory { get; set; }
 
+        // History table for air/sea requests
+        public DbSet<RequestAirSeaHistoryModel> a_tblRequestAirSea_History { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -65,6 +68,9 @@ namespace MDMPI.App.Data
 
             modelBuilder.Entity<RequestStandardHistoryModel>()
                 .ToTable("a_tblRequestStandardDeliveryHistory", b => b.UseSqlOutputClause(false));
+
+            modelBuilder.Entity<RequestAirSeaHistoryModel>()
+                .ToTable("a_tblRequestAirSea_History", b => b.UseSqlOutputClause(false));
 
             // map new entities to database table names (adjust names if your DB uses different table names)
             modelBuilder.Entity<ItemModel>()

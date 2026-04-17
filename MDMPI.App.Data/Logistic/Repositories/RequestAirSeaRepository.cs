@@ -3,7 +3,6 @@ using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
-using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Data.Common;
 using MDMPI.App.Core.Logistic.DTOs.RequestAirSea;
 using MDMPI.App.Core.Logistic.Entities;
@@ -154,7 +153,9 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     CreatedBy = dto.CreatedBy,
                     DatePickUp = dto.DatePickUp,
                     Status = string.IsNullOrWhiteSpace(dto.Status) ? "New Request" : dto.Status,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedBy = dto.UpdatedBy,
+
                 };
 
                 _db.a_tblRequestAirSea.Add(entity);
@@ -255,6 +256,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 QueryFilterHelper.UpdateIfNotNull(v => entity.PreparedBy = v, dto.PreparedBy);
                 QueryFilterHelper.UpdateIfNotNull(v => entity.MobileID = v, dto.MobileID);
                 QueryFilterHelper.UpdateIfNotNull(v => entity.Remarks = v, dto.Remarks);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.UpdatedBy = v, dto.UpdatedBy);
 
                 await _db.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -267,6 +269,43 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 await TransactionHelper.RollbackTransactionAsync(transaction, _logger, ex, "updating Air/Sea request");
                 return false;
             }
+        }
+
+        public async Task<List<RequestAirSeaHistoryDto>> GetHistoryAsync(long requestId)
+        {
+            var items = await _db.a_tblRequestAirSea_History
+                .AsNoTracking()
+                .Where(h => h.RequestID == requestId)
+                .Select(h => new RequestAirSeaHistoryDto
+                {
+                    HistoryID = h.HistoryID,
+                    ChangedAt = h.ChangedAt,
+                    ActionType = h.ActionType,
+                    RequestID = h.RequestID,
+                    ClientID = h.ClientID,
+                    ItemCategoryID = h.ItemCategoryID,
+                    ReceivedBy = h.ReceivedBy,
+                    WaybillNumber = h.WaybillNumber,
+                    TripTicketNumber = h.TripTicketNumber,
+                    Driver = h.Driver,
+                    Helper = h.Helper,
+                    MobileID = h.MobileID,
+                    DatePickUp = h.DatePickUp,
+                    ItemPreparedAt = h.ItemPreparedAt,
+                    ItemPreparedEndAt = h.ItemPreparedEndAt,
+                    DispatchedAt = h.DispatchedAt,
+                    DropOffAt = h.DropOffAt,
+                    PreparedBy = h.PreparedBy,
+                    Status = h.Status,
+                    Remarks = h.Remarks,
+                    CreatedBy = h.CreatedBy,
+                    CreatedAt = h.CreatedAt,
+                    UpdatedAt = h.UpdatedAt,
+                    ChangedBy = h.ChangedBy,
+                })
+                .ToListAsync();
+
+            return items;
         }
     }
 }

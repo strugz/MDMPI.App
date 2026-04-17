@@ -1,9 +1,10 @@
+using MDMPI.App.Api.Models;
 using MDMPI.App.Core.Common.DTOs;
+using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Logistic.DTOs.RequestAirSea;
 using MDMPI.App.Core.Logistic.Interfaces;
+using MDMPI.App.Core.Logistic.Services;
 using Microsoft.AspNetCore.Mvc;
-using MDMPI.App.Api.Models;
-using MDMPI.App.Core.Common.Interfaces;
 
 namespace MDMPI.App.Api.Controllers.Logistic
 {
@@ -25,11 +26,7 @@ namespace MDMPI.App.Api.Controllers.Logistic
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetAll(
-            [FromQuery] RequestDateFilter dateFilter = RequestDateFilter.All,
-            [FromQuery] RequestStatusFilter statusFilter = RequestStatusFilter.All,
-            [FromQuery] int page = 1,
-            [FromQuery] int pageSize = 20)
+        public async Task<ActionResult> GetAll([FromQuery] RequestDateFilter dateFilter = RequestDateFilter.All,[FromQuery] RequestStatusFilter statusFilter = RequestStatusFilter.All,[FromQuery] int page = 1,[FromQuery] int pageSize = 20)
         {
             var query = new RequestQueryDto
             {
@@ -134,6 +131,23 @@ namespace MDMPI.App.Api.Controllers.Logistic
             }
             return File(imageBytes, "image/png");
         }
+
+        [HttpGet("history/{requestid}")]
+        public async Task<ActionResult> GetRequestHistory(long requestid)
+        {
+            if (requestid <= 0)
+            {
+                return BadRequest("RequestID is required and must be greater than zero.");
+            }
+
+            var result = await _airSeaService.GetHistoryAsync(requestid);
+            if (result == null || result.Count == 0)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
 
         [HttpPost("upload-image")]
         [Consumes("multipart/form-data")]

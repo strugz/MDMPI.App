@@ -33,5 +33,10 @@ namespace MDMPI.App.Core.Logistic.Services
         {
             return await _repository.UpdateAsync(dto);
         }
+
+        public async Task<List<RequestAirSeaHistoryDto>> GetHistoryAsync(long requestId)
+        {
+            return await _repository.GetHistoryAsync(requestId);
+        }
     }
 }

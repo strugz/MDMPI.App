@@ -10,5 +10,8 @@ namespace MDMPI.App.Core.Logistic.Interfaces
         Task<List<RequestAirSeaDto>> GetAllAsync(RequestQueryDto query);
         Task<RequestAirSeaDto?> InsertAsync(InsertRequestAirSeaDto dto);
         Task<bool> UpdateAsync(UpdateRequestAirSeaDto dto);
+
+        // History support (read-only)
+        Task<List<RequestAirSeaHistoryDto>> GetHistoryAsync(long requestId);
     }
 }
