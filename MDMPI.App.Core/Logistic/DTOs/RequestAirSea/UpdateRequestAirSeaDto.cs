@@ -22,5 +22,12 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestAirSea
         public string? Status { get; set; }
         public string? Remarks { get; set; }
         public string? UpdatedBy { get; set; }
+        public string? ProvincialPickUpBy { get; set; }
+        public DateTime? ProvincialPickUpAt { get; set; }
+        public DateTime? ProvincialInTransitAt { get; set; }
+        public string? ProvincialInTransitLocation { get; set; }
+        public string? ProvincialReceiverName { get; set; }
+        public DateTime? ProvincialDeliveredEndAt { get; set; }
+        public string? ProvincialDeliveredLocation { get; set; }
     }
 }

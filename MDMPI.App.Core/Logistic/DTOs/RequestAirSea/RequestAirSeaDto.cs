@@ -26,6 +26,13 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestAirSea
         public string? CreatedBy { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public string? ProvincialPickUpBy { get; set; }
+        public DateTime? ProvincialPickUpAt { get; set; }
+        public DateTime? ProvincialInTransitAt { get; set; }
+        public string? ProvincialInTransitLocation { get; set; }
+        public string? ProvincialReceiverName { get; set; }
+        public DateTime? ProvincialDeliveredEndAt { get; set; }
+        public string? ProvincialDeliveredLocation { get; set; }
         [JsonPropertyName("Client")]
         public ACCMSTDto? Client { get; set; }
     }

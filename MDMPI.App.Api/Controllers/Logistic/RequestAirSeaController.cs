@@ -169,9 +169,9 @@ namespace MDMPI.App.Api.Controllers.Logistic
             await image.CopyToAsync(ms);
             var imageBytes = ms.ToArray();
 
-            if (string.IsNullOrWhiteSpace(dto.Type) || (dto.Type != "Signature" && dto.Type != "Proof"))
+            if (string.IsNullOrWhiteSpace(dto.Type) || (dto.Type != "Signature" && dto.Type != "Proof" && dto.Type != "Provincial_PickUp_Proof" && dto.Type != "Provincial_Signature" && dto.Type != "Provincial_Delivery_Proof"))
             {
-                return BadRequest("Type must be 'Signature' or 'Proof'.");
+                return BadRequest("Type must be 'Signature', 'Proof', 'Provincial_PickUp_Proof', 'Provincial_Signature', or 'Provincial_Delivery_Proof'.");
             }
 
             var filePath = await _imageService.UploadImageAsync(imageBytes, dto.RequestID!, dto.Type!);

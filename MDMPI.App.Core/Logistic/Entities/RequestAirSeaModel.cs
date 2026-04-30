@@ -1,5 +1,4 @@
 using MDMPI.App.Core.Common.Entities;
-using MDMPI.App.Core.Common.Entities;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -40,7 +39,14 @@ namespace MDMPI.App.Core.Logistic.Entities
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string? UpdatedBy { get; set; }
-
+        public string? ProvincialPickUpBy { get; set; }
+        public DateTime? ProvincialPickUpAt { get; set; }
+        public DateTime? ProvincialInTransitAt { get; set; }
+        public string? ProvincialInTransitLocation { get; set; }
+        public string? ProvincialReceiverName { get; set; }
+        public DateTime? ProvincialDeliveredEndAt { get; set; }
+        public string? ProvincialDeliveredLocation { get; set; }
+        
         /// <summary>
         /// Enriched to support multiple document references
         /// </summary>

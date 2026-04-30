@@ -113,6 +113,13 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     CreatedBy = r.CreatedBy,
                     CreatedAt = r.CreatedAt,
                     UpdatedAt = r.UpdatedAt,
+                    ProvincialPickUpBy = r.ProvincialPickUpBy,
+                    ProvincialPickUpAt = r.ProvincialPickUpAt,
+                    ProvincialInTransitAt = r.ProvincialInTransitAt,
+                    ProvincialInTransitLocation = r.ProvincialInTransitLocation,
+                    ProvincialDeliveredEndAt = r.ProvincialDeliveredEndAt,
+                    ProvincialDeliveredLocation = r.ProvincialDeliveredLocation,
+                    ProvincialReceiverName = r.ProvincialReceiverName,
                     Client = r.Client == null ? null : new ACCMSTDto
                     {
                         ACCMID = r.Client.ACCMID,
@@ -256,7 +263,15 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 QueryFilterHelper.UpdateIfNotNull(v => entity.PreparedBy = v, dto.PreparedBy);
                 QueryFilterHelper.UpdateIfNotNull(v => entity.MobileID = v, dto.MobileID);
                 QueryFilterHelper.UpdateIfNotNull(v => entity.Remarks = v, dto.Remarks);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.ProvincialPickUpBy = v, dto.ProvincialPickUpBy);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.ProvincialPickUpAt = v, dto.ProvincialPickUpAt);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.ProvincialInTransitAt = v, dto.ProvincialInTransitAt);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.ProvincialInTransitLocation = v, dto.ProvincialInTransitLocation);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.ProvincialReceiverName = v, dto.ProvincialReceiverName);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.ProvincialDeliveredEndAt = v, dto.ProvincialDeliveredEndAt);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.ProvincialDeliveredLocation = v, dto.ProvincialDeliveredLocation);
                 QueryFilterHelper.UpdateIfNotNull(v => entity.UpdatedBy = v, dto.UpdatedBy);
+
 
                 await _db.SaveChangesAsync();
                 await transaction.CommitAsync();

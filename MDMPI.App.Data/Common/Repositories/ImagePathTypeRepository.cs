@@ -74,7 +74,23 @@ namespace MDMPI.App.Data.Common.Repositories
             }
 
             var directoryPath = ImageService.GetImageDirectory();
-            var fileName = type == "Signature" ? $"Signature_{requestId}.png" : $"Proof_{requestId}.png";
+
+            // Support provincial variants for signature and proof
+            string fileName;
+            if (type == "Signature" || type == "Provincial_Signature")
+            {
+                fileName = (type == "Provincial_Signature" ? $"Provincial_Signature_{requestId}.png" : $"Signature_{requestId}.png");
+            }
+            else if (type == "Proof" || type == "Provincial_PickUp_Proof" || type == "Provincial_Delivery_Proof")
+            {
+                fileName = (type == "Provincial_PickUp_Proof" ? $"Provincial_PickUp_Proof_{requestId}.png" : type == "Provincial_Delivery_Proof" ? $"Provincial_Delivery_Proof_{requestId}.png" : $"Proof_{requestId}.png");
+            }
+            else
+            {
+                // Fallback to using the raw type name so unexpected types still get saved
+                fileName = $"{type}_{requestId}.png";
+            }
+
             var filePath = Path.Combine(directoryPath, fileName);
 
             try
@@ -86,7 +102,7 @@ namespace MDMPI.App.Data.Common.Repositories
                 using var transaction = await _db.Database.BeginTransactionAsync();
                 try
                 {
-                    if (type == "Signature")
+                    if (type == "Signature" || type == "Provincial_Signature")
                     {
                         var base64 = Convert.ToBase64String(imageBytes);
 
