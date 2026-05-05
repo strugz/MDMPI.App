@@ -55,6 +55,8 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestStandard
         public string? Helper { get; set; }
         [JsonPropertyName("Receiver")]
         public string? Receiver { get; set; }
+        [JsonPropertyName("RecipientContactDetails")]
+        public string? RecipientContactDetails { get; set; }
         [JsonPropertyName("TripTicketNumber")]
         public string? TripTicketNumber { get; set; }
         [JsonPropertyName("LocationStartedAt")]

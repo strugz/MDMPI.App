@@ -147,6 +147,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     MobileName = r.Mobile != null ? r.Mobile.MobileName : null,
                     Helper = r.RequestDriverHelper,
                     Receiver = r.Receiver,
+                    RecipientContactDetails = r.RecipientContactDetails,
                     TripTicketNumber = r.RequestTripTicketNumber,
                     DocumentReference = r.DocumentReference != null
                         ? r.DocumentReference.Select(dr => dr.Reference).ToList()!
@@ -228,6 +229,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                         MobileName = r.Mobile != null ? r.Mobile.MobileName : null,
                         Helper = r.RequestDriverHelper,
                         Receiver = r.Receiver,
+                        RecipientContactDetails = r.RecipientContactDetails,
                         TripTicketNumber = r.RequestTripTicketNumber,
                         DocumentReference = _db.a_tblRequestDocumentReference
                             .Where(dr => dr.RequestID == r.RequestID)
@@ -246,7 +248,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                             ACCSTS = r.Client.ACCSTS,
                             ACCOWN = r.Client.ACCOWN
                         },
-                       UpdatedBy = r.UpdatedBy
+                        UpdatedBy = r.UpdatedBy
                     })
                     .FirstOrDefaultAsync();
 
