@@ -32,6 +32,7 @@ namespace MDMPI.App.Core.Logistic.Entities
         public long? MobileID { get; set; }
         public string? RequestDriverHelper { get; set; }
         public string? Receiver { get; set; }
+        public string? RecipientName { get; set; }
         public string? RecipientContactDetails { get; set; }
         public string? RequestTripTicketNumber { get; set; }
         public string? UpdatedBy { get; set; }

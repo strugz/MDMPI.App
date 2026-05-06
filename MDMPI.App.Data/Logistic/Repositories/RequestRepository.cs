@@ -147,6 +147,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     MobileName = r.Mobile != null ? r.Mobile.MobileName : null,
                     Helper = r.RequestDriverHelper,
                     Receiver = r.Receiver,
+                    RecipientName = r.RecipientName,
                     RecipientContactDetails = r.RecipientContactDetails,
                     TripTicketNumber = r.RequestTripTicketNumber,
                     DocumentReference = r.DocumentReference != null
@@ -229,6 +230,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                         MobileName = r.Mobile != null ? r.Mobile.MobileName : null,
                         Helper = r.RequestDriverHelper,
                         Receiver = r.Receiver,
+                        RecipientName = r.RecipientName,
                         RecipientContactDetails = r.RecipientContactDetails,
                         TripTicketNumber = r.RequestTripTicketNumber,
                         DocumentReference = _db.a_tblRequestDocumentReference

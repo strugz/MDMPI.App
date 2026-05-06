@@ -102,6 +102,7 @@ namespace MDMPI.App.Core.Common.Services
                 RequestStatus = dto.RequestStatus,
                 RequestBy = dto.RequestBy,
                 RequestCreatedBy = dto.RequestCreatedBy,
+                RecipientName = dto.RecipientName,
                 RecipientContactDetails = dto.RecipientContactDetails,
                 RequestCreatedAt = DateTime.UtcNow,
                 UpdatedBy = dto.UpdatedBy

@@ -40,6 +40,9 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestStandard
         [JsonPropertyName("requestCreatedBy")]
         public string? RequestCreatedBy { get; set; } = string.Empty;
 
+        [JsonPropertyName("recipientName")]
+        public string? RecipientName { get; set; } = string.Empty;
+
         [JsonPropertyName("recipientContactDetails")]
         public string? RecipientContactDetails { get; set; } = string.Empty;
 
