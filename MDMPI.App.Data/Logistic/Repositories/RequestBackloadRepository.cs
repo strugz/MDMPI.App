@@ -13,11 +13,11 @@ namespace MDMPI.App.Data.Logistic.Repositories
 {
     public class RequestBackloadRepository : IRequestBackloadRepository
     {
-        private readonly AppDbContext _db;
+        private readonly PostgreSqlAppDbContext _db;
         private readonly ILogger<RequestBackloadRepository> _logger;
         private readonly IBackloadIdGenerator _backloadIdGenerator;
 
-        public RequestBackloadRepository(AppDbContext db, ILogger<RequestBackloadRepository> logger, IBackloadIdGenerator backloadIdGenerator)
+        public RequestBackloadRepository(PostgreSqlAppDbContext db, ILogger<RequestBackloadRepository> logger, IBackloadIdGenerator backloadIdGenerator)
         {
             _db = db;
             _logger = logger;

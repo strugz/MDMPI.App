@@ -24,6 +24,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DB")));
+builder.Services.AddDbContext<PostgreSqlAppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSqlDB")));
 
 // Register application services
 builder.Services.AddSingleton<ImageService>();
@@ -48,6 +50,7 @@ builder.Services.AddScoped<IRequestAirSeaRepository, RequestAirSeaRepository>();
 builder.Services.AddScoped<IRequestBackloadRepository, RequestBackloadRepository>();
 builder.Services.AddScoped<ICollectionTransactionDetailsRepository, CollectionRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IClientLookupRepository, ClientLookupRepository>();
 
 // ── Services (Use Cases / Application Layer) ──
 builder.Services.AddScoped<IRequestService, RequestService>();

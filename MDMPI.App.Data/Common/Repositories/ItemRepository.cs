@@ -1,4 +1,3 @@
-
 using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.DTOs.Item;
 using MDMPI.App.Core.Common.Entities.Item;
@@ -12,13 +11,13 @@ namespace MDMPI.App.Data.Common.Repositories
 {
     public class ItemRepository : IItemRepository
     {
-        private readonly AppDbContext _db;
+        private readonly PostgreSqlAppDbContext _db;
         private readonly ILogger<ItemRepository> _logger;
         private readonly IItemIdGenerator _itemIdGenerator;
         private readonly IBatchIdGenerator _batchIdGenerator;
 
         public ItemRepository(
-            AppDbContext db,
+            PostgreSqlAppDbContext db,
             ILogger<ItemRepository> logger,
             IItemIdGenerator itemIdGenerator,
             IBatchIdGenerator batchIdGenerator)

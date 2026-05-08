@@ -11,23 +11,31 @@ namespace MDMPI.App.Tests.Logistic
 {
     public class RequestPickUpRepositoryTests
     {
-        private static (AppDbContext db, SqliteConnection conn) CreateDbContext()
+        private static (PostgreSqlAppDbContext db, SqliteConnection conn) CreateDbContext()
         {
             var conn = new SqliteConnection("DataSource=:memory:");
             conn.Open();
-            var options = new DbContextOptionsBuilder<AppDbContext>()
+            var options = new DbContextOptionsBuilder<PostgreSqlAppDbContext>()
                 .UseSqlite(conn)
                 .Options;
-            var db = new AppDbContext(options);
+            var db = new PostgreSqlAppDbContext(options);
             db.Database.EnsureCreated();
             return (db, conn);
         }
 
-        private class FixedIdGenerator : IRequestIdGenerator
+        private sealed class FixedIdGenerator : IRequestIdGenerator
         {
             private long _next;
             public FixedIdGenerator(long start) { _next = start; }
             public Task<long> GenerateAsync() => Task.FromResult(_next++);
+        }
+
+        private sealed class NoOpClientLookupRepository : IClientLookupRepository
+        {
+            public Task<Dictionary<string, ACCMSTDto>> GetByIdsAsync(IEnumerable<string> clientIds)
+            {
+                return Task.FromResult(new Dictionary<string, ACCMSTDto>(StringComparer.OrdinalIgnoreCase));
+            }
         }
 
         [Fact]
@@ -36,11 +44,10 @@ namespace MDMPI.App.Tests.Logistic
             var (db, conn) = CreateDbContext();
             try
             {
-                var repo = new RequestPickUpRepository(db, NullLogger<RequestPickUpRepository>.Instance, new FixedIdGenerator(1000));
+                var repo = new RequestPickUpRepository(db, new NoOpClientLookupRepository(), NullLogger<RequestPickUpRepository>.Instance, new FixedIdGenerator(1000));
 
                 var dto = new InsertRequestPickUpDto
                 {
-                    // minimal insert, no PreparedBy/ReleasedBy on insert
                     Status = null
                 };
 
@@ -66,13 +73,12 @@ namespace MDMPI.App.Tests.Logistic
             var (db, conn) = CreateDbContext();
             try
             {
-                var repo = new RequestPickUpRepository(db, NullLogger<RequestPickUpRepository>.Instance, new FixedIdGenerator(2000));
+                var repo = new RequestPickUpRepository(db, new NoOpClientLookupRepository(), NullLogger<RequestPickUpRepository>.Instance, new FixedIdGenerator(2000));
 
                 var insertDto = new InsertRequestPickUpDto { Status = "New Request" };
                 await repo.InsertAsync(insertDto);
                 var existing = await db.a_tblRequestPickUpMDMPI.AsNoTracking().FirstAsync();
 
-                // Step 1: move to Item Prepared, can set PreparedBy and ItemPreparedEndAt
                 var updateToPrepared = new UpdateRequestPickUpDto
                 {
                     RequestID = existing.RequestID,
@@ -88,7 +94,6 @@ namespace MDMPI.App.Tests.Logistic
                 Assert.Equal("Item Prepared", afterPrepared.Status);
                 Assert.NotNull(afterPrepared.ItemPreparedEndAt);
 
-                // Step 2: move to Delivered, can set Remarks and ReceivedBy
                 var updateToDelivered = new UpdateRequestPickUpDto
                 {
                     RequestID = existing.RequestID,
@@ -101,7 +106,7 @@ namespace MDMPI.App.Tests.Logistic
                 Assert.True(ok2);
 
                 var saved = await db.a_tblRequestPickUpMDMPI.AsNoTracking().FirstAsync();
-                Assert.Equal("Jane", saved.PreparedBy); // unchanged
+                Assert.Equal("Jane", saved.PreparedBy);
                 Assert.Equal("Delivered", saved.Status);
                 Assert.Equal("Done", saved.Remarks);
                 Assert.Equal("Warehouse", saved.ReceivedBy);

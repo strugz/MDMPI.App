@@ -11,10 +11,10 @@ namespace MDMPI.App.Data.Common.Services
 {
     public class ItemIdGenerator : IItemIdGenerator
     {
-        private readonly AppDbContext _db;
+        private readonly PostgreSqlAppDbContext _db;
         private readonly ILogger<ItemIdGenerator> _logger;
 
-        public ItemIdGenerator(AppDbContext db, ILogger<ItemIdGenerator> logger)
+        public ItemIdGenerator(PostgreSqlAppDbContext db, ILogger<ItemIdGenerator> logger)
         {
             _db = db;
             _logger = logger;
@@ -27,8 +27,10 @@ namespace MDMPI.App.Data.Common.Services
 
             var counter = await _db.a_tblItemCounters
                 .FromSqlInterpolated($"""
-                    SELECT * FROM a_tblItemCounters WITH (UPDLOCK, HOLDLOCK)
-                    WHERE YearMonth = {yearMonth}
+                    select *
+                    from public.a_tblitemcounters
+                    where yearmonth = {yearMonth}
+                    for update
                 """)
                 .FirstOrDefaultAsync();
 

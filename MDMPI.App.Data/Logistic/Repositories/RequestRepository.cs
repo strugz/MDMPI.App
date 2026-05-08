@@ -13,21 +13,23 @@ namespace MDMPI.App.Data.Logistic.Repositories
 {
     public class RequestRepository : IRequestRepository
     {
-        private readonly AppDbContext _db;
+        private readonly PostgreSqlAppDbContext _db;
+        private readonly IClientLookupRepository _clientLookupRepository;
         private readonly ILogger<RequestRepository> _logger;
         private readonly IRequestIdGenerator _requestIdGenerator;
 
         public RequestRepository(
-            AppDbContext db,
+            PostgreSqlAppDbContext db,
+            IClientLookupRepository clientLookupRepository,
             ILogger<RequestRepository> logger,
             IRequestIdGenerator requestIdGenerator,
             IItemIdGenerator itemIdGenerator,
             IBatchIdGenerator batchIdGenerator)
         {
             _db = db;
+            _clientLookupRepository = clientLookupRepository;
             _logger = logger;
             _requestIdGenerator = requestIdGenerator;
-
         }
 
         /// <summary>
@@ -153,21 +155,11 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     DocumentReference = r.DocumentReference != null
                         ? r.DocumentReference.Select(dr => dr.Reference).ToList()!
                         : new List<string>(),
-                    Client = r.Client == null ? null : new ACCMSTDto
-                    {
-                        ACCMID = r.Client.ACCMID,
-                        ACCMSC = r.Client.ACCMSC,
-                        ACCMNM = r.Client.ACCMNM.ToProperCase(),
-                        ACCMBC = r.Client.ACCMBC,
-                        ACCMAD = r.Client.ACCMAD,
-                        ACCMPH = r.Client.ACCMPH,
-                        ACCMEM = r.Client.ACCMEM,
-                        ACCMWS = r.Client.ACCMWS,
-                        ACCSTS = r.Client.ACCSTS,
-                        ACCOWN = r.Client.ACCOWN
-                    }
+                    UpdatedBy = r.UpdatedBy
                 })
                 .ToListAsync();
+
+            await PopulateClientsAsync(result, item => item.ClientID, (item, client) => item.Client = client);
 
             _logger.LogInformation("Fetched {Count} requests.", result.Count);
             return result;
@@ -237,22 +229,14 @@ namespace MDMPI.App.Data.Logistic.Repositories
                             .Where(dr => dr.RequestID == r.RequestID)
                             .Select(dr => dr.Reference!)
                             .ToList(),
-                        Client = r.Client == null ? null : new ACCMSTDto
-                        {
-                            ACCMID = r.Client.ACCMID,
-                            ACCMSC = r.Client.ACCMSC,
-                            ACCMNM = r.Client.ACCMNM.ToProperCase(),
-                            ACCMBC = r.Client.ACCMBC,
-                            ACCMAD = r.Client.ACCMAD,
-                            ACCMPH = r.Client.ACCMPH,
-                            ACCMEM = r.Client.ACCMEM,
-                            ACCMWS = r.Client.ACCMWS,
-                            ACCSTS = r.Client.ACCSTS,
-                            ACCOWN = r.Client.ACCOWN
-                        },
                         UpdatedBy = r.UpdatedBy
                     })
                     .FirstOrDefaultAsync();
+
+                if (inserted != null)
+                {
+                    await PopulateClientsAsync(new[] { inserted }, item => item.ClientID, (item, client) => item.Client = client);
+                }
 
                 return inserted;
             }
@@ -311,6 +295,32 @@ namespace MDMPI.App.Data.Logistic.Repositories
             }
         }
 
+        private async Task PopulateClientsAsync<T>(IEnumerable<T> items, Func<T, string?> clientIdSelector, Action<T, ACCMSTDto> clientSetter)
+        {
+            var materializedItems = items.ToList();
+            if (materializedItems.Count == 0)
+            {
+                return;
+            }
 
+            var clients = await _clientLookupRepository.GetByIdsAsync(
+                materializedItems
+                    .Select(clientIdSelector)
+                    .OfType<string>());
+
+            foreach (var item in materializedItems)
+            {
+                var clientId = clientIdSelector(item);
+                if (string.IsNullOrWhiteSpace(clientId))
+                {
+                    continue;
+                }
+
+                if (clients.TryGetValue(clientId, out var client))
+                {
+                    clientSetter(item, client);
+                }
+            }
+        }
     }
 }

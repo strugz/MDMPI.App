@@ -11,10 +11,10 @@ namespace MDMPI.App.Data.Common.Services
 {
     public class BatchIdGenerator : IBatchIdGenerator
     {
-        private readonly AppDbContext _db;
+        private readonly PostgreSqlAppDbContext _db;
         private readonly ILogger<BatchIdGenerator> _logger;
 
-        public BatchIdGenerator(AppDbContext db, ILogger<BatchIdGenerator> logger)
+        public BatchIdGenerator(PostgreSqlAppDbContext db, ILogger<BatchIdGenerator> logger)
         {
             _db = db;
             _logger = logger;
@@ -27,8 +27,10 @@ namespace MDMPI.App.Data.Common.Services
 
             var counter = await _db.a_tblBatchCounters
                 .FromSqlInterpolated($"""
-                    SELECT * FROM a_tblBatchCounters WITH (UPDLOCK, HOLDLOCK)
-                    WHERE YearMonth = {yearMonth}
+                    select *
+                    from public.a_tblbatchcounters
+                    where yearmonth = {yearMonth}
+                    for update
                 """)
                 .FirstOrDefaultAsync();
 

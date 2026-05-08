@@ -11,8 +11,8 @@ namespace MDMPI.App.Data.Common.Repositories
 {
     public class MobileRepository : IMobileRepository
     {
-        private readonly AppDbContext _db;
-        public MobileRepository(AppDbContext db) => _db = db;
+        private readonly PostgreSqlAppDbContext _db;
+        public MobileRepository(PostgreSqlAppDbContext db) => _db = db;
 
         public async Task<List<MobileDto>> GetAllMobilesAsync()
         {

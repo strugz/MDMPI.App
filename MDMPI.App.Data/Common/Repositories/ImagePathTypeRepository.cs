@@ -13,10 +13,10 @@ namespace MDMPI.App.Data.Common.Repositories
 {
     public class ImagePathTypeRepository : IImagePathTypeRepository
     {
-        private readonly AppDbContext _db;
+        private readonly PostgreSqlAppDbContext _db;
         private readonly ILogger<ImagePathTypeRepository> _logger;
 
-        public ImagePathTypeRepository(AppDbContext db, ILogger<ImagePathTypeRepository> logger)
+        public ImagePathTypeRepository(PostgreSqlAppDbContext db, ILogger<ImagePathTypeRepository> logger)
         {
             _db = db;
             _logger = logger;
@@ -46,7 +46,7 @@ namespace MDMPI.App.Data.Common.Repositories
 
             try
             {
-                return await File.ReadAllBytesAsync(imageRecord!.ImagePath);
+                return await File.ReadAllBytesAsync(imageRecord.ImagePath);
             }
             catch (Exception ex)
             {
@@ -104,8 +104,6 @@ namespace MDMPI.App.Data.Common.Repositories
                 {
                     if (type == "Signature" || type == "Provincial_Signature")
                     {
-                        var base64 = Convert.ToBase64String(imageBytes);
-
                         var existingSig = await _db.a_tblRequestImagePath.FirstOrDefaultAsync(s => s.RequestID == id && s.ImageType == type);
 
                         if (existingSig is null)

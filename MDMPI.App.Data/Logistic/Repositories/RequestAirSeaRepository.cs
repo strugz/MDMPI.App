@@ -13,12 +13,14 @@ using Microsoft.Extensions.Logging;
 namespace MDMPI.App.Data.Logistic.Repositories
 {
     public class RequestAirSeaRepository(
-        AppDbContext db,
+        PostgreSqlAppDbContext db,
+        IClientLookupRepository clientLookupRepository,
         ILogger<RequestAirSeaRepository> logger,
         IRequestIdGenerator requestIdGenerator
     ) : IRequestAirSeaRepository
     {
-        private readonly AppDbContext _db = db;
+        private readonly PostgreSqlAppDbContext _db = db;
+        private readonly IClientLookupRepository _clientLookupRepository = clientLookupRepository;
         private readonly ILogger<RequestAirSeaRepository> _logger = logger;
         private readonly IRequestIdGenerator _requestIdGenerator = requestIdGenerator;
 
@@ -28,7 +30,6 @@ namespace MDMPI.App.Data.Logistic.Repositories
 
             var requests = _db.a_tblRequestAirSea.AsNoTracking();
 
-            // Apply date filter on DatePickUp (translateable to SQL)
             if (query.DateFilter != RequestDateFilter.All)
             {
                 var today = DateTime.Today;
@@ -94,8 +95,8 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     ItemCategoryID = r.ItemCategoryID,
                     ClientID = r.ClientID,
                     DocumentReference = r.DocumentReference != null
-                    ? r.DocumentReference.Select(dr => dr.Reference).ToList()!
-                    : new List<string>(),
+                        ? r.DocumentReference.Select(dr => dr.Reference).ToList()!
+                        : new List<string>(),
                     MobileID = r.MobileID,
                     ReceivedBy = r.ReceivedBy,
                     WaybillNumber = r.WaybillNumber,
@@ -120,21 +121,10 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     ProvincialDeliveredEndAt = r.ProvincialDeliveredEndAt,
                     ProvincialDeliveredLocation = r.ProvincialDeliveredLocation,
                     ProvincialReceiverName = r.ProvincialReceiverName,
-                    Client = r.Client == null ? null : new ACCMSTDto
-                    {
-                        ACCMID = r.Client.ACCMID,
-                        ACCMSC = r.Client.ACCMSC,
-                        ACCMNM = r.Client.ACCMNM.ToProperCase(),
-                        ACCMBC = r.Client.ACCMBC,
-                        ACCMAD = r.Client.ACCMAD,
-                        ACCMPH = r.Client.ACCMPH,
-                        ACCMEM = r.Client.ACCMEM,
-                        ACCMWS = r.Client.ACCMWS,
-                        ACCSTS = r.Client.ACCSTS,
-                        ACCOWN = r.Client.ACCOWN
-                    }
                 })
                 .ToListAsync();
+
+            await PopulateClientsAsync(result, item => item.ClientID, (item, client) => item.Client = client);
 
             _logger.LogInformation("Fetched {Count} air/sea requests.", result.Count);
 
@@ -151,7 +141,6 @@ namespace MDMPI.App.Data.Logistic.Repositories
 
                 var newRequestIdLong = await _requestIdGenerator.GenerateAsync();
 
-                // Only populate the fields you specified: ItemCategoryID, ClientID, DatePickUp, Status
                 var entity = new RequestAirSeaModel
                 {
                     RequestID = newRequestIdLong,
@@ -162,13 +151,11 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     Status = string.IsNullOrWhiteSpace(dto.Status) ? "New Request" : dto.Status,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedBy = dto.UpdatedBy,
-
                 };
 
                 _db.a_tblRequestAirSea.Add(entity);
                 await _db.SaveChangesAsync();
 
-                // Persist document references if provided
                 if (dto.DocumentReference is { Count: > 0 })
                 {
                     var refs = dto.DocumentReference.Select(dr => new DocumentReferenceModel
@@ -212,21 +199,13 @@ namespace MDMPI.App.Data.Logistic.Repositories
                         CreatedBy = r.CreatedBy,
                         CreatedAt = r.CreatedAt,
                         UpdatedAt = r.UpdatedAt,
-                        Client = r.Client == null ? null : new ACCMSTDto
-                        {
-                            ACCMID = r.Client.ACCMID,
-                            ACCMSC = r.Client.ACCMSC,
-                            ACCMNM = r.Client.ACCMNM.ToProperCase(),
-                            ACCMBC = r.Client.ACCMBC,
-                            ACCMAD = r.Client.ACCMAD,
-                            ACCMPH = r.Client.ACCMPH,
-                            ACCMEM = r.Client.ACCMEM,
-                            ACCMWS = r.Client.ACCMWS,
-                            ACCSTS = r.Client.ACCSTS,
-                            ACCOWN = r.Client.ACCOWN
-                        }
                     })
                     .FirstOrDefaultAsync();
+
+                if (inserted != null)
+                {
+                    await PopulateClientsAsync(new[] { inserted }, item => item.ClientID, (item, client) => item.Client = client);
+                }
 
                 return inserted;
             }
@@ -271,7 +250,6 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 QueryFilterHelper.UpdateIfNotNull(v => entity.ProvincialDeliveredEndAt = v, dto.ProvincialDeliveredEndAt);
                 QueryFilterHelper.UpdateIfNotNull(v => entity.ProvincialDeliveredLocation = v, dto.ProvincialDeliveredLocation);
                 QueryFilterHelper.UpdateIfNotNull(v => entity.UpdatedBy = v, dto.UpdatedBy);
-
 
                 await _db.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -321,6 +299,34 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 .ToListAsync();
 
             return items;
+        }
+
+        private async Task PopulateClientsAsync<T>(IEnumerable<T> items, Func<T, string?> clientIdSelector, Action<T, ACCMSTDto> clientSetter)
+        {
+            var materializedItems = items.ToList();
+            if (materializedItems.Count == 0)
+            {
+                return;
+            }
+
+            var clients = await _clientLookupRepository.GetByIdsAsync(
+                materializedItems
+                    .Select(clientIdSelector)
+                    .OfType<string>());
+
+            foreach (var item in materializedItems)
+            {
+                var clientId = clientIdSelector(item);
+                if (string.IsNullOrWhiteSpace(clientId))
+                {
+                    continue;
+                }
+
+                if (clients.TryGetValue(clientId, out var client))
+                {
+                    clientSetter(item, client);
+                }
+            }
         }
     }
 }

@@ -7,10 +7,10 @@ namespace MDMPI.App.Data.Common.Services
 {
     public class BackloadIdGenerator : IBackloadIdGenerator
     {
-        private readonly AppDbContext _db;
+        private readonly PostgreSqlAppDbContext _db;
         private readonly ILogger<BackloadIdGenerator> _logger;
 
-        public BackloadIdGenerator(AppDbContext db, ILogger<BackloadIdGenerator> logger)
+        public BackloadIdGenerator(PostgreSqlAppDbContext db, ILogger<BackloadIdGenerator> logger)
         {
             _db = db;
             _logger = logger;
@@ -23,8 +23,10 @@ namespace MDMPI.App.Data.Common.Services
 
             var counter = await _db.a_tblBackloadCounters
                 .FromSqlInterpolated($"""
-                    SELECT * FROM a_tblBackloadCounters WITH (UPDLOCK, HOLDLOCK)
-                    WHERE YearMonth = {yearMonth}
+                    select *
+                    from public.a_tblbackloadcounters
+                    where yearmonth = {yearMonth}
+                    for update
                 """)
                 .FirstOrDefaultAsync();
 

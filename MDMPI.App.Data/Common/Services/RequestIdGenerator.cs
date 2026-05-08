@@ -10,10 +10,10 @@ namespace MDMPI.App.Data.Common.Services
 {
     public class RequestIdGenerator : IRequestIdGenerator
     {
-        private readonly AppDbContext _db;
+        private readonly PostgreSqlAppDbContext _db;
         private readonly ILogger<RequestIdGenerator> _logger;
 
-        public RequestIdGenerator(AppDbContext db, ILogger<RequestIdGenerator> logger)
+        public RequestIdGenerator(PostgreSqlAppDbContext db, ILogger<RequestIdGenerator> logger)
         {
             _db = db;
             _logger = logger;
@@ -22,14 +22,14 @@ namespace MDMPI.App.Data.Common.Services
 
         public async Task<long> GenerateAsync()
         {
-            // Expect caller (repository) to have started a transaction if atomicity required.
             var yearMonth = DateTime.UtcNow.ToString("yyyyMM");
 
-            // Lock current month row (or range) in caller transaction using UPDLOCK + HOLDLOCK.
             var counter = await _db.a_tblRequestCounters
                 .FromSqlInterpolated($"""
-                    SELECT * FROM a_tblRequestCounters WITH (UPDLOCK, HOLDLOCK)
-                    WHERE YearMonth = {yearMonth}
+                    select *
+                    from public.a_tblrequestcounters
+                    where yearmonth = {yearMonth}
+                    for update
                 """)
                 .FirstOrDefaultAsync();
 

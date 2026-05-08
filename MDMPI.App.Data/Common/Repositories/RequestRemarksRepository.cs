@@ -9,10 +9,10 @@ namespace MDMPI.App.Data.Common.Repositories
 {
     public class RequestRemarksRepository : IRequestRemarksRepository
     {
-        private readonly AppDbContext _db;
+        private readonly PostgreSqlAppDbContext _db;
         private readonly ILogger<RequestRemarksRepository> _logger;
 
-                public RequestRemarksRepository(AppDbContext db, ILogger<RequestRemarksRepository> logger)
+        public RequestRemarksRepository(PostgreSqlAppDbContext db, ILogger<RequestRemarksRepository> logger)
         {
             _db = db;
             _logger = logger;
