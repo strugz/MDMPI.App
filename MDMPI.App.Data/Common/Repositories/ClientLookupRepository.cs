@@ -29,14 +29,14 @@ namespace MDMPI.App.Data.Common.Repositories
                 return new Dictionary<string, ACCMSTDto>(StringComparer.OrdinalIgnoreCase);
             }
 
-            return await _db.ACCMST_
+            var clients = await _db.ACCMST_
                 .AsNoTracking()
                 .Where(c => c.ACCMID != null && normalizedIds.Contains(c.ACCMID))
                 .Select(c => new ACCMSTDto
                 {
                     ACCMID = c.ACCMID,
                     ACCMSC = c.ACCMSC,
-                    ACCMNM = c.ACCMNM != null ? c.ACCMNM.ToProperCase() : null,
+                    ACCMNM = c.ACCMNM,
                     ACCMBC = c.ACCMBC,
                     ACCMAD = c.ACCMAD,
                     ACCMPH = c.ACCMPH,
@@ -45,7 +45,14 @@ namespace MDMPI.App.Data.Common.Repositories
                     ACCSTS = c.ACCSTS,
                     ACCOWN = c.ACCOWN
                 })
-                .ToDictionaryAsync(c => c.ACCMID!, StringComparer.OrdinalIgnoreCase);
+                .ToListAsync();
+
+            foreach (var client in clients)
+            {
+                client.ACCMNM = client.ACCMNM != null ? client.ACCMNM.ToProperCase() : null;
+            }
+
+            return clients.ToDictionary(c => c.ACCMID!, StringComparer.OrdinalIgnoreCase);
         }
     }
 }

@@ -17,6 +17,9 @@ namespace MDMPI.App.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<ACCMSTModel>()
+                .ToTable("ACCMST_");
+
             modelBuilder.Entity<CollectionTransactionDetailsModel>()
                 .ToTable("a_tblCollectionTransactionDetails", b => b.UseSqlOutputClause(false));
         }

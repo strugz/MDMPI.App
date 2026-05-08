@@ -23,7 +23,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DB")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DB"),
+        sqlOptions => sqlOptions.UseCompatibilityLevel(120)));
 builder.Services.AddDbContext<PostgreSqlAppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSqlDB")));
 
