@@ -17,7 +17,7 @@ namespace MDMPI.App.Core.Logistic.Entities
         public long? ItemCategoryID { get; set; }
         public string? SlipNo { get; set; }
         public string? IRRFNumber { get; set; }
-        public DateTime? IRRFDate { get; set; }
+        public DateOnly? IRRFDate { get; set; } // Changed to DateOnly
         public string? ReasonForReturn { get; set; }
         public string? ReleasedBy { get; set; }
         public DateOnly? PullOutDate { get; set; } // PullOutDate is a date-only value (no time)

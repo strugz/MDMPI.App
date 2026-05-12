@@ -94,7 +94,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     BackLoadID = backloadId,
                     RequestID = dto.RequestID,
                     Remarks = dto.Remarks,
-                    DateReported = DateTime.Now,
+                    DateReported = DateTime.UtcNow,
                     DeliveryDate = dto.DeliveryDate
                 };
 

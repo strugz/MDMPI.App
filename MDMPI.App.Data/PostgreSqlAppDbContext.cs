@@ -2,6 +2,7 @@ using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Entities.Item;
 using MDMPI.App.Core.Logistic.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace MDMPI.App.Data
 {
@@ -81,6 +82,7 @@ namespace MDMPI.App.Data
                 entity.ToTable("a_tblrequestpulloutreturnpickup", "public");
                 entity.Ignore(x => x.Client);
                 entity.Ignore(x => x.Signature);
+                entity.Property(x => x.IRRFDate).HasColumnType("date");
             });
 
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
@@ -113,7 +115,49 @@ namespace MDMPI.App.Data
                 }
             }
 
+            NormalizeTrackedDateTimesToUtc();
+
             return await base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void NormalizeTrackedDateTimesToUtc()
+        {
+            var entries = ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+
+            foreach (var entry in entries)
+            {
+                NormalizeEntryDateTimesToUtc(entry);
+            }
+        }
+
+        private static void NormalizeEntryDateTimesToUtc(EntityEntry entry)
+        {
+            foreach (var property in entry.Properties)
+            {
+                var clrType = property.Metadata.ClrType;
+                var underlyingType = Nullable.GetUnderlyingType(clrType);
+
+                if (clrType != typeof(DateTime) && underlyingType != typeof(DateTime))
+                {
+                    continue;
+                }
+
+                if (property.CurrentValue is DateTime dateTime)
+                {
+                    property.CurrentValue = NormalizeToUtc(dateTime);
+                }
+            }
+        }
+
+        private static DateTime NormalizeToUtc(DateTime value)
+        {
+            return value.Kind switch
+            {
+                DateTimeKind.Utc => value,
+                DateTimeKind.Local => value.ToUniversalTime(),
+                _ => DateTime.SpecifyKind(value, DateTimeKind.Utc)
+            };
         }
     }
 }

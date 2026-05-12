@@ -8,6 +8,7 @@ using MDMPI.App.Core.Logistic.DTOs.RequestStandard;
 using MDMPI.App.Core.Logistic.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
 
 namespace MDMPI.App.Data.Logistic.Repositories
 {
@@ -274,10 +275,10 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 QueryFilterHelper.UpdateIfNotNull(v => request.MobileID = v, dto.MobileID);
                 QueryFilterHelper.UpdateIfNotNull(v => request.Receiver = v, dto.Receiver);
                 QueryFilterHelper.UpdateIfNotNull(v => request.RequestTripTicketNumber = v, dto.RequestTripTicketNumber);
-                QueryFilterHelper.UpdateIfNotNull(v => request.RequestItemPreparedAt = DateTime.TryParse(v, out var dt) ? dt : (DateTime?)null, dto.RequestItemPreparedAt);
-                QueryFilterHelper.UpdateIfNotNull(v => request.RequestItemPreparedEndAt = DateTime.TryParse(v, out var dt) ? dt : (DateTime?)null, dto.RequestItemPreparedEndAt);
-                QueryFilterHelper.UpdateIfNotNull(v => request.RequestDeliveredAt = DateTime.TryParse(v, out var dt) ? dt : (DateTime?)null, dto.RequestDeliveredAt);
-                QueryFilterHelper.UpdateIfNotNull(v => request.RequestDeliveredEndAt = DateTime.TryParse(v, out var dt) ? dt : (DateTime?)null, dto.RequestDeliveredEndAt);
+                QueryFilterHelper.UpdateIfNotNull(v => request.RequestItemPreparedAt = ParseUtcTimestamp(v), dto.RequestItemPreparedAt);
+                QueryFilterHelper.UpdateIfNotNull(v => request.RequestItemPreparedEndAt = ParseUtcTimestamp(v), dto.RequestItemPreparedEndAt);
+                QueryFilterHelper.UpdateIfNotNull(v => request.RequestDeliveredAt = ParseUtcTimestamp(v), dto.RequestDeliveredAt);
+                QueryFilterHelper.UpdateIfNotNull(v => request.RequestDeliveredEndAt = ParseUtcTimestamp(v), dto.RequestDeliveredEndAt);
                 QueryFilterHelper.UpdateIfNotNull(v => request.LocationStartedAt = v, dto.LocationStartedAt);
                 QueryFilterHelper.UpdateIfNotNull(v => request.LocationEndAt = v, dto.LocationEndAt);
                 QueryFilterHelper.UpdateIfNotNull(v => request.UpdatedBy = v, dto.UpdatedBy);
@@ -321,6 +322,27 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     clientSetter(item, client);
                 }
             }
+        }
+
+        private static DateTime? ParseUtcTimestamp(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return null;
+            }
+
+            if (!DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var parsed) &&
+                !DateTime.TryParse(value, CultureInfo.CurrentCulture, DateTimeStyles.RoundtripKind, out parsed))
+            {
+                return null;
+            }
+
+            return parsed.Kind switch
+            {
+                DateTimeKind.Utc => parsed,
+                DateTimeKind.Local => parsed.ToUniversalTime(),
+                _ => DateTime.SpecifyKind(parsed, DateTimeKind.Utc)
+            };
         }
     }
 }

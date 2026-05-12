@@ -89,7 +89,7 @@ namespace MDMPI.App.Data.Common.Repositories
                     RequestID = requestId,
                     Remarks = remarks,
                     UserUpdated = user,
-                    Date = GetPhilippineNow()
+                    Date = GetUtcNow()
                 };
 
                 _db.a_tblRequestRemarks.Add(remark);
@@ -148,30 +148,10 @@ namespace MDMPI.App.Data.Common.Repositories
             }
         }
 
-        // Helper to get current Philippine time. Tries cross-platform timezone IDs and falls back to UTC+8.
-        private DateTime GetPhilippineNow()
+        // Persist UTC to PostgreSQL timestamptz columns. Convert to local time only when displaying.
+        private static DateTime GetUtcNow()
         {
-            // Try common timezone identifiers for different platforms
-            var tzCandidates = new[] { "Asia/Manila", "Singapore Standard Time" };
-            foreach (var tzId in tzCandidates)
-            {
-                try
-                {
-                    var tz = TimeZoneInfo.FindSystemTimeZoneById(tzId);
-                    return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, tz);
-                }
-                catch (TimeZoneNotFoundException)
-                {
-                    // try next
-                }
-                catch (InvalidTimeZoneException)
-                {
-                    // try next
-                }
-            }
-
-            // As a last resort, apply offset for UTC+8
-            return DateTime.UtcNow.AddHours(8);
+            return DateTime.UtcNow;
         }
     }
 }

@@ -1,13 +1,11 @@
-using MDMPI.App.Common.Utilities;
 using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
-using MDMPI.App.Core.Common.DTOs;
-using MDMPI.App.Data.Common;
 using MDMPI.App.Core.Logistic.DTOs.RequestPickUp;
 using MDMPI.App.Core.Logistic.Entities;
 using MDMPI.App.Core.Logistic.Interfaces;
+using MDMPI.App.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -41,7 +39,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
             // Apply date filter on DatePickUp (translateable to SQL)
             if (query.DateFilter != RequestDateFilter.All)
             {
-                var today = DateTime.Today;
+                var today = NormalizeToUtc(DateTime.UtcNow.Date);
                 DateTime start;
                 DateTime end;
                 switch (query.DateFilter)
@@ -142,7 +140,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     ClientID = dto.ClientID,
                     ItemCategoryID = dto.ItemCategoryID,
                     DocumentReference = null, // stored separately
-                    DatePickUp = dto.DatePickUp,
+                    DatePickUp = NormalizeNullableUtc(dto.DatePickUp),
                     Status = string.IsNullOrWhiteSpace(dto.Status) ? "New Request" : dto.Status,
                     CreatedBy = dto.CreatedBy,
                     CreatedAt = DateTime.UtcNow
@@ -225,7 +223,10 @@ namespace MDMPI.App.Data.Logistic.Repositories
 
                 // Always allowed updates when provided
                 QueryFilterHelper.UpdateIfNotNull(v => entity.PreparedBy = v, dto.PreparedBy);
-                QueryFilterHelper.UpdateIfNotNull(v => entity.ItemPreparedAt = v, dto.ItemPreparedAt);
+                if (dto.ItemPreparedAt.HasValue)
+                {
+                    entity.ItemPreparedAt = NormalizeToUtc(dto.ItemPreparedAt.Value);
+                }
 
                 // Handle status change and UpdatedAt
                 var incomingStatus = dto.Status;
@@ -243,7 +244,10 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 if (string.Equals(effectiveStatus, "Item Packed", StringComparison.OrdinalIgnoreCase)
                     || string.Equals(effectiveStatus, "Item Prepared", StringComparison.OrdinalIgnoreCase))
                 {
-                    QueryFilterHelper.UpdateIfNotNull(v => entity.ItemPreparedEndAt = v, dto.ItemPreparedEndAt);
+                    if (dto.ItemPreparedEndAt.HasValue)
+                    {
+                        entity.ItemPreparedEndAt = NormalizeToUtc(dto.ItemPreparedEndAt.Value);
+                    }
                 }
 
                 // Remarks and ReceivedBy only if status is Delivered or Received
@@ -267,6 +271,12 @@ namespace MDMPI.App.Data.Logistic.Repositories
                         Reference = dr
                     });
                     _db.a_tblRequestDocumentReference.AddRange(newRefs);
+                }
+
+                // Update PickUpDate with proper UTC parsing
+                if (dto.DatePickUp.HasValue)
+                {
+                    entity.DatePickUp = NormalizeToUtc(dto.DatePickUp.Value);
                 }
 
                 await _db.SaveChangesAsync();
@@ -308,6 +318,21 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     clientSetter(item, client);
                 }
             }
+        }
+
+        private static DateTime? NormalizeNullableUtc(DateTime? value)
+        {
+            return value.HasValue ? NormalizeToUtc(value.Value) : null;
+        }
+
+        private static DateTime NormalizeToUtc(DateTime value)
+        {
+            return value.Kind switch
+            {
+                DateTimeKind.Utc => value,
+                DateTimeKind.Local => value.ToUniversalTime(),
+                _ => DateTime.SpecifyKind(value, DateTimeKind.Utc)
+            };
         }
     }
 }

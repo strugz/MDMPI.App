@@ -1,12 +1,11 @@
-using MDMPI.App.Common.Utilities;
 using MDMPI.App.Core.Common.DTOs;
 using MDMPI.App.Core.Common.Entities;
 using MDMPI.App.Core.Common.Interfaces;
 using MDMPI.App.Core.Common.Services;
-using MDMPI.App.Core.Common.DTOs;
-using MDMPI.App.Data.Common;
 using MDMPI.App.Core.Logistic.DTOs.RequestPullOutReturnPickUp;
+using MDMPI.App.Core.Logistic.Entities;
 using MDMPI.App.Core.Logistic.Interfaces;
+using MDMPI.App.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -122,6 +121,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 var newRequestId = await _requestIdGenerator.GenerateAsync();
 
                 var request = QueryFilterHelper.BuilbRequestPullOutReturnPickUpModel(dto, newRequestId);
+                NormalizeRequestDateTimes(request);
 
                 _db.a_tblRequestPullOutReturnPickUp.Add(request);
                 await _db.SaveChangesAsync();
@@ -215,8 +215,15 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 QueryFilterHelper.UpdateIfNotNull(v => request.ClientContactPerson = v, dto.ClientContactPerson);
                 QueryFilterHelper.UpdateIfNotNull(v => request.ReasonForReturn = v, dto.ReasonForReturn);
                 QueryFilterHelper.UpdateIfNotNull(v => request.ReleasedBy = v, dto.ReleasedBy);
-                QueryFilterHelper.UpdateIfNotNull(v => request.PullOutDateStartAt = v, dto.PullOutDateStartAt);
-                QueryFilterHelper.UpdateIfNotNull(v => request.PullOutDateEndAt = v, dto.PullOutDateEndAt);
+                if (dto.PullOutDateStartAt.HasValue)
+                {
+                    request.PullOutDateStartAt = NormalizeToUtc(dto.PullOutDateStartAt.Value);
+                }
+
+                if (dto.PullOutDateEndAt.HasValue)
+                {
+                    request.PullOutDateEndAt = NormalizeToUtc(dto.PullOutDateEndAt.Value);
+                }
                 QueryFilterHelper.UpdateIfNotNull(v => request.MobileID = v, dto.MobileID);
                 QueryFilterHelper.UpdateIfNotNull(v => request.RequestStatus = v, dto.RequestStatus);
                 QueryFilterHelper.UpdateIfNotNull(v => request.TripTicketNumber = v, dto.TripTicketNumber);
@@ -265,6 +272,29 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     clientSetter(item, client);
                 }
             }
+        }
+
+        private static void NormalizeRequestDateTimes(RequestPullOutReturnPickUpModel request)
+        {
+            request.PullOutDateStartAt = NormalizeNullableUtc(request.PullOutDateStartAt);
+            request.PullOutDateEndAt = NormalizeNullableUtc(request.PullOutDateEndAt);
+            request.CreatedAt = NormalizeNullableUtc(request.CreatedAt) ?? DateTime.UtcNow;
+            request.UpdatedAt = NormalizeNullableUtc(request.UpdatedAt);
+        }
+
+        private static DateTime? NormalizeNullableUtc(DateTime? value)
+        {
+            return value.HasValue ? NormalizeToUtc(value.Value) : null;
+        }
+
+        private static DateTime NormalizeToUtc(DateTime value)
+        {
+            return value.Kind switch
+            {
+                DateTimeKind.Utc => value,
+                DateTimeKind.Local => value.ToUniversalTime(),
+                _ => DateTime.SpecifyKind(value, DateTimeKind.Utc)
+            };
         }
     }
 }
