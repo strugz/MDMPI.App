@@ -32,7 +32,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
 
             if (query.DateFilter != RequestDateFilter.All)
             {
-                var today = DateTime.Today;
+                var today = DateTime.UtcNow.Date;
                 DateTime start;
                 DateTime end;
                 switch (query.DateFilter)
@@ -58,8 +58,8 @@ namespace MDMPI.App.Data.Logistic.Repositories
                         end = today.AddDays(-29);
                         break;
                     default:
-                        start = DateTime.MinValue;
-                        end = DateTime.MaxValue;
+                        start = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
+                        end = DateTime.SpecifyKind(DateTime.MaxValue, DateTimeKind.Utc);
                         break;
                 }
                 requests = requests.Where(r => r.DatePickUp >= start && r.DatePickUp < end);
@@ -147,7 +147,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     ItemCategoryID = dto.ItemCategoryID,
                     ClientID = dto.ClientID,
                     CreatedBy = dto.CreatedBy,
-                    DatePickUp = dto.DatePickUp,
+                    DatePickUp = NormalizeToUtc(dto.DatePickUp),
                     Status = string.IsNullOrWhiteSpace(dto.Status) ? "New Request" : dto.Status,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedBy = dto.UpdatedBy,
@@ -235,19 +235,19 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 QueryFilterHelper.UpdateIfNotNull(v => entity.TripTicketNumber = v, dto.TripTicketNumber);
                 QueryFilterHelper.UpdateIfNotNull(v => entity.Driver = v, dto.Driver);
                 QueryFilterHelper.UpdateIfNotNull(v => entity.Helper = v, dto.Helper);
-                QueryFilterHelper.UpdateIfNotNull(v => entity.ItemPreparedAt = v, dto.ItemPreparedAt);
-                QueryFilterHelper.UpdateIfNotNull(v => entity.ItemPreparedEndAt = v, dto.ItemPreparedEndAt);
-                QueryFilterHelper.UpdateIfNotNull(v => entity.DispatchedAt = v, dto.DispatchedAt);
-                QueryFilterHelper.UpdateIfNotNull(v => entity.DropOffAt = v, dto.DropOffAt);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.ItemPreparedAt = NormalizeToUtc(v), dto.ItemPreparedAt);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.ItemPreparedEndAt = NormalizeToUtc(v), dto.ItemPreparedEndAt);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.DispatchedAt = NormalizeToUtc(v), dto.DispatchedAt);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.DropOffAt = NormalizeToUtc(v), dto.DropOffAt);
                 QueryFilterHelper.UpdateIfNotNull(v => entity.PreparedBy = v, dto.PreparedBy);
                 QueryFilterHelper.UpdateIfNotNull(v => entity.MobileID = v, dto.MobileID);
                 QueryFilterHelper.UpdateIfNotNull(v => entity.Remarks = v, dto.Remarks);
                 QueryFilterHelper.UpdateIfNotNull(v => entity.ProvincialPickUpBy = v, dto.ProvincialPickUpBy);
-                QueryFilterHelper.UpdateIfNotNull(v => entity.ProvincialPickUpAt = v, dto.ProvincialPickUpAt);
-                QueryFilterHelper.UpdateIfNotNull(v => entity.ProvincialInTransitAt = v, dto.ProvincialInTransitAt);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.ProvincialPickUpAt = NormalizeToUtc(v), dto.ProvincialPickUpAt);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.ProvincialInTransitAt = NormalizeToUtc(v), dto.ProvincialInTransitAt);
                 QueryFilterHelper.UpdateIfNotNull(v => entity.ProvincialInTransitLocation = v, dto.ProvincialInTransitLocation);
                 QueryFilterHelper.UpdateIfNotNull(v => entity.ProvincialReceiverName = v, dto.ProvincialReceiverName);
-                QueryFilterHelper.UpdateIfNotNull(v => entity.ProvincialDeliveredEndAt = v, dto.ProvincialDeliveredEndAt);
+                QueryFilterHelper.UpdateIfNotNull(v => entity.ProvincialDeliveredEndAt = NormalizeToUtc(v), dto.ProvincialDeliveredEndAt);
                 QueryFilterHelper.UpdateIfNotNull(v => entity.ProvincialDeliveredLocation = v, dto.ProvincialDeliveredLocation);
                 QueryFilterHelper.UpdateIfNotNull(v => entity.UpdatedBy = v, dto.UpdatedBy);
 
@@ -329,5 +329,19 @@ namespace MDMPI.App.Data.Logistic.Repositories
             }
         }
 
+        private static DateTime? NormalizeToUtc(DateTime? value)
+        {
+            if (!value.HasValue)
+            {
+                return null;
+            }
+
+            return value.Value.Kind switch
+            {
+                DateTimeKind.Utc => value.Value,
+                DateTimeKind.Local => value.Value.ToUniversalTime(),
+                _ => DateTime.SpecifyKind(value.Value, DateTimeKind.Utc)
+            };
+        }
     }
 }
