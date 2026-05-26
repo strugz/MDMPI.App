@@ -1,3 +1,4 @@
+using MDMPI.App.Api.WebSockets;
 using MDMPI.App.Core.Collection.Interfaces;
 using MDMPI.App.Core.Collection.Services;
 using MDMPI.App.Core.Common.Interfaces;
@@ -66,6 +67,7 @@ builder.Services.AddScoped<IMobileService, MobileService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IItemService, MDMPI.App.Core.Common.Services.ItemService>();
 builder.Services.AddScoped<ICollectionTransactionService, CollectionTransactionService>();
+builder.Services.AddSingleton<WebSocketConnectionHandler>();
 
 
 //builder.Services.AddCors(options =>
@@ -90,6 +92,17 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.UseWebSockets(new WebSocketOptions
+{
+    KeepAliveInterval = TimeSpan.FromSeconds(30)
+});
+
+app.Map("/api/ws", async context =>
+{
+    var handler = context.RequestServices.GetRequiredService<WebSocketConnectionHandler>();
+    await handler.HandleAsync(context);
+});
+
 app.MapControllers();
 
 //app.UseCors("AllowAll");
@@ -97,3 +110,7 @@ app.MapControllers();
 //app.Run($"http://0.0.0.0:{port}");
 
 app.Run();
+
+public partial class Program
+{
+}
