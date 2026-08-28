@@ -81,14 +81,39 @@ builder.Services.AddSingleton<WebSocketConnectionHandler>();
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment() &&
+    !app.Configuration.GetValue<bool>("ALLOW_PRODUCTION_DB"))
+{
+    throw new InvalidOperationException(
+        "Local MDMPI.App startup uses production databases. Set " +
+        "ALLOW_PRODUCTION_DB=true explicitly to continue.");
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    // Production exposes this application beneath /api4. Keep the same
+    // contract locally without claiming /api3 or any other live API routes.
+    app.Use(async (context, next) =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api4", out var remaining))
+        {
+            context.Request.Path = $"/api{remaining}";
+        }
+
+        await next();
+    });
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+app.UseRouting();
 
 app.UseAuthorization();
 

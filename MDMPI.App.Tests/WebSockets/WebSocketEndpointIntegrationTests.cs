@@ -142,6 +142,7 @@ public sealed class WebSocketEndpointIntegrationTests
                 {
                     configuration.AddInMemoryCollection(new Dictionary<string, string?>
                     {
+                        ["ALLOW_PRODUCTION_DB"] = "true",
                         ["WebSocket:ApiKey"] = ApiKey
                     });
                 });
