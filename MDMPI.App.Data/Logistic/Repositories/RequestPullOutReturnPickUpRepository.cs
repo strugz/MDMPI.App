@@ -56,6 +56,7 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     RequestStatusFilter.GettingsSupliesReady => "Getting Supplies Ready",
                     RequestStatusFilter.ItemPrepared => "Item Prepared",
                     RequestStatusFilter.ForDelivery => "For Delivery",
+                    RequestStatusFilter.ForPullOut => "For Pull Out",
                     RequestStatusFilter.InTransit => "In Transit",
                     RequestStatusFilter.Delivered => "Delivered",
                     RequestStatusFilter.Cancelled => "Cancelled",

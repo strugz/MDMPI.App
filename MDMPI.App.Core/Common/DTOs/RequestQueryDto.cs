@@ -18,6 +18,7 @@ namespace MDMPI.App.Core.Common.DTOs
         ReadyForShipment,
         EndorsedToGuard,
         ForDelivery,
+        ForPullOut,
         InTransit,
         Delivered,
         Received,
