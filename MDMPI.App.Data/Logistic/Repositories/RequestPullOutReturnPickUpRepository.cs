@@ -216,7 +216,13 @@ namespace MDMPI.App.Data.Logistic.Repositories
                 QueryFilterHelper.UpdateIfNotNull(v => request.ClientContactPerson = v, dto.ClientContactPerson);
                 QueryFilterHelper.UpdateIfNotNull(v => request.ReasonForReturn = v, dto.ReasonForReturn);
                 QueryFilterHelper.UpdateIfNotNull(v => request.ReleasedBy = v, dto.ReleasedBy);
-                if (dto.PullOutDateStartAt.HasValue)
+                if (dto.ClearPullOutDateStartAt == true)
+                {
+                    // Pause: courier returns the request to For Pull Out; the
+                    // next departure stamps a fresh start time.
+                    request.PullOutDateStartAt = null;
+                }
+                else if (dto.PullOutDateStartAt.HasValue)
                 {
                     request.PullOutDateStartAt = NormalizeToUtc(dto.PullOutDateStartAt.Value);
                 }
