@@ -55,6 +55,7 @@ builder.Services.AddScoped<IRequestBackloadRepository, RequestBackloadRepository
 builder.Services.AddScoped<ICollectionTransactionDetailsRepository, CollectionRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IClientLookupRepository, ClientLookupRepository>();
+builder.Services.AddScoped<ILoseItemRepository, LoseItemRepository>();
 
 // ── Services (Use Cases / Application Layer) ──
 builder.Services.AddScoped<IRequestService, RequestService>();
@@ -68,6 +69,7 @@ builder.Services.AddScoped<IMobileService, MobileService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IItemService, MDMPI.App.Core.Common.Services.ItemService>();
 builder.Services.AddScoped<ICollectionTransactionService, CollectionTransactionService>();
+builder.Services.AddScoped<ILoseItemService, LoseItemService>();
 builder.Services.AddSingleton<WebSocketConnectionHandler>();
 
 

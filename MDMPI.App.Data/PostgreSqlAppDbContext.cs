@@ -32,6 +32,7 @@ namespace MDMPI.App.Data
         public DbSet<RequestStandardHistoryModel> a_tblRequestStandardDeliveryHistory { get; set; }
         public DbSet<ItemModel> a_tblRequestStandardItem { get; set; }
         public DbSet<ItemBatchModel> a_tblRequestStandardItemBatch { get; set; }
+        public DbSet<LoseItemModel> a_tblLoseItem { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -55,6 +56,7 @@ namespace MDMPI.App.Data
             modelBuilder.Entity<RequestPullOutReturnPickUpHistoryModel>().ToTable("a_tblrequestpulloutreturnpickup_history", "public");
             modelBuilder.Entity<ItemModel>().ToTable("a_tblrequeststandarditem", "public");
             modelBuilder.Entity<ItemBatchModel>().ToTable("a_tblrequeststandarditembatch", "public");
+            modelBuilder.Entity<LoseItemModel>().ToTable("a_tblloseitem", "public");
 
             modelBuilder.Entity<RequestStandardModel>(entity =>
             {
