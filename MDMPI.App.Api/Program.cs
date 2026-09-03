@@ -31,6 +31,7 @@ builder.Services.AddDbContext<PostgreSqlAppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSqlDB")));
 
 // Register application services
+builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<ImageService>();
 
 // Register Gemini AI service

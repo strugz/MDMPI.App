@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -46,12 +47,13 @@ public sealed class NotificationUpdate
 
 public sealed class WebSocketMessageNormalizationResult
 {
-    private WebSocketMessageNormalizationResult(bool success, bool invalidJson, string? normalizedJson, string? messageType)
+    private WebSocketMessageNormalizationResult(bool success, bool invalidJson, string? normalizedJson, string? messageType, string? requestId)
     {
         Success = success;
         InvalidJson = invalidJson;
         NormalizedJson = normalizedJson;
         MessageType = messageType;
+        RequestID = requestId;
     }
 
     public bool Success { get; }
@@ -62,19 +64,21 @@ public sealed class WebSocketMessageNormalizationResult
 
     public string? MessageType { get; }
 
-    public static WebSocketMessageNormalizationResult Valid(string normalizedJson, string messageType)
+    public string? RequestID { get; }
+
+    public static WebSocketMessageNormalizationResult Valid(string normalizedJson, string messageType, string? requestId = null)
     {
-        return new WebSocketMessageNormalizationResult(true, false, normalizedJson, messageType);
+        return new WebSocketMessageNormalizationResult(true, false, normalizedJson, messageType, requestId);
     }
 
     public static WebSocketMessageNormalizationResult InvalidJsonMessage()
     {
-        return new WebSocketMessageNormalizationResult(false, true, null, null);
+        return new WebSocketMessageNormalizationResult(false, true, null, null, null);
     }
 
     public static WebSocketMessageNormalizationResult UnknownShape()
     {
-        return new WebSocketMessageNormalizationResult(false, false, null, null);
+        return new WebSocketMessageNormalizationResult(false, false, null, null, null);
     }
 }
 
@@ -112,7 +116,7 @@ public static class WebSocketMessageNormalizer
                         : new NotificationUpdate()
                 };
 
-                return WebSocketMessageNormalizationResult.Valid(Serialize(envelope), envelope.Message);
+                return WebSocketMessageNormalizationResult.Valid(Serialize(envelope), envelope.Message, envelope.LocationUpdate.RequestID);
             }
 
             if (string.Equals(message, "Notification", StringComparison.Ordinal))
@@ -141,7 +145,7 @@ public static class WebSocketMessageNormalizer
                     NotificationUpdate = new NotificationUpdate()
                 };
 
-                return WebSocketMessageNormalizationResult.Valid(Serialize(envelope), envelope.Message);
+                return WebSocketMessageNormalizationResult.Valid(Serialize(envelope), envelope.Message, envelope.LocationUpdate.RequestID);
             }
 
             return WebSocketMessageNormalizationResult.UnknownShape();
@@ -244,7 +248,11 @@ public static class WebSocketMessageNormalizer
             return value;
         }
 
-        if (property.ValueKind == JsonValueKind.String && double.TryParse(property.GetString(), out var stringValue))
+        // Invariant culture: on a de-DE server "14.5995" would otherwise parse as 145995,
+        // and on fr-FR it would fail outright. Coordinates are machine-formatted JSON,
+        // never locale-formatted user input.
+        if (property.ValueKind == JsonValueKind.String &&
+            double.TryParse(property.GetString(), NumberStyles.Float, CultureInfo.InvariantCulture, out var stringValue))
         {
             return stringValue;
         }

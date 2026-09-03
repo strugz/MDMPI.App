@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using MDMPI.App.Api.WebSockets;
 
@@ -119,5 +120,38 @@ public sealed class WebSocketMessageNormalizerTests
         Assert.False(result.Success);
         Assert.True(result.InvalidJson);
         Assert.Null(result.NormalizedJson);
+    }
+
+    [Fact]
+    public void Normalize_StringCoordinates_ParsesInvariantOfServerCulture()
+    {
+        // Regression: GetDouble used culture-sensitive double.TryParse, so on a de-DE
+        // server "14.5995" parsed as 145995 and on fr-FR it parsed as 0.
+        var original = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = new CultureInfo("de-DE");
+
+            var json = """
+            {
+              "Type": "location_update",
+              "RequestID": "REQ-004",
+              "Latitude": "14.5995",
+              "Longitude": "120.9842"
+            }
+            """;
+
+            var result = WebSocketMessageNormalizer.Normalize(json);
+
+            Assert.True(result.Success);
+            using var document = JsonDocument.Parse(result.NormalizedJson!);
+            var location = document.RootElement.GetProperty("LocationUpdate");
+            Assert.Equal(14.5995, location.GetProperty("Latitude").GetDouble(), 4);
+            Assert.Equal(120.9842, location.GetProperty("Longitude").GetDouble(), 4);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = original;
+        }
     }
 }

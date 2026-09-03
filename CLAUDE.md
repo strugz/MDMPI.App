@@ -35,7 +35,7 @@ dotnet test MDMPI.App.sln
 ```
 
 **Verified baseline (2026-08-28, branch `prod/websocket-location`): build succeeds
-with 5 warnings, 49/49 tests pass.** If you see a different number, something changed —
+with 5 warnings, 91/91 tests pass.** If you see a different number, something changed —
 investigate before assuming it was already broken.
 
 Running the API locally:
@@ -97,10 +97,15 @@ Rules while this remains true:
 
 ## 5. WebSockets
 
-Endpoint `/api/ws`, api-key gated via query string. `WebSocketConnectionHandler` is a
-singleton; `WebSocketMessages.cs` holds the payload contracts. Manual test script and
-payload shapes: `MDMPI.App.Api/WebSockets/README.md`. Senders do not receive their own
-broadcast. Automated coverage: `MDMPI.App.Tests/WebSockets/`.
+Endpoint `/api/ws`, api-key gated via query string, with optional declared identity
+(`clientId`, `role` — sanitized, log-only). `WebSocketConnectionHandler` is a singleton;
+`WebSocketMessages.cs` holds the payload contracts; `LocationReplayCache.cs` replays the
+latest location per RequestID to newly connected clients. Guardrails: 64 KB message cap,
+20 msg/s rate limit (1008 on sustained abuse), 500-connection cap (503), 5 s send budget.
+Config via `WebSocket:*` keys (code defaults + env vars — never appsettings.json).
+Senders do not receive their own broadcast. The handler takes an injected `TimeProvider`.
+Manual test script and payload shapes: `MDMPI.App.Api/WebSockets/README.md`. Automated
+coverage: `MDMPI.App.Tests/WebSockets/`.
 
 ## 6. Excluded / dead code
 
