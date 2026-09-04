@@ -10,6 +10,10 @@ namespace MDMPI.App.Core.Logistic.DTOs.RequestPickUp
         public long RequestID { get; set; }
         public string? ClientID { get; set; }
         public long? ItemCategoryID { get; set; }
+
+        /// <summary>All selected item categories (primary one first).</summary>
+        public List<long>? ItemCategoryIDs { get; set; }
+
         public List<string>? DocumentReference { get; set; }
         public string? PreparedBy { get; set; }
         public DateTime? ItemPreparedAt { get; set; }

@@ -100,6 +100,11 @@ namespace MDMPI.App.Data.Logistic.Repositories
                     RequestID = r.RequestID,
                     ClientID = r.ClientID,
                     ItemCategoryID = r.ItemCategoryID,
+                    ItemCategoryIDs = _db.a_tblRequestPickUpItemCategory
+                        .Where(c => c.RequestID == r.RequestID)
+                        .OrderBy(c => c.PickUpItemCategoryID)
+                        .Select(c => c.ItemCategoryID)
+                        .ToList(),
                     DocumentReference = _db.a_tblRequestDocumentReference
                         .Where(dr => dr.RequestID == r.RequestID)
                         .Select(dr => dr.Reference!)
@@ -134,11 +139,22 @@ namespace MDMPI.App.Data.Logistic.Repositories
 
                 var newRequestId = await _requestIdGenerator.GenerateAsync();
 
+                // All selected categories (multi-select); the first one also
+                // fills the scalar column as the primary category.
+                var categoryIds = (dto.ItemCategoryIDs ?? new List<long>())
+                    .Distinct()
+                    .ToList();
+                if (categoryIds.Count == 0 && dto.ItemCategoryID.HasValue)
+                {
+                    categoryIds.Add(dto.ItemCategoryID.Value);
+                }
+
                 var entity = new RequestPickUpModel
                 {
                     RequestID = newRequestId,
                     ClientID = dto.ClientID,
-                    ItemCategoryID = dto.ItemCategoryID,
+                    ItemCategoryID = dto.ItemCategoryID ??
+                        (categoryIds.Count > 0 ? categoryIds[0] : null),
                     DocumentReference = null, // stored separately
                     DatePickUp = NormalizeNullableUtc(dto.DatePickUp),
                     Status = string.IsNullOrWhiteSpace(dto.Status) ? "New Request" : dto.Status,
@@ -148,6 +164,18 @@ namespace MDMPI.App.Data.Logistic.Repositories
 
                 _db.a_tblRequestPickUpMDMPI.Add(entity);
                 await _db.SaveChangesAsync();
+
+                // Persist the full category selection in the child table.
+                if (categoryIds.Count > 0)
+                {
+                    _db.a_tblRequestPickUpItemCategory.AddRange(
+                        categoryIds.Select(id => new PickUpItemCategoryModel
+                        {
+                            RequestID = entity.RequestID,
+                            ItemCategoryID = id
+                        }));
+                    await _db.SaveChangesAsync();
+                }
 
                 // Persist document references if provided
                 if (dto.DocumentReference is { Count: > 0 })

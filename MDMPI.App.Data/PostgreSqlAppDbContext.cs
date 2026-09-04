@@ -33,6 +33,7 @@ namespace MDMPI.App.Data
         public DbSet<ItemModel> a_tblRequestStandardItem { get; set; }
         public DbSet<ItemBatchModel> a_tblRequestStandardItemBatch { get; set; }
         public DbSet<LoseItemModel> a_tblLoseItem { get; set; }
+        public DbSet<PickUpItemCategoryModel> a_tblRequestPickUpItemCategory { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -57,6 +58,7 @@ namespace MDMPI.App.Data
             modelBuilder.Entity<ItemModel>().ToTable("a_tblrequeststandarditem", "public");
             modelBuilder.Entity<ItemBatchModel>().ToTable("a_tblrequeststandarditembatch", "public");
             modelBuilder.Entity<LoseItemModel>().ToTable("a_tblloseitem", "public");
+            modelBuilder.Entity<PickUpItemCategoryModel>().ToTable("a_tblrequestpickupitemcategory", "public");
 
             modelBuilder.Entity<RequestStandardModel>(entity =>
             {
