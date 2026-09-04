@@ -29,30 +29,69 @@ namespace MDMPI.App.Data.Common.Repositories
                 return new Dictionary<string, ACCMSTDto>(StringComparer.OrdinalIgnoreCase);
             }
 
-            var clients = await _db.ACCMST_
+            // UNION of ACCMST_ (main: clinics/hospitals) and DLRMST (dealers),
+            // projected to the same shape. Source 0 = ACCMST_, 1 = DLRMST, so
+            // ACCMST_ wins when the same id exists in both tables.
+            var rows = await _db.ACCMST_
                 .AsNoTracking()
                 .Where(c => c.ACCMID != null && normalizedIds.Contains(c.ACCMID))
-                .Select(c => new ACCMSTDto
+                .Select(c => new
                 {
-                    ACCMID = c.ACCMID,
-                    ACCMSC = c.ACCMSC,
-                    ACCMNM = c.ACCMNM,
-                    ACCMBC = c.ACCMBC,
-                    ACCMAD = c.ACCMAD,
-                    ACCMPH = c.ACCMPH,
-                    ACCMEM = c.ACCMEM,
-                    ACCMWS = c.ACCMWS,
-                    ACCSTS = c.ACCSTS,
-                    ACCOWN = c.ACCOWN
+                    Source = 0,
+                    Id = c.ACCMID,
+                    Code = c.ACCMSC,
+                    Name = c.ACCMNM,
+                    BusinessCode = c.ACCMBC,
+                    Address = c.ACCMAD,
+                    Phone = c.ACCMPH,
+                    Email = c.ACCMEM,
+                    Website = c.ACCMWS,
+                    Status = c.ACCSTS,
+                    Owner = c.ACCOWN
                 })
+                .Union(_db.DLRMST
+                    .AsNoTracking()
+                    .Where(d => d.DLRMID != null && normalizedIds.Contains(d.DLRMID))
+                    .Select(d => new
+                    {
+                        Source = 1,
+                        Id = d.DLRMID,
+                        Code = d.DLRMSC,
+                        Name = d.DLRMNM,
+                        BusinessCode = d.DLRMBC,
+                        Address = d.DLRMAD,
+                        Phone = d.DLRMPH,
+                        Email = d.DLRMEM,
+                        Website = d.DLRMWS,
+                        Status = d.DLRSTS,
+                        Owner = d.DLROWN
+                    }))
                 .ToListAsync();
 
-            foreach (var client in clients)
+            var result = new Dictionary<string, ACCMSTDto>(StringComparer.OrdinalIgnoreCase);
+            foreach (var row in rows.OrderBy(r => r.Source))
             {
-                client.ACCMNM = client.ACCMNM != null ? client.ACCMNM.ToProperCase() : null;
+                if (row.Id == null || result.ContainsKey(row.Id))
+                {
+                    continue;
+                }
+
+                result[row.Id] = new ACCMSTDto
+                {
+                    ACCMID = row.Id,
+                    ACCMSC = row.Code,
+                    ACCMNM = row.Name != null ? row.Name.ToProperCase() : null,
+                    ACCMBC = row.BusinessCode,
+                    ACCMAD = row.Address,
+                    ACCMPH = row.Phone,
+                    ACCMEM = row.Email,
+                    ACCMWS = row.Website,
+                    ACCSTS = row.Status,
+                    ACCOWN = row.Owner
+                };
             }
 
-            return clients.ToDictionary(c => c.ACCMID!, StringComparer.OrdinalIgnoreCase);
+            return result;
         }
     }
 }

@@ -11,6 +11,7 @@ namespace MDMPI.App.Data
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<ACCMSTModel> ACCMST_ { get; set; }
+        public DbSet<DLRMSTModel> DLRMST { get; set; }
         public DbSet<CollectionTransactionDetailsModel> a_tblCollectionTransactionDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -19,6 +20,9 @@ namespace MDMPI.App.Data
 
             modelBuilder.Entity<ACCMSTModel>()
                 .ToTable("ACCMST_");
+
+            modelBuilder.Entity<DLRMSTModel>()
+                .ToTable("DLRMST");
 
             modelBuilder.Entity<CollectionTransactionDetailsModel>()
                 .ToTable("a_tblCollectionTransactionDetails", b => b.UseSqlOutputClause(false));
